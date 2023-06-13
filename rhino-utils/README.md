@@ -1,6 +1,6 @@
 # Rhino Health Utilities
 
-***Tools to help assist in the local development, testing, and deplying to the RHP for both Generalized Compute and NVFLARE-based containers.***
+***Tools to assist in the local development, testing, and deployment to the RHP for both Generalized Compute and NVFLARE-based containers.***
 
 <br><br>
 
