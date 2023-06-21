@@ -1,5 +1,5 @@
-# Rhino Health Client Resources
-Rhino Health Client Resources is a collection of resources designed to help developers quickly get started with using the Rhino Health Web Interface and the Python SDK. This repository contains a range of tutorials, code examples, and documentation to make it easier to build applications that interact with Rhino Health's Platform services.
+# Rhino Health User Resources
+Rhino Health User Resources is a collection of resources designed to help developers quickly get started with using the Rhino Health Web Interface and the Python SDK. This repository contains a range of tutorials, code examples, and documentation to make it easier to build applications that interact with Rhino Health's Platform services.
 
 In addition to the tutorials and documentation, this repository also includes Docker container tooling that simplifies the development process of building your own containers for deployment on the Rhino Health Platform. With these tools, developers can easily set up a local development environment, test their applications, and deploy them to production with ease.
 
