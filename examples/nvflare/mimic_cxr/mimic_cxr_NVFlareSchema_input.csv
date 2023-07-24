@@ -1,0 +1,9 @@
+Variable Name,ViewPosition,Age,Pneumonia,Group_Age,PNG_file
+Identifier,ViewPosition,Age,Pneumonia,Group_Age,PNG_file
+Description,Dicom tag - ViewPosition,Dicom tag - Age,Ground Truth - Pneumonia,Grouping age,PNG file name
+Role,Input,Input,Input,Input,Input
+Type,String,Integer,Integer,String,Filename
+Type Parameters,,,,,
+Units,,,,,
+May Contain PHI?,False,False,False,False,False
+Permissions,Default,Default,Default,Default,Default

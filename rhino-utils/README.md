@@ -1,13 +1,13 @@
 # Rhino Health Utilities
 
-***Tools to assist in the local development, testing, and deployment to the RHP for both Generalized Compute and NVFLARE-based containers.***
+***Tools to assist in the local development, testing, and deployment to the FCP for both Generalized Compute and NVFLARE-based containers.***
 
 <br><br>
 
 # Why Use This?
 
 * Iterate quickly while developing locally.
-* Emulate the conditions of the Rhino Health Platform, to help ensure your container images will work there.
+* Emulate the conditions of the Rhino Health FCP, to help ensure your container images will work there.
 * These tools take care of many small details for you.  Some are crucial, such as building container images for the correct architecture (amd64, not ARM).  Some make local development faster and nicer, such as re-using local caches for `pip install` and `apt-get install`, and not running containers as a root user.
 * `docker-run.sh --auto` completely automates setting up a local NVFLARE server and local client(s) and running FL training with them, saving you the time and effort of doing so repeatedly (and of learning how!).
 

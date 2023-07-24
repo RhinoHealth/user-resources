@@ -1,0 +1,24 @@
+{
+  "format_version": 2,
+  "executors": [
+    {
+      "tasks": [
+        "train",
+        "submit_model"
+      ],
+      "executor": {
+        "path": "cifar10trainer.Cifar10Trainer",
+        "args": {
+          "lr": 0.01,
+          "epochs": 4
+        }
+      }
+    }
+  ],
+  "task_result_filters": [
+  ],
+  "task_data_filters": [
+  ],
+  "components": [
+  ]
+}

@@ -1,9 +1,9 @@
-# Tutorial 2 -  Multi-Cohort Data Harmonization with the Rhino Health Python SDK
+# Tutorial #2 - Rhino Health Federated Computing Platform Data Harmonization on the FCP SDK
 <br/>
 
 ### **Description**
 
-By following the [step-by-step instruction](https://rhinohealth.zendesk.com/hc/en-us/articles/10289950903837) in this tutorial, you will learn how to:
+By following the [step-by-step instruction](https://docs.rhinohealth.com/hc/en-us/articles/10289950903837-Tutorial-2-Rhino-Health-Federated-Computing-Platform-Data-Harmonization-on-the-FCP-SDK) in this tutorial, you will learn how to:
 
 1. Install and configure the Rhino Health Python SDK
 2. Import cohorts with local CSV files

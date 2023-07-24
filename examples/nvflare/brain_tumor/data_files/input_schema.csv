@@ -1,0 +1,9 @@
+Variable Name,image_name,category
+Identifier,image_name,category
+Description,image_name,category
+Role,Input,Input
+Type,Filename,Integer
+Type Parameters,,
+Units,,
+May Contain PHI?,FALSE,FALSE
+Permissions,Default,Default

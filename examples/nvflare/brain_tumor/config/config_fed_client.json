@@ -1,0 +1,23 @@
+{
+  "format_version": 2,
+
+  "executors": [
+    {
+      "tasks": ["train", "submit_model"],
+      "executor": {
+        "path": "brain_tumor_train.ConvNetTrainer",
+        "args": {
+          "lr": 0.001,
+          "epochs": 20,
+          "weight_decay" : 0.0001
+        }
+      }
+    }
+  ],
+  "task_result_filters": [
+  ],
+  "task_data_filters": [
+  ],
+  "components": [
+  ]
+}
