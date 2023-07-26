@@ -1,13 +1,13 @@
 # Rhino Health Utilities
 
-***Tools to assist in the local development, testing, and deployment to the RHP for both Generalized Compute and NVFLARE-based containers.***
+***Tools to assist in the local development, testing, and deployment to the FCP for both Generalized Compute and NVFLARE-based containers.***
 
 <br><br>
 
 # Why Use This?
 
 * Iterate quickly while developing locally.
-* Emulate the conditions of the Rhino Health Platform, to help ensure your container images will work there.
+* Emulate the conditions of the Rhino Health FCP, to help ensure your container images will work there.
 * These tools take care of many small details for you.  Some are crucial, such as building container images for the correct architecture (amd64, not ARM).  Some make local development faster and nicer, such as re-using local caches for `pip install` and `apt-get install`, and not running containers as a root user.
 * `docker-run.sh --auto` completely automates setting up a local NVFLARE server and local client(s) and running FL training with them, saving you the time and effort of doing so repeatedly (and of learning how!).
 
@@ -99,15 +99,15 @@ cd path/to/your/code
 
 ## Using the Docker Push Script
 
-1. If you have not already setup your ECR credentials with the AWS CLI. If you need assistance in setting these up, please follow this tutorial [How can I setup or Change my ECR Credentials?](https://rhinohealth.zendesk.com/hc/en-us/articles/11383336127133)
-2. Find your ECR workgroup repository name (e.g. `rhino-gc-workgroup-rhinohealth`). If you need help finding your ECR workgroup repository name, please follow this tutorial [How can I find my ECR Workgroup Repository Name, ECR Access Key ID, ECR Secret Access Key?](https://rhinohealth.zendesk.com/hc/en-us/articles/9073591628189)
+1. If you have not already done so, set up your ECR credentials with the AWS CLI. If you need assistance in setting these up, please follow the instructions in the `Setup` steps of [Pushing Generalized Compute Image Containers](https://docs.rhinohealth.com/hc/en-us/articles/6040656682269-Pushing-Generalized-Compute-Container-Images) guide. If your credentials have been updated and you need assistance updating them in your local config, please review this guide: [How can I setup or Change my ECR Credentials?](https://rhinohealth.zendesk.com/hc/en-us/articles/11383336127133)
+2. Find your ECR workgroup repository name (e.g. `rhino-gc-workgroup-my-workgroup`). If you need help finding your ECR workgroup repository name, please follow this guide [How can I find my ECR Workgroup Repository Name, ECR Access Key ID, ECR Secret Access Key?](https://rhinohealth.zendesk.com/hc/en-us/articles/9073591628189)
 3. Choose a unique tag for this container image (e.g. `tutorial-1-data-prep-v1`)
 4. Build and push the container to the Rhino ECR repo using `docker-push.sh`.  <br>For example:
 ```shell
 cd path/to/client-resources/rhino-utils
 chmod +x *.sh
 cd path/to/your/code
-./path/to/client-resources/rhino-utils/docker-push.sh rhino-gc-workgroup-rhinohealth tutorial-1-data-prep-v1
+./path/to/client-resources/rhino-utils/docker-push.sh rhino-gc-workgroup-my-workgroup tutorial-1-data-prep-v1
 ```
 
 <br><br>

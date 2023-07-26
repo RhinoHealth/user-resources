@@ -1,0 +1,31 @@
+{
+  "format_version": 2,
+
+  "executors": [
+    {
+      "tasks": ["train"],
+      "executor": {
+        "id": "Executor",
+        "path": "nvflare.app_opt.sklearn.sklearn_executor.SKLearnExecutor",
+        "args": {
+          "learner_id": "poisson_learner"
+        }
+      }
+    }
+  ],
+  "task_result_filters": [],
+  "task_data_filters": [],
+  "components": [
+    {
+      "id": "poisson_learner",
+      "path": "poisson_learner.PoissonLearner",
+      "args": {
+        "data_path": "/input/cohorts",
+        "random_state": 42,
+        "test_size": 0,
+        "features_columns":["Xc","c"],
+        "label_column":"Ys"
+      }
+    }
+  ]
+}

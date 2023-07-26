@@ -1,0 +1,11 @@
+name: cudf_test
+channels:
+  - rapidsai
+  - nvidia
+  - numba
+  - conda-forge
+dependencies:
+  - python=3.7
+  - cudf=21.08
+  - cudatoolkit=11.0
+  - pandas=1.0
