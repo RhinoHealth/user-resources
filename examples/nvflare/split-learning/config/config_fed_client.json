@@ -1,0 +1,33 @@
+{
+    "format_version": 2,
+    "executors": [
+        {
+            "tasks": [
+                "_splitnn_task_init_model_",
+                "_splitnn_task_train_",
+                "_splitnn_task_submit_model_"
+            ],
+            "executor": {
+                "id": "Executor",
+                "path": "splitnn_learner_executor.SplitNNLearnerExecutor",
+                "args": {
+                    "learner_id": "learner-splitnn"
+                }
+            }
+        }
+    ],
+    "task_result_filters": [],
+    "task_data_filters": [],
+    "components": [
+        {
+            "id": "learner-splitnn",
+            "path": "learner_splitnn.LearnerSplitNN",
+            "args": {
+                "lr": 0.01,
+                "model": {
+                    "path": "split_nn.SplitNN"
+                }
+            }
+        }
+    ]
+}

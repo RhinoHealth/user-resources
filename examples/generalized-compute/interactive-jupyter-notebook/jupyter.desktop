@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=Jupyter Notebook
+Exec=sh -c '/venv/bin/jupyter-notebook --allow-root >$HOME/jupyter-notebook.log 2>&1 && xdg-open http://localhost:8888/'
+StartupNotify=false
+Terminal=false
+Hidden=false
+Icon=jupyter-notebook
