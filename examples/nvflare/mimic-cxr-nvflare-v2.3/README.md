@@ -1,7 +1,6 @@
-# NVIDIA FLARE Example - MIMIC CXR for NVIDIA FLARE v2.3
-<br/>
+# NVIDIA FLARE Example - MIMIC CXR with NVIDIA FLARE v2.3
 
-### **Description**
+## Description
 
 This example contains files to train a pneumonia detection model from Chest XRays using Rhino Health's Federated
 Computing Platform (FCP) and NVIDIA FLARE v2.3.
@@ -14,9 +13,8 @@ It shows how to:
 * Package the code in a Docker container that can be used with FCP.
 
 Please reference the User Documentation and/or Tutorials for in depth explanations on how to use NVFLARE on FCP.
-<br/><br/>
 
-### **Resources**
+## Resources
 - `config` - This is the standard NVFlare directory for config files
   - `config_fed_client.json` - The standard NVFlare federated client config, setting to 1 epoch for the example 
   - `config_fed_server.json` - The standard NVFlare federated server config, setting the output model weights file to be stored in `/output/model_parameters.pt`
@@ -24,7 +22,6 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
 - `infer.py` - A script for running inference on the trained model
 - `Dockerfile` - This is the Dockerfile to be used for building the container image
 - `requirements.txt` - The python requirements for this project
-<br><br>
 
-# Getting Help
+## Getting Help
 For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
