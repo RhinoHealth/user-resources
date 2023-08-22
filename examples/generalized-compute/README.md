@@ -10,7 +10,6 @@ This folder contains examples for using Rhino Health's Generalized Compute capab
 - [gpu-with-pip](./gpu-with-pip/README.md) - Perform operations with cupy using GPUs in remotely executed code
 - [gpu-with-conda](./gpu-with-conda/README.md) - Perform operations with cudf using GPUs in remotely executed code, building the container image using conda
 - [run-encrypted-code](./run-encrypted-code/README.md) - Locally encrypt the code that you would like to have run and build a container image using just the encrypted code (and not the source code). Have the container execute the encrypted code, using the decryption key as an input parameter provided during run time
-- [interactive-3d-slicer](./interactive-3d-slicer/README.md) - Run an interactive container session with 3D Slicer to view and/or annotate remote DICOM data on a Rhino Client
 - [interactive-qupath](./interactive-qupath/README.md) - Run an interactive container session with QuPath to view and/or annotate remote DICOM data on a Rhino Client
 - [interactive-jupyter-notebook](./interactive-jupyter-notebook/README.md) - Run an interactive container session with Jupyter Notebook to interact with remote data on a Rhino Client
 <br><br>
