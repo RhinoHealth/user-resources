@@ -140,10 +140,10 @@ nvflare_version="$(docker run --rm --network none "rhino-nvflare-localrun" pip f
 IFS='.' read -r -a nvflare_version_parts <<< "$nvflare_version"
 if [[ "$nvflare_version" == 2.0.* ]]; then
   nvflare_server_connection_str="rhino-nvflare-localrun-server"
-elif [[ "$nvflare_version" == 2.2.* ]]; then
+elif [[ "$nvflare_version" == 2.2.* ]] || [[ "$nvflare_version" == 2.3.* ]]; then
   nvflare_server_connection_str="rhino-nvflare-localrun-server:8002:8002"
 else
-  echo >&2 "Only versions 2.0 and 2.2 of NVFLARE are supported."
+  echo >&2 "Only versions 2.0, 2.2 and 2.3 of NVFLARE are supported."
   exit 1
 fi
 
@@ -164,12 +164,12 @@ cat > $tmpdir/prep_poc.sh << EOF
 #!/bin/sh
 if [ "${nvflare_version_parts[1]}" -eq 0 ]; then
   echo y | poc -n "$n_clients" >/dev/null
-elif [ "${nvflare_version_parts[1]}" -eq 2 ]; then
+elif [ "${nvflare_version_parts[1]}" -eq 2 ] || [ "${nvflare_version_parts[1]}" -eq 3 ]; then
   export NVFLARE_POC_WORKSPACE=/tmp/nvflare/poc
   echo y | nvflare poc --prepare -n "$n_clients" >/dev/null
   mv /tmp/nvflare/poc/* poc/
 else
-  echo >&2 "Only versions 2.0 and 2.2 of NVFLARE are supported."
+  echo >&2 "Only versions 2.0, 2.2 and 2.3 of NVFLARE are supported."
   exit 1
 fi
 EOF
@@ -187,7 +187,7 @@ for clientnum in $(seq 1 "$n_clients"); do
   chmod +x "$tmpdir/poc/site-$clientnum/startup/sub_start.sh"
 done
 chmod +x "$tmpdir/poc/admin/startup/fl_admin.sh"
-if [[ "$nvflare_version" == 2.2.* ]]; then
+if [[ "$nvflare_version" == 2.2.* ]] || [[ "$nvflare_version" == 2.3.* ]]; then
   find "$tmpdir/poc/" -type f -name 'fed_*.json' \
     -exec sed -i.bak 's/localhost:8002/rhino-nvflare-localrun-server:8002/' {} \; \
     -exec rm {}.bak \;
@@ -197,13 +197,28 @@ if ! docker network ls | tail -n +2 | awk '{ print $2 }' | grep -q '^rhino-nvfla
   docker network create --internal rhino-nvflare-localrun
 fi
 
+mkdir "$tmpdir/tb-logs"
+mkdir "$tmpdir/tb-logs/server"
+for clientnum in $(seq 1 "$n_clients"); do
+  mkdir "$tmpdir/tb-logs/client-$clientnum"
+done
+
 docker_run_base_cmd=(docker run --rm)
 if [ ${#docker_run_args[@]} -gt 0 ]; then
   docker_run_base_cmd+=("${docker_run_args[@]}")
 fi
-"${docker_run_base_cmd[@]}" --name "rhino-nvflare-localrun-server" -v "$tmpdir/poc/server:/home/localuser/server" -v "$abs_output_dir:/output" --network rhino-nvflare-localrun --hostname rhino-nvflare-localrun-server "rhino-nvflare-localrun" server/startup/sub_start.sh rhino-nvflare-localrun-server >"$tmpdir/server_log.txt" 2>&1 &
+# Run server.
+"${docker_run_base_cmd[@]}" --name "rhino-nvflare-localrun-server" -v "$tmpdir/poc/server:/home/localuser/server" -v "$abs_output_dir:/output" -v "$tmpdir/tb-logs/server:/tb-logs" --network rhino-nvflare-localrun --hostname rhino-nvflare-localrun-server "rhino-nvflare-localrun" server/startup/sub_start.sh rhino-nvflare-localrun-server >"$tmpdir/server_log.txt" 2>&1 &
+# Wait for server to start.
+echo "Waiting for FL server to start..."
+while ! grep 'Server started' "$tmpdir/server_log.txt" >&/dev/null; do
+  echo -n "."
+  sleep 1;
+done
+echo ""
+# Run clients.
 for clientnum in $(seq 1 "$n_clients"); do
-  "${docker_run_base_cmd[@]}" --name "rhino-nvflare-localrun-site-$clientnum" -v "$tmpdir/poc/site-$clientnum:/home/localuser/site-$clientnum" -v "$abs_input_dir:/input:ro" --network rhino-nvflare-localrun "rhino-nvflare-localrun" site-$clientnum/startup/sub_start.sh "site-$clientnum" "$nvflare_server_connection_str" >"$tmpdir/site-${clientnum}_log.txt" 2>&1 &
+  "${docker_run_base_cmd[@]}" --name "rhino-nvflare-localrun-site-$clientnum" -v "$tmpdir/poc/site-$clientnum:/home/localuser/site-$clientnum" -v "$abs_input_dir:/input:ro" -v "$tmpdir/tb-logs/client-$clientnum:/tb-logs" --network rhino-nvflare-localrun "rhino-nvflare-localrun" site-$clientnum/startup/sub_start.sh "site-$clientnum" "$nvflare_server_connection_str" >"$tmpdir/site-${clientnum}_log.txt" 2>&1 &
 done
 echo "Server and $clientnum clients running."
 
