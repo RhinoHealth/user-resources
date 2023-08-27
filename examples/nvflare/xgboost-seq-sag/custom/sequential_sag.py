@@ -61,7 +61,7 @@ class SequentialScatterAndGather(Controller):
         Each client sends it's updated weights after local training which is aggregated (aggregator_id). The
         shareable generator is used to convert the aggregated weights to shareable and shareable back to weight.
         The model_persistor also saves the model after training.
-        The SequentialScatterAndGather workflow ebables running multiple FL clients on the same machine,
+        The SequentialScatterAndGather workflow enables running multiple FL clients on the same machine,
         executing the client-side training one at a time, in order to share the local compute resources.
 
         Args:
