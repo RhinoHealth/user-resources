@@ -10,11 +10,10 @@ FROM continuumio/miniconda3:4.12.0
 ARG UID=5642
 ARG GID=5642
 
-COPY --from=envbuilder /env /env
+COPY --from=envbuilder --chown=$UID:$GID /env /env
 
 RUN ( getent group $GID >/dev/null || groupadd -g $GID localgroup ) \
- && useradd -m -l -s /bin/bash -g $GID -N -u $UID localuser \
- && chown -R $UID:$GID /env
+ && useradd -m -l -s /bin/bash -g $GID -N -u $UID localuser
 # See: https://github.com/ContinuumIO/docker-images/issues/151#issuecomment-549742754
 RUN mkdir /opt/conda/pkgs && \
     chgrp $GID /opt/conda/pkgs && \
