@@ -124,7 +124,7 @@ fi
 uid=$(id -u)
 gid=$(id -g)
 set -x
-"${docker_build_base_cmd[@]}" --build-arg="UID=$uid" --build-arg="GID=$gid" -t "rhino-nvflare-localrun" .
+DOCKER_BUILDKIT=1 "${docker_build_base_cmd[@]}" --build-arg="UID=$uid" --build-arg="GID=$gid" -t "rhino-nvflare-localrun" .
 { set +x; } 2>/dev/null
 mv ./config/config_fed_server.json.bak ./config/config_fed_server.json
 
