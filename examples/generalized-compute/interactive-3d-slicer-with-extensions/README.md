@@ -7,7 +7,8 @@ This example provides files that can be used with the Rhino Health Generalized C
 
 It shows how to:
 * Structure a Dockerfile to run an interactive 3D Slicer application
-* Add links to the interactive desktop to load 3D Slicer
+* Download and install 3DSlicer extensions in the Dockerfile
+* Add a link to the desktop to run 3D Slicer
 * Add a script to create a manifest CSV file from the 3D Slicer output files
 
 Please reference the User Documentation and/or Tutorials for in depth explanations on how to use the Generalized Compute and Interactive Container capability.
