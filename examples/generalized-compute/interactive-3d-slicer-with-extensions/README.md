@@ -3,7 +3,7 @@
 
 ### **Description**
 
-This example provides files that can be used with the Rhino Health Generalized Compute capability to remotely run an interactive 3D Slicer session to view and/or annotate DICOM data on a Rhino Client. It also includes several extensions that allow a user to save their output as DICOM images instead of NIfTI
+This example provides files that can be used with the Rhino Health Generalized Compute capability to remotely run an interactive 3D Slicer session to view and/or annotate DICOM data on a Rhino Client. It also includes several extensions that allow a user to save their output as DICOM images instead of NIfTI.
 
 It shows how to:
 * Structure a Dockerfile to run an interactive 3D Slicer application
