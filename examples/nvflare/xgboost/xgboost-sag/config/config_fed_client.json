@@ -10,7 +10,6 @@
         "id": "Executor",
         "path": "bcw_executor.FedXGBTreeBCWExecutor",
         "args": {
-          "data_split_filename": "data_split.json",
           "training_mode": "bagging",
           "num_tree_bagging": 5,
           "lr_mode": "scaled",
