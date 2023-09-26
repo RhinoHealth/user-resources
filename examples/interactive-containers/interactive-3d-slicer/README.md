@@ -7,7 +7,7 @@ It shows how to:
 * Add links to the interactive desktop to load 3D Slicer
 * Add a script to create a manifest CSV file from the 3D Slicer output files
 
-Please reference the User Documentation and/or Tutorials for in depth explanations on how to use the Generalized Compute and Interactive Container capability.
+Please reference the User Documentation and/or Tutorials for in depth explanations on how to use the Interactive Container capability.
 
 
 ## How to Run Locally

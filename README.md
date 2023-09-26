@@ -5,16 +5,13 @@ In addition to the tutorials and documentation, this repository also includes Do
 
 Get started today and see how Rhino Health's client resources can help you build better, more efficient healthcare applications.
 
-<br>
-
-# Table of Contents
-- Tutorials
-    1. [Tutorial #1 - Rhino Health Federated Computing Platform “Hello World” - Basic Usage](./tutorials/tutorial_1/README.md)
-    2. [Tutorial #2 - Rhino Health Federated Computing Platform Data Harmonization on the FCP SDK](./tutorials/tutorial_2/README.md)
+## Table of Contents
+- **Tutorials**
+  - [Tutorial #1 - Rhino Health Federated Computing Platform “Hello World” - Basic Usage](./tutorials/tutorial_1/README.md)
+  - [Tutorial #2 - Rhino Health Federated Computing Platform Data Harmonization on the FCP SDK](./tutorials/tutorial_2/README.md)
 - [Rhino Utils](./rhino-utils/README.md) - Utilities for locally running and pushing containers to your workgroup's ECR for both FCP Generalized Compute and NVFlare models
 - [Examples](./examples/README.md) - User examples for generalized compute and NVFlare containers and the Rhino Health Python SDK
 
-<br><br>
 
-# Getting Help
+## Getting Help
 For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).

@@ -4,23 +4,20 @@ FROM dorowu/ubuntu-desktop-lxde-vnc:focal
 RUN sed -i 's/command=x11vnc/command=x11vnc -nosel -noprimary -noclipboard/' /etc/supervisor/conf.d/supervisord.conf
 
 # Set env vars to be able to run apt-get commands without issues.
-ARG LC_ALL=C.UTF-8
-ARG TZ=Etc/UTC
-ENV DEBIAN_FRONTEND=noninteractive
+ENV LC_ALL="C.UTF-8"
+ENV TZ=Etc/UTC
 
 # Remove Google Chrome.
 RUN apt-get purge -y -q --auto-remove google-chrome-stable
 
 # Install Python 3.10
-RUN apt-get update \
+RUN export DEBIAN_FRONTEND=noninteractive \
+ && apt-get update \
  && apt-get install -y -q curl software-properties-common \
  && add-apt-repository ppa:deadsnakes/ppa \
  && apt-get update \
  && apt-get install -y -q python3.10 python3.10-dev python3.10-venv \
  && apt-get remove -y --autoremove curl software-properties-common
-
-# Clean up.
-ENV DEBIAN_FRONTEND=""
 
 # Create venv.
 ENV VIRTUAL_ENV="/venv"
