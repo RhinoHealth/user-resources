@@ -24,7 +24,7 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
     - `y_values`: List of the y values to use in the model. Should always be used with `x_values`. Should not be used if `formula` is used`.
   - `config_fed_server.json` - The standard NVFlare federated server config.
 - `custom` - This is the standard NVFlare directory for custom model code, containing the code for the regression model (reading the input data from the `/input` folder in order to work with FCP)
-  - `coeff_optimizer.py` - The custom code used for optimizing and aggregate each client's results for the GLM coefficient estimation model. This code is used by the server to aggregate the results from each client by a known optimizing, and examples are provided for Nethon-Raphson (labeld as "NR") and IRLS. 
+  - `coeff_optimizer.py` - The custom code used for optimizing and aggregate each client's results for the GLM coefficient estimation model. This code is used by the server to aggregate the results from each client by a known optimizing, and examples are provided for Newton-Raphson (labeled as "NR") and IRLS. 
 - `Dockerfile` - This is the Dockerfile to be used for building the container image with pip
 - `requirements.txt` - The python requirements for this project when building with pip
 <br><br>
