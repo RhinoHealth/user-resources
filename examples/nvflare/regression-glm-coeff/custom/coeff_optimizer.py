@@ -28,7 +28,7 @@ class CoeffOptimizer:
         raise NotImplementedError
 
 
-class NewthonRaphson(CoeffOptimizer):
+class NewtonRaphson(CoeffOptimizer):
 
     def __init__(self, **kwargs):
         self.accuracy_threshold = None
