@@ -7,7 +7,7 @@ This example contains files to train a GLM model to estimate coefficients for a 
  
 It shows how to:
 * Get client's GLM coefficient estimations using NVFlare 
-* Use an optimization method for aggregating each of the client's model parameters using NVFlare (with the examples of Newthon-Raphson and Iteratively reweighted least squares (IRLS)) optimizers
+* Use an optimization method for aggregating each of the client's model parameters using NVFlare (with the examples of Newton-Raphson and Iteratively Reweighted Least Squares (IRLS) optimizers)
 * Package the code in a Docker container that can be used with FCP using pip
 
 Please reference the User Documentation and/or Tutorials for in depth explanations on how to use NVFlare on FCP
