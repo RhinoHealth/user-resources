@@ -34,7 +34,7 @@ def _get_run_dir(fl_ctx: FLContext):
     return run_dir
 
 
-class NPModelPersistor(ModelPersistor):
+class GLMModelPersistor(ModelPersistor):
     def __init__(self, model_dir="/output", model_name="model_parameters.npy"):
         super().__init__()
 
