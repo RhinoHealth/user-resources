@@ -243,4 +243,4 @@ class IRLS(CoeffOptimizer):
         return None, {"site_info": {"params": next_beta}, "beta": next_beta, "fed_stderror": fed_stderror, "Reached accuracy threshold": False}
 
 
-OPTIMIZERS = {"NR": NewthonRaphson, "IRLS": IRLS}
+OPTIMIZERS = {"NR": NewtonRaphson, "IRLS": IRLS}
