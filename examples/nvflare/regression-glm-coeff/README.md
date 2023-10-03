@@ -21,7 +21,7 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
     - `offset`: The offset variable name for the poisson regression (Use this only when configuring "glm_type: Poisson").
     - `formula`: The formula for the GLM model, using a format like "y ~ x1 + x2 + x3 + ..." where y is the dependent variable and x1, x2, x3, ... are the independent variables. `formula` should not be used if `y_values` and `x_values` are used.
     - `x_values`: List of x values to use in the model. Should always be used with `y_values`. Should not be used if `formula` is used`.
-    - `y_values`: List of the y values to use in the model. Should always be used with `x_values`. Should not be used if `formula` is used`
+    - `y_values`: List of the y values to use in the model. Should always be used with `x_values`. Should not be used if `formula` is used`.
   - `config_fed_server.json` - The standard NVFlare federated server config.
 - `custom` - This is the standard NVFlare directory for custom model code, containing the code for the regression model (reading the input data from the `/input` folder in order to work with FCP)
   - `coeff_optimizer.py` - The custom code used for optimizing and aggregate each client's results for the GLM coefficient estimation model. This code is used by the server to aggregate the results from each client by a known optimizing, and examples are provided for Nethon-Raphson (labeld as "NR") and IRLS. 
