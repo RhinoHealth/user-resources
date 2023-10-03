@@ -23,7 +23,7 @@ from coeff_optimizer import OPTIMIZERS
 class EPIAggregationHelper(object):
     def __init__(self, exclude_vars: Optional[str] = None, weigh_by_local_iter: bool = True,
                  target_accuracy: float = None):
-        """Perform weighted aggregation.
+        """Perform aggregation by the chosen optimization method.
 
         Args:
             exclude_vars (str, optional): regex string to match excluded vars during aggregation. Defaults to None.

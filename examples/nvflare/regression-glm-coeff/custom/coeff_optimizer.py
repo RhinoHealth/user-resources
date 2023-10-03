@@ -115,6 +115,10 @@ class IRLS(CoeffOptimizer):
 
     @staticmethod
     def _site_irls_initialization(glm, start_params=None):
+        """
+        Initialize the model for the IRLS algorithm.
+        This call is done once per site and runs locally at each site.
+        """
         endog = glm.endog
         exog = glm.exog
 
@@ -135,6 +139,10 @@ class IRLS(CoeffOptimizer):
 
     @staticmethod
     def _site_irls_iteration(site_info, logger_warnings):
+        """
+        Perform one iteration of the IRLS algorithm.
+        This call is done once per site and runs locally at each site.
+        """
         glm = site_info['glm']
 
         if (params := site_info.get('params', None)) is None:
@@ -193,6 +201,10 @@ class IRLS(CoeffOptimizer):
         return ols_params
 
     def get_local_coeffs(self, current_round, np_data, formula, offset, family_class, logger_warnings, data=None, data_y=None, data_x=None, site_info=None):
+        """
+        Calculate the local coefficients, and modifies the np_data object with the results.
+        Runs locally at each site.
+        """
         glm = self.get_glm_obj(formula, offset, family_class, data, data_y, data_x)
         if current_round == 0:
             np_data["method"] = self.name()

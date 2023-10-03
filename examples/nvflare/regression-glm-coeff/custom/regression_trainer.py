@@ -33,10 +33,7 @@ from nvflare.security.logging import secure_format_exception
 from coeff_optimizer import OPTIMIZERS
 
 
-# from .constants import NPConstants
-
-
-class NPTrainer(Executor):
+class GLMTrainer(Executor):
     def __init__(
         self,
         delta=1,
@@ -221,7 +218,7 @@ class NPTrainer(Executor):
                 # If unknown task name, set RC accordingly.
                 return make_reply(ReturnCode.TASK_UNKNOWN)
         except Exception as e:
-            self.log_exception(fl_ctx, f"Exception in NPTrainer execute: {secure_format_exception(e)}.")
+            self.log_exception(fl_ctx, f"Exception in GLMTrainer execute: {secure_format_exception(e)}.")
             return make_reply(ReturnCode.EXECUTION_EXCEPTION)
 
     def _load_local_model(self, fl_ctx: FLContext):

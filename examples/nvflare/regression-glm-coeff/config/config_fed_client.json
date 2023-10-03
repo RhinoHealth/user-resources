@@ -6,7 +6,7 @@
         "train"
       ],
       "executor": {
-        "path": "regression_trainer.NPTrainer",
+        "path": "regression_trainer.GLMTrainer",
         "args": {
           "glm_type": "Binomial",
           "method": "IRLS",
