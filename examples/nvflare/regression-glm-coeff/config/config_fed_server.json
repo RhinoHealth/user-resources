@@ -8,7 +8,7 @@
   "components": [
     {
       "id": "persistor",
-      "path": "np_model_persistor.GLMModelPersistor",
+      "path": "glm_model_persistor.GLMModelPersistor",
       "args": {
       }
     },
