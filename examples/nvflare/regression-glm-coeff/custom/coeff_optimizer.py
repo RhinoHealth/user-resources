@@ -117,7 +117,7 @@ class IRLS(CoeffOptimizer):
     def _site_irls_initialization(glm, start_params=None):
         """
         Initialize the model for the IRLS algorithm.
-        This call is done once per site and runs locally at each site.
+        This method is called once per site and runs locally at each site.
         """
         endog = glm.endog
         exog = glm.exog
