@@ -203,7 +203,7 @@ class IRLS(CoeffOptimizer):
     def get_local_coeffs(self, current_round, np_data, formula, offset, family_class, logger_warnings, data=None, data_y=None, data_x=None, site_info=None):
         """
         Calculate the local coefficients, and modifies the np_data object with the results.
-        Runs locally at each site.
+        This method is called during each iteration of IRLS and runs locally at each site.
         """
         glm = self.get_glm_obj(formula, offset, family_class, data, data_y, data_x)
         if current_round == 0:
