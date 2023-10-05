@@ -141,7 +141,7 @@ class IRLS(CoeffOptimizer):
     def _site_irls_iteration(site_info, logger_warnings):
         """
         Perform one iteration of the IRLS algorithm.
-        This call is done once per site and runs locally at each site.
+        This method is called during each iteration of IRLS and runs locally at each site.
         """
         glm = site_info['glm']
 
