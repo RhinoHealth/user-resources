@@ -73,6 +73,10 @@ WORKDIR /home/localuser
 COPY --chown=$UID:$GID . .
 USER localuser
 
+# Avoid strange PermissionError crash in Conda when it tries to find .condarc.
+ENV XDG_CONFIG_HOME=/home/localuser/.config
+RUN mkdir "$XDG_CONFIG_HOME" && mkdir "$XDG_CONFIG_HOME/conda"
+
 # !! EDIT THIS: Set the command to be executed when the container is run, with arguments as needed.
 ENTRYPOINT ["conda", "run", "--no-capture-output", "-p", "/env"]
 CMD ["python", "cudf_preprocessing.py"]

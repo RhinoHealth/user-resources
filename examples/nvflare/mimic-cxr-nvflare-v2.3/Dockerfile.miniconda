@@ -27,5 +27,9 @@ COPY ./config ./config
 COPY ./custom ./custom
 COPY ./infer.py ./infer.py
 
+# Avoid strange PermissionError crash in Conda when it tries to find .condarc.
+ENV XDG_CONFIG_HOME=/home/localuser/.config
+RUN mkdir "$XDG_CONFIG_HOME" && mkdir "$XDG_CONFIG_HOME/conda"
+
 # !! EDIT THIS: Set the command to be executed when the container is run, with arguments as needed.
 ENTRYPOINT ["conda", "run", "--no-capture-output", "-p", "/env"]
