@@ -8,7 +8,8 @@ ENV LC_ALL="C.UTF-8"
 ENV TZ=Etc/UTC
 
 # Remove Google Chrome.
-RUN apt-get purge -y -q --auto-remove google-chrome-stable
+RUN export DEBIAN_FRONTEND=noninteractive \
+ && apt-get purge -y -q --auto-remove google-chrome-stable
 
 # Install Python 3.10
 RUN export DEBIAN_FRONTEND=noninteractive \

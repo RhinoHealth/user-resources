@@ -8,7 +8,8 @@ ENV LC_ALL="C.UTF-8"
 ENV TZ=Etc/UTC
 
 # Remove Google Chrome.
-RUN apt-get purge -y -q --auto-remove google-chrome-stable
+RUN export DEBIAN_FRONTEND=noninteractive \
+ && apt-get purge -y -q --auto-remove google-chrome-stable
 
 # Clean up.
 ENV DEBIAN_FRONTEND=""
