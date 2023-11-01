@@ -4,12 +4,12 @@ FROM dorowu/ubuntu-desktop-lxde-vnc:focal
 RUN sed -i 's/command=x11vnc/command=x11vnc -nosel -noprimary -noclipboard/' /etc/supervisor/conf.d/supervisord.conf
 
 # Set env vars to be able to run apt-get commands without issues.
-ARG LC_ALL=C.UTF-8
-ARG TZ=Etc/UTC
-ENV DEBIAN_FRONTEND=noninteractive
+ENV LC_ALL="C.UTF-8"
+ENV TZ=Etc/UTC
 
 # Remove Google Chrome.
-RUN apt-get purge -y -q --auto-remove google-chrome-stable
+RUN export DEBIAN_FRONTEND=noninteractive \
+ && apt-get purge -y -q --auto-remove google-chrome-stable
 
 # Clean up.
 ENV DEBIAN_FRONTEND=""
@@ -26,7 +26,8 @@ RUN mkdir -p /opt \
  && ln -s /opt/QuPath/bin/QuPath.sh /usr/local/bin/QuPath.sh
 
 # Install gnumeric
-RUN apt-get update \
+RUN export DEBIAN_FRONTEND=noninteractive \
+ && apt-get update \
  && sudo apt-get -y install gnumeric
 
 # Install app menu item and desktop shortcut.
