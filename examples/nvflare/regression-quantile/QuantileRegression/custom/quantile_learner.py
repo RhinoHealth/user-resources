@@ -1,3 +1,6 @@
+# Copyright (c) 2023, Rhino HealthTech, Inc.
+# Original file modified by Rhino Health to adapt it to the Rhino Health Federated Computing Platform.
+
 # Copyright (c) 2023, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +21,7 @@ from typing import Optional, Tuple
 import pandas as pd
 import numpy as np
 import os
-# from sklearn.linear_model import SGDClassifier
 from sklearn.linear_model import QuantileRegressor
-from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 
 from nvflare.apis.fl_context import FLContext

@@ -14,8 +14,8 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
 
 
 ### **Resources**
-- `config` - This is the standard NVFlare directory for config files
-  - `config_fed_client.json` - The standard NVFlare federated client config
+- `config` - This is the standard NVFlare directory for config files.
+  - `config_fed_client.json` - The standard NVFlare federated client config.
   - `feature_columns`: The list of columns to use as features for the quantile regression.
   - `label_column`: The column to use as the label for the quantile regression.
   - `config_fed_server.json` - The standard NVFlare federated server config
@@ -24,8 +24,9 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
     - `alpha`: The alpha value to use for the quantile regression.
     - `solver`: The solver to use for the quantile regression. The default is "highs".
     - `fit_intercept`: Whether to fit an intercept for the quantile regression. The default is True.
-- `Dockerfile` - This is the Dockerfile to be used for building the container image
-- `requirements.txt` - The python requirements for this project when building with pip
+- `Dockerfile` - This is the Dockerfile to be used for building the container image.
+- `requirements.txt` - The python requirements for this project when building with pip.
+- `custom` - This is the standard NVFlare directory for custom model code, containing the sklearn code for the model.
 <br><br>
 
 # Getting Help
