@@ -23,7 +23,7 @@
         "data_path": "/input/cohorts",
         "random_state": 42,
         "test_size": 0,
-        "feature_columns":["X","V1", "V2", "V3"],
+        "feature_columns":["X", "V1", "V2", "V3"],
         "label_column":"Y"
       }
     }
