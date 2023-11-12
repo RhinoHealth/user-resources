@@ -16,8 +16,8 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
 ### **Resources**
 - `config` - This is the standard NVFlare directory for config files.
   - `config_fed_client.json` - The standard NVFlare federated client config.
-  - `feature_columns`: The list of columns to use as features for the quantile regression.
-  - `label_column`: The column to use as the label for the quantile regression.
+    - `feature_columns`: The list of columns to use as features for the quantile regression.
+    - `label_column`: The column to use as the label for the quantile regression.
   - `config_fed_server.json` - The standard NVFlare federated server config
     - `quantile`: The quantile to use for the quantile regression. The default is 0.5 (the median)
     - `n_classes`: The number of classes to use for the quantile regression. The default is 1.
