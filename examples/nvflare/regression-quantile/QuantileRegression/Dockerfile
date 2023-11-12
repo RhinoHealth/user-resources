@@ -42,7 +42,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 WORKDIR /home/localuser
 USER localuser
 
-# !! EDIT THIS: Copy the needed local files (code and otherwise) into the container work directory.
+# Copy the needed local files (code and otherwise) into the container work directory.
 # Note: For directories, have a separate COPY command for each top-level directory.
 COPY --chown=$UID:$GID config ./config
 COPY --chown=$UID:$GID custom ./custom
