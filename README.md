@@ -9,7 +9,8 @@ Get started today and see how Rhino Health's client resources can help you build
 - **Tutorials**
   - [Tutorial #1 - Rhino Health Federated Computing Platform “Hello World” - Basic Usage](./tutorials/tutorial_1/README.md)
   - [Tutorial #2 - Rhino Health Federated Computing Platform Data Harmonization on the FCP SDK](./tutorials/tutorial_2/README.md)
-- [Sandbox](./rhino-utils/README,md) - A set of walkthroughs for the Rhino Health Sandbox
+- **Sandbox**
+  - [Pneumonia Predicition](./sandbox/pneumonia-prediction/README,md)
 - [Rhino Utils](./rhino-utils/README.md) - Utilities for locally running and pushing containers to your workgroup's ECR for both FCP Generalized Compute and NVFlare models
 - [Examples](./examples/README.md) - User examples for generalized compute and NVFlare containers and the Rhino Health Python SDK
 
