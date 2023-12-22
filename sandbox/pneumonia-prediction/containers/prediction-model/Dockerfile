@@ -1,38 +1,51 @@
-# !! EDIT THIS: Set the version of Python to be used.
-FROM python:3.8-bullseye as wheelbuilder
+# !! EDIT THIS: Set base Docker image to be used.
+FROM nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04
 
-COPY requirements.txt ./
+# Set env vars to be able to run apt-get commands without issues.
+ARG LC_ALL="C.UTF-8"
+ARG TZ=Etc/UTC
+ENV DEBIAN_FRONTEND=noninteractive
 
-RUN --mount=type=cache,target=/root/.cache/pip \
-    python -m pip install -U pip setuptools wheel \
- && pip wheel --cache-dir=/.cache/pip --wheel-dir /wheels -r requirements.txt
+# Install Python 3.8
+RUN --mount=type=cache,id=apt,target=/var/cache/apt \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+ && apt-get update \
+ && apt-get install -y -q software-properties-common \
+ && add-apt-repository ppa:deadsnakes/ppa \
+ && apt-get update \
+ && apt-get install -y -q python3.8 python3.8-dev python3.8-venv \
+ && apt-get remove -y --autoremove software-properties-common \
+ && rm -rf /var/lib/apt/lists/*
 
-
-
-# !! EDIT THIS: Set the version of Python to be used.
-FROM python:3.8-slim-bullseye
-
-COPY --from=wheelbuilder /wheels /wheels
-RUN --mount=type=cache,target=/root/.cache/pip \
-    python -m venv /venv \
- && . /venv/bin/activate \
- && python -m pip install -U pip setuptools wheel \
- && pip install --no-cache /wheels/*
-
+# Set up non-root user and group.
 ARG UID=5642
 ARG GID=5642
+RUN ( getent group $GID >/dev/null || groupadd -r -g $GID localgroup ) \
+ && useradd -m -l -s /bin/bash -g $GID -N -u $UID localuser
 
-RUN ( getent group $GID >/dev/null || groupadd -g $GID localgroup ) \
- && useradd -m -l -s /bin/bash -g $GID -N -u $UID localuser \
- && chown -R $UID:$GID /venv
+# Create and "activate" venv.
+ENV VIRTUAL_ENV="/venv"
+RUN mkdir $VIRTUAL_ENV \
+ && chmod g+s $VIRTUAL_ENV \
+ && chown $UID:$GID $VIRTUAL_ENV \
+ && python3.8 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Install dependencies.
+COPY requirements.txt ./
+RUN --mount=type=cache,target=/root/.cache/pip \
+    python -m pip install --upgrade pip setuptools wheel \
+ && pip install -r requirements.txt \
+ && rm requirements.txt
+
 WORKDIR /home/localuser
 USER localuser
 
-COPY ./config ./config
-COPY ./custom ./custom
-COPY ./infer.py ./infer.py
+# !! EDIT THIS: Copy the needed local files (code and otherwise) into the container work directory.
+# Note: For directories, have a separate COPY command for each top-level directory.
+COPY --chown=$UID:$GID ./config ./config
+COPY --chown=$UID:$GID ./custom ./custom
+COPY --chown=$UID:$GID ./infer.py ./infer.py
 
-# This is basically what venv/bin/activate does
-ENV PATH="/venv/bin:$PATH"
-ENV VIRTUAL_ENV="/venv"
 ENV PYTHONPATH="/home/localuser/custom"
+ENV PYTHONUNBUFFERED=1

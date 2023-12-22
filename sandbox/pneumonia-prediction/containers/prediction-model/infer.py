@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-import shutil
 import sys
-from pathlib import Path
 
 import pandas as pd
 import torch
@@ -40,10 +38,9 @@ def infer(model_weights_file_path):
             output = model(images)
             batch_scores = torch.select(output, 1, 1)
             scores.extend([score.item() for score in batch_scores])
-    tabular_data['Model Score'] = scores
+    tabular_data['Model_Score'] = scores
 
     tabular_data.to_csv("/output/cohort_data.csv", index=False)
-
 
 
 if __name__ == "__main__":
