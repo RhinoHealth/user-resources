@@ -1,0 +1,23 @@
+{
+  "format_version": 2,
+
+  "executors": [
+    {
+      "tasks": ["train", "submit_model"],
+      "executor": {
+        "path": "pneumonia_trainer.PneumoniaTrainer",
+        "args": {
+          "lr": 0.01,
+          "epochs": 5,
+          "fedproxloss_mu": 1e-4
+        }
+      }
+    }
+  ],
+  "task_result_filters": [
+  ],
+  "task_data_filters": [
+  ],
+  "components": [
+  ]
+}
