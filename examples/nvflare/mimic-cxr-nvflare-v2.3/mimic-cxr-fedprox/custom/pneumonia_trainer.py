@@ -59,6 +59,7 @@ class PneumoniaTrainer(Executor):
         Args:
             lr (float, optional): Learning rate. Defaults to 0.01
             epochs (int, optional): Epochs. Defaults to 5
+            fedproxloss_mu (float, optional): Weight for FedProx loss. Float number. Defaults to 0.0 (no FedProx).
             train_task_name (str, optional): Task name for train task. Defaults to "train".
             submit_model_task_name (str, optional): Task name for submit model. Defaults to "submit_model".
             exclude_vars (list): List of variables to exclude during model loading.

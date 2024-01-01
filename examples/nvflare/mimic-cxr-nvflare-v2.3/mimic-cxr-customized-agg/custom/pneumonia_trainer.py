@@ -40,7 +40,6 @@ from torch import nn
 from torch.optim import Adam
 from torch.utils.data.dataloader import DataLoader
 from torchvision.transforms import CenterCrop, Compose, Normalize, RandomRotation, Resize, ToTensor
-from nvflare.app_opt.pt.fedproxloss import PTFedProxLoss
 
 
 
@@ -49,7 +48,6 @@ class PneumoniaTrainer(Executor):
         self,
         lr = 0.01,
         epochs = 5,
-        fedproxloss_mu = 0.0,
         test_set_percentage = 20.0,
         train_task_name=AppConstants.TASK_TRAIN,
         submit_model_task_name=AppConstants.TASK_SUBMIT_MODEL,
@@ -67,8 +65,6 @@ class PneumoniaTrainer(Executor):
 
         self._lr = lr
         self._epochs = epochs
-        self._fedproxloss_mu = fedproxloss_mu
-        self._criterion_prox = None
         self._test_set_percentage = test_set_percentage
         self._train_task_name = train_task_name
         self._submit_model_task_name = submit_model_task_name
@@ -84,14 +80,9 @@ class PneumoniaTrainer(Executor):
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.model.to(self.device)
         self.loss = nn.CrossEntropyLoss()
-
-        if self._fedproxloss_mu > 0:
-            print(f"using FedProx loss with mu {self._fedproxloss_mu}")
-            self._criterion_prox = PTFedProxLoss(mu=self._fedproxloss_mu)
-
         self.optimizer = Adam(self.model.parameters(), lr=lr)
 
-        # Read cohorts.
+        # Read cohorts
         cohort_dirs = [x for x in Path("/input/cohorts/").iterdir() if x.resolve().is_dir()]
         cohort_dfs = [pd.read_csv(cohort_dir / "cohort_data.csv") for cohort_dir in cohort_dirs]
         for cohort_dir, df in zip(cohort_dirs, cohort_dfs):
@@ -100,9 +91,11 @@ class PneumoniaTrainer(Executor):
         # Random train/test split.
         combined_df = pd.concat(cohort_dfs)
         train_df, test_df = train_test_split(combined_df, test_size=self._test_set_percentage / 100)
-        self._n_samples = len(train_df)
         train_image_file_paths = train_df["PNG_file_abspath"]
         test_image_file_paths = test_df["PNG_file_abspath"]
+
+        # Collect the amount of training samples for the aggregation algorithm
+        self._n_samples = len(train_df)
 
         # Load datasets by creating directories with symlinks to actual images.
         train_dataset_folder = Path("/tmp/train_images_symlinks")
@@ -162,11 +155,6 @@ class PneumoniaTrainer(Executor):
 
                 predictions = self.model(batch_images)
                 cost = self.loss(predictions, batch_labels)
-
-                # FedProx loss term
-                if self._fedproxloss_mu > 0:
-                    fed_prox_loss = self._criterion_prox(self.model, model_global)
-                    cost += fed_prox_loss
 
                 cost.backward()
                 self.optimizer.step()
@@ -254,7 +242,7 @@ class PneumoniaTrainer(Executor):
                 new_weights = {k: v.cpu().numpy() for k, v in new_weights.items()}
                 outgoing_dxo = DXO(
                     data_kind=DataKind.WEIGHTS,
-                    data={'new_weights':new_weights, 'samples':self._n_samples},
+                    data={'new_weights':new_weights, 'n_samples':self._n_samples},
                     meta={
                         MetaKey.NUM_STEPS_CURRENT_ROUND: self._n_iterations,
                         MetaKey.INITIAL_METRICS: global_metric,

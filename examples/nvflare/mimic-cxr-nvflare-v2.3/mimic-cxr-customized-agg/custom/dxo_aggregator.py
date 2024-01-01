@@ -18,7 +18,6 @@ from typing import Any, Dict, Optional
 from nvflare.apis.dxo import DXO, DataKind, MetaKey
 from nvflare.apis.fl_component import FLComponent
 from nvflare.apis.fl_context import FLContext
-# from nvflare.app_common.aggregators.weighted_aggregation_helper import WeightedAggregationHelper
 from weighted_aggregation_helper import WeightedAggregationHelper
 
 from nvflare.app_common.app_constant import AppConstants
@@ -28,7 +27,6 @@ class DXOAggregator(FLComponent):
     def __init__(
         self,
         exclude_vars: Optional[str] = None,
-        aggregation_weights: Optional[Dict[str, Any]] = None,
         expected_data_kind: DataKind = DataKind.WEIGHT_DIFF,
         name_postfix: str = "",
         weigh_by_local_iter: bool = True,
@@ -37,8 +35,6 @@ class DXOAggregator(FLComponent):
 
         Args:
             exclude_vars (str, optional): Regex to match excluded vars during aggregation. Defaults to None.
-            aggregation_weights (Dict[str, Any], optional): Aggregation weight for each contributor.
-                                Defaults to None.
             expected_data_kind (DataKind): Expected DataKind for this DXO.
             name_postfix: optional postfix to give to class name and show in logger output.
             weigh_by_local_iter (bool, optional): Whether to weight the contributions by the number of iterations
@@ -50,8 +46,6 @@ class DXOAggregator(FLComponent):
         """
         super().__init__()
         self.expected_data_kind = expected_data_kind
-        self.aggregation_weights = aggregation_weights or {}
-        self.logger.debug(f"aggregation weights control: {aggregation_weights}")
 
         self.aggregation_helper = WeightedAggregationHelper(
             exclude_vars=exclude_vars, weigh_by_local_iter=weigh_by_local_iter
@@ -114,7 +108,7 @@ class DXOAggregator(FLComponent):
             return False
         self.log_debug(fl_ctx, f"current_round: {current_round}")
         data = dxo.data['new_weights']
-        n_samples = dxo.data['samples']
+        n_samples = dxo.data['n_samples']
 
         if data is None:
             self.log_error(fl_ctx, "no data to aggregate")
@@ -143,7 +137,6 @@ class DXOAggregator(FLComponent):
             DXO: the weighted mean of accepted DXOs from contributors
         """
 
-        self.log_debug(fl_ctx, f"Start aggregation with weights {self.aggregation_weights}")
         current_round = fl_ctx.get_prop(AppConstants.CURRENT_ROUND)
         self.log_info(fl_ctx, f"aggregating {self.aggregation_helper.get_len()} update(s) at round {current_round}")
         self.log_debug(fl_ctx, f"complete history {self.aggregation_helper.get_len()}")

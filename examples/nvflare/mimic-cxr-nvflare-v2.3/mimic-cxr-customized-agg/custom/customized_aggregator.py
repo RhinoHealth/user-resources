@@ -19,7 +19,6 @@ from nvflare.apis.fl_constant import ReservedKey, ReturnCode
 from nvflare.apis.fl_context import FLContext
 from nvflare.apis.shareable import Shareable
 from nvflare.app_common.abstract.aggregator import Aggregator
-# from nvflare.app_common.aggregators.dxo_aggregator import DXOAggregator
 from dxo_aggregator import DXOAggregator
 from nvflare.app_common.app_constant import AppConstants
 
@@ -47,23 +46,16 @@ class CustomizedWeightedAggregator(Aggregator):
     def __init__(
         self,
         exclude_vars: Union[str, Dict[str, str], None] = None,
-        aggregation_weights: Union[Dict[str, Any], Dict[str, Dict[str, Any]], None] = None,
         expected_data_kind: Union[DataKind, Dict[str, DataKind]] = DataKind.WEIGHT_DIFF,
         weigh_by_local_iter: bool = True,
     ):
-        """Perform accumulated weighted aggregation.
-
-        This is often used as the default aggregation method and can be used for FedAvg. It parses the shareable and
-        aggregates the contained DXO(s).
+        """Perform accumulated weighted aggregation based on the amount of samples per client.
+        It parses the shareable and aggregates the contained DXO(s).
 
         Args:
             exclude_vars (Union[str, Dict[str, str]], optional):
                 Regular expression string to match excluded vars during aggregation. Defaults to None.
                 Can be one string or a dict of {dxo_name: regex strings} corresponding to each aggregated DXO
-                when processing a DXO of `DataKind.COLLECTION`.
-            aggregation_weights (Union[Dict[str, Any], Dict[str, Dict[str, Any]]], optional):
-                Aggregation weight for each contributor. Defaults to None.
-                Can be one dict of {contrib_name: aggr_weight} or a dict of dicts corresponding to each aggregated DXO
                 when processing a DXO of `DataKind.COLLECTION`.
             expected_data_kind (Union[DataKind, Dict[str, DataKind]]):
                 DataKind for DXO. Defaults to DataKind.WEIGHT_DIFF
@@ -78,7 +70,6 @@ class CustomizedWeightedAggregator(Aggregator):
         """
         super().__init__()
         self.logger.debug(f"exclude vars: {exclude_vars}")
-        self.logger.debug(f"aggregation weights control: {aggregation_weights}")
         self.logger.debug(f"expected data kind: {expected_data_kind}")
 
         self._single_dxo_key = ""
@@ -129,24 +120,6 @@ class CustomizedWeightedAggregator(Aggregator):
             exclude_vars_dict[self._single_dxo_key] = exclude_vars
         self.exclude_vars = exclude_vars_dict
 
-        # Check aggregation weights
-        if _is_nested_aggregation_weights(aggregation_weights):
-            missing_keys = _get_missing_keys(expected_data_kind, aggregation_weights)
-            if len(missing_keys) != 0:
-                raise ValueError(
-                    "A dict of dict aggregation_weights should specify aggregation_weights "
-                    f"for every key in expected_data_kind. But missed these keys: {missing_keys}"
-                )
-
-        aggregation_weights = aggregation_weights or {}
-        aggregation_weights_dict = dict()
-        for k in self.expected_data_kind.keys():
-            if k in aggregation_weights:
-                aggregation_weights_dict[k] = aggregation_weights[k]
-            else:
-                # assume same aggregation weights for each entry of DXO collection.
-                aggregation_weights_dict[k] = aggregation_weights
-        self.aggregation_weights = aggregation_weights_dict
         # Set up DXO aggregators
         self.dxo_aggregators = dict()
         for k in self.expected_data_kind.keys():
@@ -154,7 +127,6 @@ class CustomizedWeightedAggregator(Aggregator):
                 {
                     k: DXOAggregator(
                         exclude_vars=self.exclude_vars[k],
-                        aggregation_weights=self.aggregation_weights[k],
                         expected_data_kind=self.expected_data_kind[k],
                         name_postfix=k,
                         weigh_by_local_iter=self._weigh_by_local_iter,
@@ -236,11 +208,9 @@ class CustomizedWeightedAggregator(Aggregator):
         for key in self.expected_data_kind.keys():
             aggregated_dxo = self.dxo_aggregators[key].aggregate(fl_ctx)
             if key == self._single_dxo_key:  # return single DXO with aggregation results
-                print(f'aggregated_dxo.to_shareable(): {aggregated_dxo.to_shareable()}')
                 return aggregated_dxo.to_shareable()
             self.log_info(fl_ctx, f"Aggregated contributions matching key '{key}'.")
             result_dxo_dict.update({key: aggregated_dxo})
-        print(f'**** result_dxo_dict : {result_dxo_dict}')
         # return collection of DXOs with aggregation results
         collection_dxo = DXO(data_kind=DataKind.COLLECTION, data=result_dxo_dict)
         return collection_dxo.to_shareable()

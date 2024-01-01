@@ -19,7 +19,7 @@ from typing import Optional
 
 class WeightedAggregationHelper(object):
     def __init__(self, exclude_vars: Optional[str] = None, weigh_by_local_iter: bool = True):
-        """Perform weighted aggregation.
+        """Perform weighted aggregation based on the amount of samples per client.
 
         Args:
             exclude_vars (str, optional): regex string to match excluded vars during aggregation. Defaults to None.
@@ -49,7 +49,7 @@ class WeightedAggregationHelper(object):
         self.data = []
 
     def add(self, data, contributor_name, contribution_round, n_samples):
-        """Compute weighted sum and sum of weights."""
+        """Collect the weights and the amount of samples per client."""
         with self.lock:
             self.samples.append(n_samples)
             self.data.append(data)
@@ -63,7 +63,7 @@ class WeightedAggregationHelper(object):
             )
 
     def get_result(self):
-        """Compute aggregated weights based on amount of samples per client."""
+        """Compute aggregated weights based on the amount of samples per client."""
         with self.lock:
             total = sum(self.samples)
             self.weights = [value / total for value in self.samples]

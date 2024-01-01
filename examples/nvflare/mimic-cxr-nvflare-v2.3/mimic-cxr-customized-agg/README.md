@@ -8,6 +8,7 @@ Computing Platform (FCP) and NVIDIA FLARE v2.3.
 
 It shows how to:
 * Use PyTorch model code adapted to NVIDIA FLARE (NVFLARE) v2.3, with the necessary settings for it to run on FCP.
+* Create your own aggregation algorithm.
 * Add an `infer.py` script enable automatic inference after training on a separate validation dataset.
 * Log metrics using TensorBoard, both per-client and aggregated.  These may be viewed via FCP's integrated TensorBoard.
 * Store model checkpoints throughout the training process.  These are all persisted on the FCP for your later use.
