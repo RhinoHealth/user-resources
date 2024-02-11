@@ -28,7 +28,7 @@ def main():
 
     print(
         f"Will select DICOM datasets by tag {run_params.dicom_id_attribute}, "
-        f"matching with cohort field {run_params.dicom_id_field}."
+        f"matching with dataset field {run_params.dicom_id_field}."
     )
     print("Extracting DICOM tags: " + ", ".join(run_params.tags_to_extract))
 
@@ -49,7 +49,7 @@ def main():
         new_row = {**row, **extracted}
         return new_row
 
-    with Path("/input/cohort_data.csv").open("r", newline="", encoding="utf-8") as f:
+    with Path("/input/dataset.csv").open("r", newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         input_field_names = reader.fieldnames
         input_data = list(reader)
@@ -57,7 +57,7 @@ def main():
     output_field_names = funcy.ldistinct([*input_field_names, *run_params.tags_to_extract])
     output_data = [add_fields(row) for row in input_data]
 
-    output_csv_path = Path("/output/cohort_data.csv")
+    output_csv_path = Path("/output/dataset.csv")
     with output_csv_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=output_field_names)
         writer.writeheader()

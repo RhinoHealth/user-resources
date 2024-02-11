@@ -43,12 +43,12 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
 6. Use the following SDK code to execute training.
 ```python
 import json
-run_params = AIModelTrainInput(
-    aimodel_uid="", # Change this
-    input_cohort_uids=[], # Change this 
-    one_fl_client_per_cohort=True,        
-    validation_cohort_uids=[], # Change this
-    validation_cohorts_inference_suffix="", # Change this
+run_params = ModelTrainInput(
+    code_object_uid="", # Change this
+    input_dataset_uids=[], # Change this 
+    one_fl_client_per_dataset=True,        
+    validation_dataset_uids=[], # Change this
+    validation_datasets_inference_suffix="", # Change this
     timeout_seconds=300,
     config_fed_server="",
     config_fed_client="",

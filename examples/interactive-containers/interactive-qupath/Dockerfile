@@ -37,8 +37,8 @@ COPY ./qupath_128.png /usr/share/pixmaps/
 
 RUN sed -i 's#cp -r /root/{.config,#cp -r /root/{.config,Desktop,#' /startup.sh
 
-# Set up the create_cohort_csv script.
-COPY ./create_cohort_csv.py /
-COPY ./Create-Output-Cohort.desktop /usr/share/applications/
-COPY ./Create-Output-Cohort-link.desktop /root/Desktop/
+# Set up the create_dataset_csv script.
+COPY ./create_dataset_csv.py /
+COPY ./Create-Output-Dataset.desktop /usr/share/applications/
+COPY ./Create-Output-Dataset-link.desktop /root/Desktop/
 COPY ./Rhino-Health-Logo.svg /usr/share/pixmaps/

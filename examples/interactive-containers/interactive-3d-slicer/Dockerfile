@@ -36,10 +36,10 @@ ENV QT_X11_NO_MITSHM=1
 ENV _X11_NO_MITSHM=1
 ENV _MITSHM=0
 
-# Set up the create_cohort_csv script.
-COPY ./create_cohort_csv.py /
+# Set up the create_dataset_csv script.
+COPY ./create_dataset_csv.py /
 
 # Set up Desktop and applications menu shortcuts.
-COPY ./Create-Output-Cohort.desktop /usr/share/applications/
-COPY ./Create-Output-Cohort-link.desktop /root/Desktop/
+COPY ./Create-Output-Dataset.desktop /usr/share/applications/
+COPY ./Create-Output-Dataset-link.desktop /root/Desktop/
 COPY ./Rhino-Health-Logo.svg /usr/share/pixmaps/

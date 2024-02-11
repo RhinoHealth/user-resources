@@ -3,7 +3,7 @@
 
 ### **Description**
 
-This example provides files that can be used with the Rhino Health Generalized Compute capability to remotely extract data from DICOM tags into an output cohort on a Rhino Client.
+This example provides files that can be used with the Rhino Health Generalized Compute capability to remotely extract data from DICOM tags into an output dataset on a Rhino Client.
 
 It shows how to:
 * Read dynamic run parameters provided when triggering the run of this code
@@ -16,7 +16,7 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
 
 ### **Resources**
 - `Dockerfile` - This is the Dockerfile to be used for building the container image
-- `extract_dicom_tags.py` - This file contains the python code for extracting the DICOM tags from the input files into an output cohort
+- `extract_dicom_tags.py` - This file contains the python code for extracting the DICOM tags from the input files into an output dataset
 - `requirements.in` - The input python requirements for this project
 - `requirements.txt` - The compiled python requirements for this project (using `pip-compile` on the requirements.in file)
 <br><br>

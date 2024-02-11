@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Application
 Name=Create Output Cohort
-Exec=sh -c '/usr/local/bin/python /create_cohort_csv.py > $HOME/Desktop/create-cohort-csv.log 2>&1'
+Exec=sh -c '/usr/local/bin/python /create_dataset_csv.py > $HOME/Desktop/create-dataset-csv.log 2>&1'
 StartupNotify=false
 Terminal=false
 Hidden=false

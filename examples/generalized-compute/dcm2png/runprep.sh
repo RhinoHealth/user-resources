@@ -17,4 +17,4 @@ set -e
 python $DIR/dcm2png.py --input_dir ${INPUT_DIR} --output_dir ${OUTPUT_DIR}/data --output_folder png
 python $DIR/merge_manifest.py --ehr_csv ${CSV_FILE} --manifest_csv ${OUTPUT_DIR}/data/png/manifest.csv --merged_csv ${OUTPUT_DIR}/data/merged.csv
 
-cp ${OUTPUT_DIR}/data/merged.csv ${OUTPUT_DIR}/cohort_data.csv
+cp ${OUTPUT_DIR}/data/merged.csv ${OUTPUT_DIR}/dataset.csv
