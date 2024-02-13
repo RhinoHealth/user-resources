@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=LM Studio
+Exec=/LM_Studio/squashfs-root/lm-studio
+Path=/LM_Studio/squashfs-root/
+StartupNotify=false
+Terminal=false
+Hidden=false
+Icon=lmstudio-icon
