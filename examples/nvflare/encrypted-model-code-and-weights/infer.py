@@ -12,24 +12,24 @@ from torchvision.transforms import ToTensor, Normalize, Compose,  Resize, Random
 from network import PneumoniaModel
 
 
-def decrypt_weights(model_weights_path):
+def decrypt_weights(model_parameters_path):
     secret_run_params_file_path = Path("/input/secret_run_params.json")
     if secret_run_params_file_path.is_file():
         with secret_run_params_file_path.open("rb") as secret_run_params_file:
             secret_run_params = json.load(secret_run_params_file)
             key = secret_run_params["key"]
             fernet = Fernet(key)
-            encrypted = Path(model_weights_path).read_bytes()
+            encrypted = Path(model_parameters_path).read_bytes()
             decrypted = fernet.decrypt(encrypted)
-            model_weights_path = '/output/model_parameters.pt'
-            Path(model_weights_path).write_bytes(decrypted)
-    return model_weights_path
+            model_parameters_path = '/output/model_parameters.pt'
+            Path(model_parameters_path).write_bytes(decrypted)
+    return model_parameters_path
 
 
-def infer(model_weights_file_path):
+def infer(model_params_file_path):
     # Setup the model
     model = PneumoniaModel()
-    model.load_state_dict(torch.load(decrypt_weights(model_weights_file_path))["model"])
+    model.load_state_dict(torch.load(decrypt_weights(model_params_file_path))["model"])
     model.eval()
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
@@ -42,7 +42,7 @@ def infer(model_weights_file_path):
         ToTensor(),
         Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
-    tabular_data = pd.read_csv("/input/cohort_data.csv")
+    tabular_data = pd.read_csv("/input/dataset.csv")
     dataset = torchvision.datasets.ImageFolder(root="/input/file_data", transform=transforms)
     loader = DataLoader(dataset, batch_size=4, shuffle=False)
 
@@ -56,7 +56,7 @@ def infer(model_weights_file_path):
             scores.extend([score.item() for score in batch_scores])
     tabular_data['Model_Score'] = scores
 
-    tabular_data.to_csv("/output/cohort_data.csv", index=False)
+    tabular_data.to_csv("/output/dataset.csv", index=False)
 
 
 

@@ -26,7 +26,7 @@ labels = cp.array(labels)
 features = features / 255.0
 X_train, X_test, y_train, y_test = train_test_split(features, labels, test_size=0.33, random_state=42)
 
-# Write cohorts to /output
+# Write data to /output
 cp.save('/output/file_data/X_train', X_train)
 cp.save('/output/file_data/y_train', y_train)
 cp.save('/output/file_data/X_test', X_test)
@@ -36,4 +36,4 @@ df = pd.DataFrame()
 df = df.append({'X_train': 'X_train.npy', 'X_test': 'X_test.npy',
                 'y_train': 'y_train.npy', 'y_test': 'y_test.npy'}, ignore_index=True)
 
-df.to_csv('/output/cohort_data.csv')
+df.to_csv('/output/dataset.csv')

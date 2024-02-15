@@ -75,8 +75,8 @@ class PneumoniaTrainer(Executor):
             Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
 
-        cohort_uid = next(os.walk('/input/cohorts'))[1][0]
-        self._train_dataset = torchvision.datasets.ImageFolder(root='/input/cohorts/'+cohort_uid+'/file_data',
+        dataset_uid = next(os.walk('/input/datasets'))[1][0]
+        self._train_dataset = torchvision.datasets.ImageFolder(root='/input/datasets/'+dataset_uid+'/file_data',
                                                                transform=transforms)
 
         self._train_loader = DataLoader(self._train_dataset, batch_size=4, shuffle=True)

@@ -38,7 +38,7 @@ class Cifar10Validator(Executor):
         super(Cifar10Validator, self).__init__()
 
         self._validate_task_name = validate_task_name
-        self.cohort_validation = pd.read_csv('/input/cohort_data.csv')
+        self.validation_dataset = pd.read_csv('/input/dataset.csv')
         # Setup the model
         self.model = SimpleNetwork()
         self.device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
@@ -95,7 +95,7 @@ class Cifar10Validator(Executor):
         correct = 0
         total = 0
 
-        self.cohort_validation['prediction'] = 0 # empty column, 0 as it is integer as the schema
+        self.validation_dataset['prediction'] = 0 # empty column, 0 as it is integer as the schema
 
         with torch.no_grad():
             for i, (images, labels) in enumerate(self.test_loader):
@@ -106,13 +106,10 @@ class Cifar10Validator(Executor):
                 output = self.model(images)
 
                 _, pred_label = torch.max(output, 1)
-               # for j in range(len(pred_label)):
-               #     self.cohort_validation['prediction'].iloc[i * 4 + j] = pred_label[j].item()
 
                 correct += (pred_label == labels).sum().item()
                 total += images.size()[0]
 
             metric = correct/float(total)
-       # self.cohort_validation.to_csv('/output/cohort_data.csv',index=False)
 
         return metric

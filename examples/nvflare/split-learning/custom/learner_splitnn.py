@@ -43,7 +43,7 @@ import os
 class LearnerSplitNN(Learner):
     def __init__(
         self,
-        dataset_root: str = '/input/cohorts/' + next(os.walk('/input/cohorts'))[1][0] + '/file_data/',
+        dataset_root: str = '/input/datasets/' + next(os.walk('/input/datasets'))[1][0] + '/file_data/',
         intersection_file: str = None,
         lr: float = 1e-2,
         model: dict = None,

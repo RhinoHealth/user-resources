@@ -16,8 +16,8 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
 ## Resources
 - `Dockerfile` - This is the Dockerfile to be used for building the container image. It starts from an Ubuntu desktop base image and installs Jupyter Notebook and other dependencies 
 - `jupyter-notebook.png`, `jupyter.desktop`, `jupyter-link.desktop` - Files for creating a desktop link to open Jupyter Notebook
-- `create_cohort_csv.py` - A script to create a manifest CSV file from the 3D Slicer output files
-- `Rhino-Health-Logo.svg`, `Create-Output-Cohort.desktop`, `Create-Output-Cohort-link.desktop` - Files for creating a desktop link to run the create_cohort_csv.py script
+- `create_dataset_csv.py` - A script to create a manifest CSV file from the 3D Slicer output files
+- `Rhino-Health-Logo.svg`, `Create-Output-Dataset.desktop`, `Create-Output-Dataset-link.desktop` - Files for creating a desktop link to run the create_dataset_csv.py script
 
 
 ## Getting Help

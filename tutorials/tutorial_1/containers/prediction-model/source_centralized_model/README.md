@@ -28,11 +28,11 @@
     
     **Inference**
     
-  |Step| Source | NVFLARE| 
-  |---|:---:|---:|
-   |data transform|lines 9-30|infer.py: lines 24-30|
-    |load data|lines 33-52|infer.py: lines 31-33|
-    |define model|lines 54-85|network.py|
-    |infer|lines 130-146|infer.py: lines 35-43|
-    |write cohort|___|infer.py: lines 47-55|
+  | Step           | Source | NVFLARE| 
+  |----------------|:---:|---:|
+   | data transform |lines 9-30|infer.py: lines 24-30|
+    | load data      |lines 33-52|infer.py: lines 31-33|
+    | define model   |lines 54-85|network.py|
+    | infer          |lines 130-146|infer.py: lines 35-43|
+    | write dataset  |___|infer.py: lines 47-55|
   
