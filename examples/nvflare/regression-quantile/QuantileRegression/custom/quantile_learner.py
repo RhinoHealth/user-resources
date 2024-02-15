@@ -54,13 +54,13 @@ class QuantileLearner(Learner):
         self.y_valid = None
 
     def load_data(self):
-        # Get cohort data
-        cohort_uid = next(os.walk(self.data_path))[1][0]
+        # Get data
+        dataset_uid = next(os.walk(self.data_path))[1][0]
         if self.feature_columns:
             self.feature_columns.append(self.label_column)
-            df_train = pd.read_csv(f'{self.data_path}/{cohort_uid}/cohort_data.csv', usecols=self.feature_columns)
+            df_train = pd.read_csv(f'{self.data_path}/{dataset_uid}/dataset.csv', usecols=self.feature_columns)
         else:
-            df_train = pd.read_csv(f'{self.data_path}/{cohort_uid}/cohort_data.csv')
+            df_train = pd.read_csv(f'{self.data_path}/{dataset_uid}/dataset.csv')
         x_valid, y_valid = None, None
         if self.test_size > 0:
             df_train, df_valid = train_test_split(df_train, test_size=self.test_size, random_state=self.random_state)

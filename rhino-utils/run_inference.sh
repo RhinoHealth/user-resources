@@ -4,10 +4,10 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-model_weights_file="$1"
+model_params_file="$1"
 
-if [ ! -f "$model_weights_file" ]; then
-  >&2 echo "Model weights file $model_weights_file does not exist."
+if [ ! -f "$model_params_file" ]; then
+  >&2 echo "Model parameters file $model_params_file does not exist."
   exit 1
 fi
 
@@ -17,7 +17,7 @@ for script_path in "./infer.sh" "./infer.py"; do
       >&2 echo "$script_path must be executable"
       exit 1
     fi
-    exec "$script_path" "$model_weights_file"
+    exec "$script_path" "$model_params_file"
   fi
 done
 

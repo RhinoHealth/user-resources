@@ -1,8 +1,8 @@
 import cudf
 
-filename = '/input/cohort_data.csv'
+filename = '/input/dataset.csv'
 
-# Load cohort
+# Load data
 cu_df = cudf.read_csv(filename)
 
 # One hot Encoding
@@ -18,6 +18,6 @@ for col in categorical_columns:
         cu_df = cu_df.drop(col, axis=1)
         cu_df = cu_df.join(one_hot_encoded, lsuffix='_left', rsuffix='_right')
 
-# Write cohorts to /output
-cu_df.to_csv('/output/cohort_data.csv', index=False)
+# Write dataset to /output
+cu_df.to_csv('/output/dataset.csv', index=False)
 

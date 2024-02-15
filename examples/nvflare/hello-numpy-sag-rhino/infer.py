@@ -7,12 +7,12 @@ from pathlib import Path
 import numpy as np
 
 
-def infer(model_weights_file_path):
+def infer(model_params_file_path):
     # Setup the model
-    model = np.load(model_weights_file_path)
+    model = np.load(model_params_file_path)
 
     # Preparing the dataset for testing.
-    with (Path("/input") / "cohort_data.csv").open("r", encoding="utf-8") as f:
+    with (Path("/input") / "dataset.csv").open("r", encoding="utf-8") as f:
         csv_reader = csv.DictReader(f)
         fieldnames = csv_reader.fieldnames
         rows = list(csv_reader)
@@ -22,7 +22,7 @@ def infer(model_weights_file_path):
     for row, score in zip(rows, scores):
         row["SCORE"] = score
 
-    with (Path("/output") / "cohort_data.csv").open("w", encoding="utf-8") as f:
+    with (Path("/output") / "dataset.csv").open("w", encoding="utf-8") as f:
         csv_writer = csv.DictWriter(f, fieldnames=[*fieldnames, "SCORE"])
         csv_writer.writeheader()
         csv_writer.writerows(rows)
@@ -30,6 +30,6 @@ def infer(model_weights_file_path):
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    (model_weights_file_path,) = args
-    infer(model_weights_file_path)
+    (model_params_file_path,) = args
+    infer(model_params_file_path)
     sys.exit(0)

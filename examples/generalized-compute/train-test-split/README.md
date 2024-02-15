@@ -3,7 +3,7 @@
 
 ### **Description**
 
-This example provides files that can be used with the Rhino Health Generalized Compute capability to remotely split an input cohort into two output cohorts on a Rhino Client.
+This example provides files that can be used with the Rhino Health Generalized Compute capability to remotely split an input dataset into two output datasets on a Rhino Client.
 
 It shows how to:
 * Process an input CSV file as a dataframe
@@ -15,7 +15,7 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
 
 ### **Resources**
 - `Dockerfile` - This is the Dockerfile to be used for building the container image
-- `train_test_split.py` - This file contains the python code for splitting input cohort (using sklearn.model_selection.train_test_split)
+- `train_test_split.py` - This file contains the python code for splitting input dataset (using sklearn.model_selection.train_test_split)
 - `run_code.sh` - The entrypoint shell script for the docker container, which runs train_test_split.py 
 - `requirements.txt` - The python requirements for this project
 <br><br>

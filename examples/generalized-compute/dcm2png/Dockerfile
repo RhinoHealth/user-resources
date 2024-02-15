@@ -39,4 +39,4 @@ ENV VIRTUAL_ENV="/venv"
 ENV PYTHONUNBUFFERED=1
 
 # !! EDIT THIS: Set the command to be executed when the container is run, with arguments as needed.
-CMD ["./runprep.sh", "/input", "/output", "/input/cohort_data.csv"]
+CMD ["./runprep.sh", "/input", "/output", "/input/dataset.csv"]

@@ -73,9 +73,9 @@ class Cifar10Trainer(Executor):
             ToTensor(),
             Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ])
-        cohort_uid = next(os.walk('/input/cohorts'))[1][0]
+        dataset_uid = next(os.walk('/input/datasets'))[1][0]
 
-        self._train_dataset = torchvision.datasets.ImageFolder(root='/input/cohorts/'+cohort_uid+'/file_data/train',
+        self._train_dataset = torchvision.datasets.ImageFolder(root='/input/datasets/'+dataset_uid+'/file_data/train',
                                                                transform=transforms)
 
         # self._train_dataset = CIFAR10(root='~/rhino_data/input/', transform=transforms,

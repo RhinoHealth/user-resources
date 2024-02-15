@@ -20,8 +20,8 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
 - `runprep.sh` - The entrypoint shell script for the docker container, which runs dcm2png.py and then merge_manifest.py
 - `requirements.txt` - The python requirements for this project
 - `input/`
-  - `cohort_data.csv` - This file defines the dataset you will use as input for this project. Each row in this file represents a patient. For each patient, there is a DICOM series UID and the related metadata for this patient.
-  - `dicom_data/` - This folder contains the DICOM imaging files, specifically chest X-ray (CXR) images, referenced in the cohort_data.csv file.
+  - `dataset.csv` - This file defines the dataset you will use as input for this project. Each row in this file represents a patient. For each patient, there is a DICOM series UID and the related metadata for this patient.
+  - `dicom_data/` - This folder contains the DICOM imaging files, specifically chest X-ray (CXR) images, referenced in the dataset.csv file.
 <br><br>
 
 # Getting Help

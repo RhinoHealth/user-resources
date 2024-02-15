@@ -47,8 +47,8 @@ ENV _MITSHM=0
 RUN apt-get update \
  && sudo apt-get -y install gnumeric
 
-# Set up the create_cohort_csv script.
-COPY ./create_cohort_csv.py /
-COPY ./Create-Output-Cohort.desktop /usr/share/applications/
-COPY ./Create-Output-Cohort-link.desktop /root/Desktop/
+# Set up the create_dataset_csv script.
+COPY ./create_dataset_csv.py /
+COPY ./Create-Output-Dataset.desktop /usr/share/applications/
+COPY ./Create-Output-Dataset-link.desktop /root/Desktop/
 COPY ./Rhino-Health-Logo.svg /usr/share/pixmaps/

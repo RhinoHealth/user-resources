@@ -23,9 +23,9 @@ import os
 class SplitNN(ModerateCNN):
     def __init__(self):
         super().__init__()
-        cohort_uid = next(os.walk('/input/cohorts'))[1][0]
-        cohort_files = glob.glob('/input/cohorts/' + cohort_uid + '/file_data/*')
-        for file in cohort_files:
+        dataset_uid = next(os.walk('/input/datasets'))[1][0]
+        dataset_files = glob.glob('/input/datasets/' + dataset_uid + '/file_data/*')
+        for file in dataset_files:
             if 'data_site1' in file:
                 split_id = 0
             elif 'data_site2' in file:
