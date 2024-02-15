@@ -16,41 +16,41 @@ def convert_dcm_image_to_jpg(name):
 	return final_image
 
 
-def cohort_dcm_to_jpg(df_cohort):
+def dataset_dcm_to_jpg(dataset_df):
 	input_dir = '/input/dicom_data/'
 	output_dir = '/output/file_data/'
 	dcm_list = glob.glob(input_dir + '/*/*.dcm')
 
-	df_cohort['JPG_file'] = 'Nan'
+	dataset_df['JPG_file'] = 'Nan'
 	for dcm_file in dcm_list:
 		image = convert_dcm_image_to_jpg(dcm_file)
 		jpg_file_name = dcm_file.split('/')[-1].split('.dcm')[0] + '.jpg'
 		ds = pydicom.dcmread(dcm_file)
-		idx = df_cohort['Pneumonia'][df_cohort.SeriesUID == ds.SeriesInstanceUID].index[0]
-		ground_truth = '1' if df_cohort.loc[idx, 'Pneumonia'] else '0'
+		idx = dataset_df['Pneumonia'][dataset_df.SeriesUID == ds.SeriesInstanceUID].index[0]
+		ground_truth = '1' if dataset_df.loc[idx, 'Pneumonia'] else '0'
 		class_folder = output_dir + ground_truth
 		if not os.path.exists(class_folder):
 			os.makedirs(class_folder)
 		image.save('/'.join([class_folder, jpg_file_name]))
-		df_cohort.loc[idx, 'JPG file'] = '/'.join([ground_truth, jpg_file_name])
+		dataset_df.loc[idx, 'JPG file'] = '/'.join([ground_truth, jpg_file_name])
 
-	return df_cohort
+	return dataset_df
 
 
 if __name__ == '__main__':
-	# Read cohort from /input
-	df_cohort = pd.read_csv('/input/cohort_data.csv')
+	# Read dataset from /input
+	dataset = pd.read_csv('/input/dataset.csv')
 
 	# Run data imputation
 	W_imp = SimpleImputer(missing_values=np.nan, strategy='mean')
 	H_imp = SimpleImputer(missing_values=np.nan, strategy='mean')
-	df_cohort['Weight'] = W_imp.fit_transform(df_cohort.Weight.values.reshape(-1, 1))
-	df_cohort['Height'] = H_imp.fit_transform(df_cohort.Height.values.reshape(-1, 1))
-	df_cohort['BMI'] = df_cohort.Weight / (df_cohort.Height ** 2)
+	dataset['Weight'] = W_imp.fit_transform(dataset.Weight.values.reshape(-1, 1))
+	dataset['Height'] = H_imp.fit_transform(dataset.Height.values.reshape(-1, 1))
+	dataset['BMI'] = dataset.Weight / (dataset.Height ** 2)
 
 	# Convert DICOM to JPG
-	df_cohort = cohort_dcm_to_jpg(df_cohort)
+	dataset = dataset_dcm_to_jpg(dataset)
 
-	# Write cohort to /output
-	df_cohort.to_csv('/output/cohort_data.csv', index=False)
+	# Write dataset to /output
+	dataset.to_csv('/output/dataset.csv', index=False)
 

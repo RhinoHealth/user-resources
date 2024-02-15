@@ -11,13 +11,13 @@ def infer():
                     '--config_file /home/localuser/config/spleen_ct_segmentation/configs/inference.json ' \
                     '--logging_file /home/localuser/config/spleen_ct_segmentation/configs/logging.conf'
     os.system(run_inference)
-    df = pd.read_csv("/input/cohort_data.csv")
+    df = pd.read_csv("/input/dataset.csv")
     images = list(df.image.values)
     images.sort()
     segmentations = [i.replace('/output/file_data/', '') for i in list(glob.glob('/output/file_data/seg_out/*/*'))]
     segmentations.sort()
     df = pd.DataFrame({'image': images, 'segmentation': segmentations})
-    df.to_csv("/output/cohort_data.csv", index=False)
+    df.to_csv("/output/dataset.csv", index=False)
 
 
 if __name__ == "__main__":

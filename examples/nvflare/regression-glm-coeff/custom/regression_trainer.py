@@ -90,10 +90,10 @@ class GLMTrainer(Executor):
             raise ValueError("Offset is only supported for Poisson distribution family.")
 
         # Load dataset
-        cohorts_path = '/input/cohorts'
-        cohort_uid = next(os.walk(cohorts_path))[1][0]
-        cohort_path = f'{cohorts_path}/{cohort_uid}/cohort_data.csv'
-        self.data = pd.read_csv(cohort_path)
+        datasets_path = '/input/datasets'
+        dataset_uid = next(os.walk(datasets_path))[1][0]
+        dataset_path = f'{datasets_path}/{dataset_uid}/dataset.csv'
+        self.data = pd.read_csv(dataset_path)
         if self._cast_to_string_fields:
             print(f"Casting fields {self._cast_to_string_fields} to string.")
             for field in self._cast_to_string_fields:

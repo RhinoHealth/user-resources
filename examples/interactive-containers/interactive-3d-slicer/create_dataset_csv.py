@@ -2,7 +2,6 @@
 import argparse
 import logging
 import sys
-import os
 
 from pathlib import Path
 
@@ -12,12 +11,12 @@ logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Read files from an output directory and write them to a cohort csv as a single filename column"
+        description="Read files from an output directory and write them to a dataset csv as a single filename column"
     )
 
-    parser.add_argument("--output_csv", type=str, help="output csv file path", default="/output/cohort_data.csv")
+    parser.add_argument("--output_csv", type=str, help="output csv file path", default="/output/dataset.csv")
     parser.add_argument("--output_column_name", type=str, help="filename column in output csv", default="Filename")
-    parser.add_argument("--file_dir", type=str, help="directory with files to add to cohort csv",
+    parser.add_argument("--file_dir", type=str, help="directory with files to add to dataset csv",
                         default="/output/file_data")
 
     args = parser.parse_args()
@@ -28,10 +27,9 @@ if __name__ == "__main__":
         with open(args.output_csv, "w") as f:
             f.write(f"{args.output_column_name}\n")
             f.write("\n".join(file_paths) + "\n")
-        os.system(f"python /create_cohort_csv_shortcut.py {args.output_csv}")
     except Exception:
         logger.exception(f"Error processing files in directory {args.file_dir}")
         sys.exit(1)
 
-    logger.info(f"Finished processing files - output cohort csv written to '{args.output_csv}'")
+    logger.info(f"Finished processing files - output dataset csv written to '{args.output_csv}'")
     sys.exit(0)

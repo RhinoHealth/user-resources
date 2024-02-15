@@ -33,8 +33,8 @@ To test locally, e.g. while working on changes:
 ## Resources
 - `Dockerfile` - This is the Dockerfile to be used for building the container image. It starts from an Ubuntu desktop base image and installs 3D Slicer and other dependencies 
 - `3D-Slicer-Mark.svg`, `3DSlicer.desktop`, `3DSlicer-link.desktop` - Files for creating a desktop link to open 3D Slicer
-- `create_cohort_csv.py` - A script to create a manifest CSV file from the 3D Slicer output files
-- `Rhino-Health-Logo.svg`, `Create-Output-Cohort.desktop`, `Create-Output-Cohort-link.desktop` - Files for creating a desktop link to run the create_cohort_csv.py script
+- `create_dataset_csv.py` - A script to create a manifest CSV file from the 3D Slicer output files
+- `Rhino-Health-Logo.svg`, `Create-Output-Dataset.desktop`, `Create-Output-Dataset-link.desktop` - Files for creating a desktop link to run the create_dataset_csv.py script
 
 
 ## Getting Help
