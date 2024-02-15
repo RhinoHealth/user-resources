@@ -37,12 +37,12 @@ Run each tool with `-h` or `--help` for usage details.
 
 ```
 | /input/<br>
-|_____ 00000000-0000-0000-0000-000000000000/ - The Cohorts UID
-|___________ cohort_data.csv - The tabular data for cohort with UID 00000000-0000-0000-0000-000000000000
+|_____ 00000000-0000-0000-0000-000000000000/ - The Dataset UID
+|___________ dataset.csv - The tabular data for dataset with UID 00000000-0000-0000-0000-000000000000
 |___________ dicom_data/ - If applicable, associated DICOM data
 |___________ file_data/ - If applicable, associated file data
-|_____ 00000000-0000-0000-0000-000000000001/ - The next Cohorts UID
-|___________ cohort_data.csv - The tabular data for cohort with UID 00000000-0000-0000-0000-000000000001
+|_____ 00000000-0000-0000-0000-000000000001/ - The next Dataset UID
+|___________ dataset.csv - The tabular data for dataset with UID 00000000-0000-0000-0000-000000000001
 |___________ dicom_data/ - If applicable, associated DICOM data
 |___________ file_data/ - If applicable, associated file data
 ...

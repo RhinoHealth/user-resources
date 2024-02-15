@@ -10,10 +10,10 @@ from torchvision.transforms import ToTensor, Normalize, Compose,  Resize, Random
 from network import PneumoniaModel
 
 
-def infer(model_weights_file_path):
+def infer(model_parameters_file_path):
     # Setup the model
     model = PneumoniaModel()
-    model.load_state_dict(torch.load(model_weights_file_path)["model"])
+    model.load_state_dict(torch.load(model_parameters_file_path)["model"])
     model.eval()
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
@@ -26,7 +26,7 @@ def infer(model_weights_file_path):
         ToTensor(),
         Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
-    tabular_data = pd.read_csv("/input/cohort_data.csv")
+    tabular_data = pd.read_csv("/input/dataset.csv")
     dataset = torchvision.datasets.ImageFolder(root="/input/file_data", transform=transforms)
     loader = DataLoader(dataset, batch_size=4, shuffle=False)
 
@@ -40,11 +40,11 @@ def infer(model_weights_file_path):
             scores.extend([score.item() for score in batch_scores])
     tabular_data['Model_Score'] = scores
 
-    tabular_data.to_csv("/output/cohort_data.csv", index=False)
+    tabular_data.to_csv("/output/dataset.csv", index=False)
 
 
 if __name__ == "__main__":
     args = sys.argv[1:]
-    (model_weights_file_path,) = args
-    infer(model_weights_file_path)
+    (model_params_file_path,) = args
+    infer(model_params_file_path)
     sys.exit(0)

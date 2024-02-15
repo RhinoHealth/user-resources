@@ -25,10 +25,10 @@ import os
 from sklearn.model_selection import train_test_split
 
 def load_client_data():
-    # Get cohort data
-    cohorts_path = '/input/cohorts'
-    cohort_uid = next(os.walk(cohorts_path))[1][0]
-    df = pd.read_csv(f'{cohorts_path}/{cohort_uid}/cohort_data.csv')
+    # Get data
+    datasets_path = '/input/datasets'
+    dataset_uid = next(os.walk(datasets_path))[1][0]
+    df = pd.read_csv(f'{datasets_path}/{dataset_uid}/dataset.csv')
     df_train, df_valid = train_test_split(df, test_size=0.25, random_state=42)
     X_train = df_train.drop('outcome', axis=1).values
     X_valid = df_valid.drop('outcome', axis=1).values
@@ -71,7 +71,7 @@ class FedXGBTreeBCWExecutor(FedXGBTreeExecutor):
 
     def load_data(self):
 
-        # load cohorts
+        # load data
         X_train, y_train, X_valid, y_valid, sample_size = load_client_data()
 
         # training

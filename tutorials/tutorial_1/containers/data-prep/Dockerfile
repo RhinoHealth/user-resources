@@ -31,4 +31,4 @@ COPY --chown=$UID:$GID dataprep_gc.py run_dataprep.sh ./
 ENV PATH="/venv/bin:$PATH"
 ENV VIRTUAL_ENV="/venv"
 
-CMD ["./run_dataprep.sh", "/input", "/output", "/input/cohort_data.csv"]
+CMD ["./run_dataprep.sh", "/input", "/output", "/input/dataset.csv"]

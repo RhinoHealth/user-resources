@@ -25,12 +25,12 @@ WORKDIR /home/localuser
 USER localuser
 
 # Copy code.
-COPY --chown=$UID:$GID merge_cohorts_data.py ./
+COPY --chown=$UID:$GID merge_datasets.py ./
 
 ENV PYTHONUNBUFFERED=1
 
-CMD [ "python", "./merge_cohorts_data.py", \
+CMD [ "python", "./merge_datasets.py", \
       "--input_dir", "/input", \
       "--output_dir", "/output", \
-      "--cohort_csv_file", "/input/cohort_data.csv" \
+      "--csv_file", "/input/dataset.csv" \
 ]
