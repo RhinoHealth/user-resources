@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
 Type=Application
-Name=Create Output Cohort
+Name=Create Output Dataset
 Exec=sh -c '/usr/local/bin/python /create_dataset_csv.py > $HOME/Desktop/create-dataset-csv.log 2>&1'
 StartupNotify=false
 Terminal=false

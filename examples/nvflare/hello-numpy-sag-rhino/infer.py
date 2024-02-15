@@ -7,9 +7,9 @@ from pathlib import Path
 import numpy as np
 
 
-def infer(model_paramss_file_path):
+def infer(model_params_file_path):
     # Setup the model
-    model = np.load(model_paramss_file_path)
+    model = np.load(model_params_file_path)
 
     # Preparing the dataset for testing.
     with (Path("/input") / "dataset.csv").open("r", encoding="utf-8") as f:
