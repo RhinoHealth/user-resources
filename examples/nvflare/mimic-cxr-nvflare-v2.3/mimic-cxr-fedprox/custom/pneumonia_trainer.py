@@ -91,14 +91,14 @@ class PneumoniaTrainer(Executor):
 
         self.optimizer = Adam(self.model.parameters(), lr=lr)
 
-        # Read cohorts.
-        cohort_dirs = [x for x in Path("/input/cohorts/").iterdir() if x.resolve().is_dir()]
-        cohort_dfs = [pd.read_csv(cohort_dir / "cohort_data.csv") for cohort_dir in cohort_dirs]
-        for cohort_dir, df in zip(cohort_dirs, cohort_dfs):
-            df["PNG_file_abspath"] = cohort_dir / "file_data" / df["PNG_file"]
+        # Read datasets.
+        dataset_dirs = [x for x in Path("/input/cohorts/").iterdir() if x.resolve().is_dir()]
+        dataset_dfs = [pd.read_csv(dataset_dir / "dataset.csv") for dataset_dir in dataset_dirs]
+        for dataset_dir, df in zip(dataset_dirs, dataset_dfs):
+            df["PNG_file_abspath"] = dataset_dir / "file_data" / df["PNG_file"]
 
         # Random train/test split.
-        combined_df = pd.concat(cohort_dfs)
+        combined_df = pd.concat(dataset_dfs)
         train_df, test_df = train_test_split(combined_df, test_size=self._test_set_percentage / 100)
         train_image_file_paths = train_df["PNG_file_abspath"]
         test_image_file_paths = test_df["PNG_file_abspath"]
