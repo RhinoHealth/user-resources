@@ -200,7 +200,7 @@ set -x
 $python_cmd "$create_output_symlinks_script" "$abs_input_dir" "$abs_output_dir"
 
 # Run the container.
-docker run --rm --name rhino-nvflare-localrun-inference -v "$SCRIPTDIR/run_inference.sh:/run_inference.sh:ro" -v "$abs_weights_file_path:/model_weights:ro" -v "$abs_input_dir:/input:ro" -v "$abs_output_dir:/output" --network none rhino-nvflare-localrun bash "/run_inference.sh" /model_weights
+docker run --rm --name rhino-nvflare-localrun-inference -v "$SCRIPTDIR/run_inference.sh:/run_inference.sh:ro" -v "$abs_weights_file_path:/model_params:ro" -v "$abs_input_dir:/input:ro" -v "$abs_output_dir:/output" --network none rhino-nvflare-localrun bash "/run_inference.sh" /model_params
 
 # Rewrite symlinks in output data dirs to absolute paths on the local file system.
 $python_cmd "$rewrite_output_symlinks_script" "$abs_input_dir" "$abs_output_dir"

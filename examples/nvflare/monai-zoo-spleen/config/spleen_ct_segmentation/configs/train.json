@@ -7,7 +7,7 @@
     "bundle_root": "/config/spleen_ct_segmentation",
     "ckpt_dir": "$@bundle_root + '/models'",
     "output_dir": "$@bundle_root + '/eval'",
-    "dataset_dir": "/input/cohorts",
+    "dataset_dir": "/input/datasets",
     "images": "$list(sorted(glob.glob(@dataset_dir + '/*/file_data/imagesTr/*.nii.gz')))",
     "labels": "$list(sorted(glob.glob(@dataset_dir + '/*/file_data/labelsTr/*.nii.gz')))",
     "val_interval": 5,
