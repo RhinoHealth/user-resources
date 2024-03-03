@@ -22,15 +22,14 @@ upload_directory=$1
 s3_bucket=$2
 path_in_bucket=$3
 
-
-if [[ ! -v AWS_ACCESS_KEY_ID ]] || [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
-	    echo "The 'AWS_ACCESS_KEY_ID' environment variable is empty - please set it to a valid value"
-	    exit 1
+if [ -z ${AWS_ACCESS_KEY_ID+x} ];  then
+    echo "The 'AWS_ACCESS_KEY_ID' environment variable is empty - please set it to a valid value"
+    exit 1
 fi
 
-if [[ ! -v AWS_SECRET_ACCESS_KEY ]] || [[ -z "$AWS_SECRET_ACCESS_KEY" ]]; then
-	    echo "The 'AWS_SECRET_ACCESS_KEY' environment variable is empty - please set it to a valid value"
-	    exit 1
+if [ -z ${AWS_SECRET_ACCESS_KEY+x} ]; then
+    echo "The 'AWS_SECRET_ACCESS_KEY' environment variable is empty - please set it to a valid value"
+    exit 1
 fi
 
 set -x
