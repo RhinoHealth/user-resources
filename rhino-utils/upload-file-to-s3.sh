@@ -23,20 +23,14 @@ s3_bucket=$2
 path_in_bucket=$3
 
 
-if [[ ! -v AWS_ACCESS_KEY_ID ]]; then
-    echo "AWS_ACCESS_KEY_ID is not set"
-    exit 1
-elif [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
-    echo "AWS_ACCESS_KEY_ID is set to the empty string"
-    exit 1
+if [[ ! -v AWS_ACCESS_KEY_ID ]] || [[ -z "$AWS_ACCESS_KEY_ID" ]]; then
+	    echo "The 'AWS_ACCESS_KEY_ID' environment variable is empty - please set it to a valid value"
+	    exit 1
 fi
 
-if [[ ! -v $AWS_SECRET_ACCESS_KEY ]]; then
-    echo "AWS_ACCESS_KEY_ID is not set"
-    exit 1
-elif [[ -z "$AWS_SECRET_ACCESS_KEY" ]]; then
-    echo "AWS_ACCESS_KEY_ID is set to the empty string"
-    exit 1
+if [[ ! -v AWS_SECRET_ACCESS_KEY ]] || [[ -z "$AWS_SECRET_ACCESS_KEY" ]]; then
+	    echo "The 'AWS_SECRET_ACCESS_KEY' environment variable is empty - please set it to a valid value"
+	    exit 1
 fi
 
 set -x
@@ -45,5 +39,4 @@ if aws s3 cp --recursive "$upload_directory" "s3://$s3_bucket/$path_in_bucket/";
     echo "Upload completed."
 else
     echo "Upload failed. Please check your parameters and try again."
-    usage
 fi
