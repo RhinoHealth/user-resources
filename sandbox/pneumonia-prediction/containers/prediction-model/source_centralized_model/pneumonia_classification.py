@@ -103,7 +103,7 @@ for i in range(4):
     running_loss = 0
     for images, labels in trainloader:
 
-        # Changing images to cuda for gpu
+        # Changing img to cuda for gpu
         if torch.cuda.is_available():
             images = images.cuda()
             labels = labels.cuda()
