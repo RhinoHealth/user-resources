@@ -4,6 +4,7 @@ This folder contains examples for interacting with Rhino Health's Federated Comp
 
 # Table of Contents
 - `aggregate_quantile_example.ipynb` - Demonstrate the Rhino Helath SDK's ability to calculate federated percentiles with differential privacy
+- `cox.ipynb` - Demostrate calculation of Cox proportional hazard with federated data
 - `eda.ipynb` - Demonstrate usage of the Rhino Health Python SDK for performing Exploratory Data Analysis (EDA) using federated analytics 
 - `pneumonia-results-analysis.ipynb` - Demonstrate usage of the Rhino Health Python SDK for analyzing code runs using federated analytics
 - `upsert-objects.ipynb` - Demonstrate creation and updating of different objects with the Rhino Health Python SDK
