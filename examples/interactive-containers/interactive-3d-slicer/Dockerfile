@@ -43,3 +43,6 @@ COPY ./create_dataset_csv.py /
 COPY ./Create-Output-Dataset.desktop /usr/share/applications/
 COPY ./Create-Output-Dataset-link.desktop /root/Desktop/
 COPY ./Rhino-Health-Logo.svg /usr/share/pixmaps/
+
+# Update the ENTRYPOINT to execute both scripts
+ENTRYPOINT ["custom_startup.sh"]
