@@ -37,7 +37,7 @@ NVFLARE_VERSION_TUPLE = _get_nvflare_version_tuple()
 
 if (2, 0) <= NVFLARE_VERSION_TUPLE < (2, 1):
     WAITING_CLIENT_STATUS = "not started"
-elif (2, 2) <= NVFLARE_VERSION_TUPLE < (2, 4):
+elif (2, 2) <= NVFLARE_VERSION_TUPLE < (2, 5):
     WAITING_CLIENT_STATUS = "No Jobs"
 else:
     raise Exception(f"Unsupported version of NVFLARE: {nvflare.__version__}")
@@ -104,6 +104,19 @@ def _create_fl_admin_api(host: str, port: int) -> FLAdminAPI:
                 poc=True,
                 debug=False,
             )
+    elif (2, 4) <= NVFLARE_VERSION_TUPLE < (2, 5):
+        from nvflare.ha.dummy_overseer_agent import DummyOverseerAgent
+
+        admin_api = FLAdminAPI(
+            overseer_agent=DummyOverseerAgent(sp_end_point=f"{host}:8002:{port}"),
+            user_name="admin@nvidia.com",
+            ca_cert="startup/rootCA.pem",
+            client_cert="startup/client.crt",
+            client_key="startup/client.key",
+            upload_dir="transfer",
+            download_dir="transfer",
+            debug=False,
+        )
     else:
         raise Exception(f"Unsupported version of NVFLARE: {nvflare.__version__}")
     return admin_api
@@ -153,6 +166,8 @@ def try_login(admin_api) -> Tuple[bool, Optional[str]]:
         response: FLAdminAPIResponse = admin_api.login_with_password(username="admin", password="admin")
     elif (2, 2) <= NVFLARE_VERSION_TUPLE < (2, 4):
         response: FLAdminAPIResponse = admin_api.login_with_poc(username="admin", poc_key="admin")
+    elif (2, 4) <= NVFLARE_VERSION_TUPLE < (2, 5):
+        response: FLAdminAPIResponse = admin_api.login(username="admin@nvidia.com")
     else:
         raise Exception(f"Unsupported version of NVFLARE: {nvflare.__version__}")
 
@@ -197,6 +212,10 @@ def start_app(admin_api, app_name):
         raise_on_response_error(response, errmsg_prefix="start_app failed")
     elif (2, 2) <= NVFLARE_VERSION_TUPLE < (2, 4):
         response = admin_api.submit_job(job_folder=app_name)
+        raise_on_response_error(response, errmsg_prefix="submit_job failed")
+    elif (2, 4) <= NVFLARE_VERSION_TUPLE < (2, 5):
+        response = admin_api.submit_job(job_folder="job")
+        print(f"{response=}")
         raise_on_response_error(response, errmsg_prefix="submit_job failed")
     else:
         raise Exception(f"Unsupported version of NVFLARE: {nvflare.__version__}")
@@ -254,6 +273,9 @@ def main():
     parser.add_argument("app_name", type=str, help="nvflare app name")
 
     args = parser.parse_args()
+
+    print(f"{args=}")
+    print(f"{args.host=}")
 
     print("Connecting to NVFLARE admin API...")
     admin_api = create_admin_api_and_login(host=args.host, port=args.port, connection_timeout=60.0)
