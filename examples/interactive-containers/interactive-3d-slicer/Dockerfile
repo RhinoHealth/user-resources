@@ -46,5 +46,5 @@ COPY ./Rhino-Health-Logo.svg /usr/share/pixmaps/
 
 COPY --chmod=755 custom_startup.sh /
 
-# Use a custom startup script to preform another command before the VNC server starts.
+# Use a custom startup script to perform initialization commands before the interactive session starts.
 ENTRYPOINT ["/custom_startup.sh"]
