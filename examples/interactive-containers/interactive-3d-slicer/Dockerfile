@@ -44,5 +44,7 @@ COPY ./Create-Output-Dataset.desktop /usr/share/applications/
 COPY ./Create-Output-Dataset-link.desktop /root/Desktop/
 COPY ./Rhino-Health-Logo.svg /usr/share/pixmaps/
 
-# Update the ENTRYPOINT to execute both scripts
-ENTRYPOINT ["custom_startup.sh"]
+COPY --chmod=755 custom_startup.sh /
+
+# Use a custom startup script to preform another command before the VNC server starts.
+ENTRYPOINT ["/custom_startup.sh"]
