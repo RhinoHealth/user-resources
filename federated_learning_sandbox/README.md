@@ -1,6 +1,6 @@
-## Conducting an end-to-end ML project using multimodal data from multiple hospitals
+## Rhino's Federated Learning Sandbox: Training AI with multimodal data from multiple hospitals
 
-![image info](https://drive.google.com/uc?export=view&id=1SkAZdWns-Xi8lxw7xQzRhc8jKsnOCfIL)
+![image info](images/sandbox_overview.jpg)
 
 **Follow the Tutorial: [Here](https://docs.rhinohealth.com/hc/en-us/articles/15586509051549-Pneumonia-Prediction-Step-1-Scenario-FCP-Overview)**
 
