@@ -1,25 +1,12 @@
-## Rhino's Federated Learning Sandbox: Training AI with multimodal data from multiple hospitals
+## Rhino's Federated Learning Sandbox: Using Jupyter Notebooks to train multimodal AI across multiple hospitals
 
 ![image info](images/sandbox_overview.jpg)
 
-**Follow the Tutorial: [Here](https://docs.rhinohealth.com/hc/en-us/articles/15586509051549-Pneumonia-Prediction-Step-1-Scenario-FCP-Overview)**
 
-## Notebook 1: Import EHR and CXR Datasets
-In this step, we gain experience in importing multimodal datasets onto the Rhino FCP. We will use MIMIC-IV as the source to create datasets from a database that hosts EHR data. In addition, we will load CXR DICOM images, which are linked to the EHR tables using a mapping lookup table.
+Welcome to the Rhino Health Platform! Our series of five Jupyter notebooks will guide you through designing and conducting a federated machine learning experiment using chest X-rays and structured clinical data from the MIMIC-IV dataset. In **Notebook 1**, you'll learn to import multimodal datasets, including EHR data and CXR DICOM images, onto the Rhino FCP. **Notebook 2** focuses on converting DICOM files to JPEG format for easier handling. **Notebook 3** covers exploratory data analysis and biostatistical methods, emphasizing privacy-preserving techniques. In **Notebook 4**, you'll prepare models for federated learning (FL) training, split the data, and execute model training using NVFlare across two sites. Finally, **Notebook 5** involves evaluating the performance of your federated learning-trained image classification model using a validation dataset. These notebooks will equip you with the skills needed to conduct comprehensive federated learning experiments on the Rhino Health Platform.
 
-## Notebook 2: Data Engineering 
- In this step, the the DICOM files (chest x-rays) are converted to JPEG.
+-------
+This README can also be viewed in [Rhino's documentation](https://docs.rhinohealth.com/hc/en-us/articles/15586509051549-Pneumonia-Prediction-Step-1-Scenario-FCP-Overview)
 
-## Notebook 3: Exploratory data analysis & biostatistical methods
-In this step, the user will gain experience using privacy preserving exploratory data analytics capabilities of Rhino. We show few privacy preserving query with metrics.
+Need Help? Go to the [Rhino Health Documentation Center](https://docs.rhinohealth.com/) or [support@rhinohealth.com](mailto:support@rhinohealth.com)
 
-
-## Notebook 4: Prepare Models for FL Training and execute model training
-In this step, you will split data into training and testing and use the datasets for model training. You will gain experience converting an existing model to NVFlare and execute the FL model training across two sites. 
-
-## Notebook 5: Federated Evaluations
-Visualize evaluation results
-
-
-Need Help?
-[Rhino Health Documenation Center](https://docs.rhinohealth.com/) or [support@rhinohealth.com](mailto:support@rhinohealth.com)
