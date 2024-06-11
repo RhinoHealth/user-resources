@@ -83,7 +83,7 @@ class PneumoniaTrainer(Executor):
         self.optimizer = Adam(self.model.parameters(), lr=lr)
 
         # Read datasets
-        dataset_dirs = [x for x in Path("/input/cohorts/").iterdir() if x.resolve().is_dir()]
+        dataset_dirs = [x for x in Path("/input/datasets/").iterdir() if x.resolve().is_dir()]
         dataset_dfs = [pd.read_csv(dataset_dir / "dataset.csv") for dataset_dir in dataset_dirs]
         for dataset_dir, df in zip(dataset_dirs, dataset_dfs):
             df["PNG_file_abspath"] = dataset_dir / "file_data" / df["PNG_file"]
@@ -100,12 +100,12 @@ class PneumoniaTrainer(Executor):
         # Load datasets by creating directories with symlinks to actual images.
         train_dataset_folder = Path("/tmp/train_images_symlinks")
         for image_file_path in train_image_file_paths:
-            symlink_path = train_dataset_folder / image_file_path.relative_to(Path("/input/cohorts/"))
+            symlink_path = train_dataset_folder / image_file_path.relative_to(Path("/input/datasets/"))
             symlink_path.parent.mkdir(parents=True, exist_ok=True)
             symlink_path.symlink_to(image_file_path)
         test_dataset_folder = Path("/tmp/test_images_symlinks")
         for image_file_path in test_image_file_paths:
-            symlink_path = test_dataset_folder / image_file_path.relative_to(Path("/input/cohorts/"))
+            symlink_path = test_dataset_folder / image_file_path.relative_to(Path("/input/datasets/"))
             symlink_path.parent.mkdir(parents=True, exist_ok=True)
             symlink_path.symlink_to(image_file_path)
 
