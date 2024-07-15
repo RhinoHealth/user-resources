@@ -8,6 +8,7 @@ This folder contains examples for using Rhino Health's Interactive Containers ca
 - [interactive-qupath](./interactive-qupath/README.md) - Run an interactive container session with QuPath to view and/or annotate remote DICOM data on a Rhino Client
 - [interactive-jupyter-notebook](./interactive-jupyter-notebook/README.md) - Run an interactive container session with Jupyter Notebook to interact with remote data on a Rhino Client
 - [jupyter-notebook-and-ollama](./jupyter-notebook-and-ollama/README.md) - Interact with LLM models via open-interpreter and Ollama.
+- [libre-office](./libre-office/README.md) - Use Office (e.g. spreadsheets) to interact with remote data on a Rhino Client.
 
 ## Getting Help
 For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
