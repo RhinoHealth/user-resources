@@ -36,7 +36,8 @@ RUN --mount=type=bind,source=requirements.txt,target=/requirements.txt \
 RUN find /usr/lib -maxdepth 1 -name '*.so' -exec bash -c 'ln -s "$(realpath {})" "$VIRTUAL_ENV/lib/$(basename {})" ' \;
 
 RUN ln -s /opt/nvidia/bionemo/bionemo /home/localuser/venv/lib/python3.10/site-packages/bionemo
-# !! EDIT THIS: Copy the needed local files (code and otherwise) into the container work directory.
+
+# Copy the needed local files (code and otherwise) into the container work directory.
 # Note: For directories, have a separate COPY command for each top-level directory.
 COPY --chown=$UID:$GID ./app ./app
 COPY --chown=$UID:$GID ./meta.conf ./

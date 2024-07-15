@@ -14,6 +14,7 @@ This folder contains examples for using Rhino Health's integration with NVIDIA F
 - [regression-quantile](./regression-quantile/README.md) - Use NVIDIA FLARE v2.3 to fit a quantile regression model using FCP
 - [glm-coeff-optimization](./glm-coeff-optimization/README.md) - Use NVIDIA FLARE v2.3 to train a GLM model to estimate coefficients for a regression model using FCP
 - [xgboost](./xgboost/README.md) - Use NVIDIA FLARE v2.3 to train an XGBoost model using FCP
+- [llm-federated-fine-tuning-bionemo](./llm-federated-fine-tuning-bionemo/README.md) - Use NVIDIA FLARE v2.4 and BioNeMo to perform federated fine-tuning of a protein language model using FCP
 - [split-learning](./split-learning/README.md) - Adapts NVIDIA's [Split Learning](https://github.com/NVIDIA/NVFlare/tree/2.3/examples/advanced/vertical_federated_learning) NVIDIA FLARE v2.3 example to run on FCP
 - [encrypted-model-code-and-weights](./encrypted-model-code-and-weights/README.md) - Locally encrypt your model code and build a container image using just the encrypted code (and not the source code). Set up the model to encrypt the model parameters so that they are stored in an encrypted manner on FCP. Add an `infer.py` script to perform inference on the trained model, decrypting the model parameters during inference using a key provided during run time
 <br><br>
