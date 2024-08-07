@@ -14,7 +14,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # Install 3DSlicer dependencies.
 RUN export DEBIAN_FRONTEND=noninteractive \
  && apt-get update \
- && apt-get install -y -q libpulse-dev libnss3 libglu1-mesa wget xvfb \
+ && apt-get install -y -q libpulse-dev libnss3 libglu1-mesa wget \
  && apt-get install -y -q --reinstall libxcb-xinerama0 \
  && apt-get -y -q install libxcb-icccm4-dev libxcb-image0-dev \
     libxcb-keysyms1-dev libxcb-randr0 libxcb-render-util0 libxcb-xkb-dev libxkbcommon-x11-dev
@@ -29,7 +29,7 @@ COPY ./3DSlicer.desktop /usr/share/applications/
 COPY ./3DSlicer-link.desktop /root/Desktop/
 COPY ./3D-Slicer-Mark.svg /usr/share/pixmaps/
 RUN sed -i 's#cp -r /root/{.config,#cp -r /root/{.config,Desktop,#' /startup.sh
-ENV PATH "$PATH:/opt/slicer"
+ENV PATH="$PATH:/opt/slicer"
 
 # Disable MIT-SHM, since 3DSlicer tries to use it by default and this causes problems.
 ENV QT_X11_NO_MITSHM=1
@@ -43,7 +43,17 @@ COPY ./create_dataset_csv.py /
 COPY ./Create-Output-Dataset.desktop /usr/share/applications/
 COPY ./Create-Output-Dataset-link.desktop /root/Desktop/
 COPY ./Rhino-Health-Logo.svg /usr/share/pixmaps/
-COPY ./extensions /root/Desktop/
-COPY ./install-slicer-extension.py /tmp
 
-RUN xvfb-run --auto-servernum /opt/slicer/Slicer --python-script /tmp/install-slicer-extension.py
+COPY --chmod=755 entrypoint.sh /
+
+# Install 3DSlicer externsions.
+RUN --mount=type=bind,source=./extensions,target=/opt/slicer-extensions \
+    --mount=type=bind,source=./install-slicer-extension.py,target=/opt/install-slicer-extension.py \
+    export DEBIAN_FRONTEND=noninteractive \
+ && apt-get install -y -q xvfb \
+ && xvfb-run --auto-servernum /opt/slicer/Slicer --python-script /opt/install-slicer-extension.py \
+ && apt-get remove -y -q xvfb \
+ && rm -rf /var/lib/apt/lists/*
+
+# Use a custom startup script to perform initialization commands before the interactive session starts.
+ENTRYPOINT ["/entrypoint.sh"]

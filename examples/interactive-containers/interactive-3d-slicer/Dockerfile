@@ -29,7 +29,7 @@ COPY ./3DSlicer.desktop /usr/share/applications/
 COPY ./3DSlicer-link.desktop /root/Desktop/
 COPY ./3D-Slicer-Mark.svg /usr/share/pixmaps/
 RUN sed -i 's#cp -r /root/{.config,#cp -r /root/{.config,Desktop,#' /startup.sh
-ENV PATH "$PATH:/opt/slicer"
+ENV PATH="$PATH:/opt/slicer"
 
 # Disable MIT-SHM, since 3DSlicer tries to use it by default and this causes problems.
 ENV QT_X11_NO_MITSHM=1
@@ -44,7 +44,7 @@ COPY ./Create-Output-Dataset.desktop /usr/share/applications/
 COPY ./Create-Output-Dataset-link.desktop /root/Desktop/
 COPY ./Rhino-Health-Logo.svg /usr/share/pixmaps/
 
-COPY --chmod=755 custom_startup.sh /
+COPY --chmod=755 entrypoint.sh /
 
 # Use a custom startup script to perform initialization commands before the interactive session starts.
-ENTRYPOINT ["/custom_startup.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
