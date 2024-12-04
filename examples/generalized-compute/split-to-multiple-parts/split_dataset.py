@@ -29,15 +29,15 @@ if __name__ == '__main__':
         exit(1)
 
     # Read the input data from /input and split it using np.array_split
-    df = pd.read_csv('/input/dataset.csv')
+    df = pd.read_csv('/input/0/dataset.csv')
     df_parts = np.array_split(df, num_parts)
     print(f"Split dataframe (len={df.shape[0]}) into {num_parts} parts")
 
     # Write the outputs - each one to a different subdirectory under /output/0
     for index, part in enumerate(df_parts):
-        dirname = f"/output/0/part_{index}/"
-        print(f"Writing output into {dirname}")
-        os.mkdir(dirname)
-        part.to_csv(dirname + "/dataset.csv", index=False)
+        dirpath = f"/output/0/part_{index}/"
+        print(f"Writing output into {dirpath}")
+        os.mkdir(dirpath)
+        part.to_csv(dirpath + "/dataset.csv", index=False)
 
     print("Done")
