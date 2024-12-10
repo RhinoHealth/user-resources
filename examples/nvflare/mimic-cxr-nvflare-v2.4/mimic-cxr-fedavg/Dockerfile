@@ -29,16 +29,13 @@ ENV VIRTUAL_ENV="/venv"
 RUN mkdir $VIRTUAL_ENV \
  && chmod g+s $VIRTUAL_ENV \
  && chown $UID:$GID $VIRTUAL_ENV \
- && python3.10 -m venv $VIRTUAL_ENV
+ && python3.10 -m venv --upgrade-deps $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install dependencies.
-COPY requirements.txt ./
 RUN --mount=type=cache,target=/root/.cache/pip \
-    export PIP_ROOT_USER_ACTION=ignore \
- && python -m pip install --upgrade pip setuptools wheel \
- && pip install -r requirements.txt \
- && rm requirements.txt
+    --mount=type=bind,source=requirements.txt,target=/requirements.txt \
+    PIP_ROOT_USER_ACTION=ignore pip install -r /requirements.txt
 
 WORKDIR /home/localuser
 USER localuser

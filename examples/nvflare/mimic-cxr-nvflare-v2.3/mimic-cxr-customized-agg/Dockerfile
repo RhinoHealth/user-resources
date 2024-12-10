@@ -1,5 +1,5 @@
 # !! EDIT THIS: Set base Docker image to be used.
-FROM nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04
+FROM nvcr.io/nvidia/cuda:12.4.1-runtime-ubuntu22.04
 
 # Set env vars to be able to run apt-get commands without issues.
 ENV LC_ALL="C.UTF-8"
@@ -11,12 +11,12 @@ RUN rm -f /etc/apt/apt.conf.d/docker-clean; \
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     export DEBIAN_FRONTEND=noninteractive \
- && apt-get update \
- && apt-get install -y --no-install-recommends -q software-properties-common \
- && add-apt-repository ppa:deadsnakes/ppa \
- && apt-get update \
- && apt-get install -y --no-install-recommends -q python3.10 python3.10-dev python3.10-venv \
- && apt-get remove -y --autoremove software-properties-common
+ && apt-get update -qq \
+ && apt-get install -q -y --no-install-recommends -q software-properties-common \
+ && add-apt-repository -y ppa:deadsnakes/ppa \
+ && apt-get update -qq \
+ && apt-get install -q -y --no-install-recommends -q python3.10 python3.10-dev python3.10-venv \
+ && apt-get remove -q -y --autoremove software-properties-common
 
 # Set up non-root user and group.
 ARG UID=5642
@@ -29,16 +29,13 @@ ENV VIRTUAL_ENV="/venv"
 RUN mkdir $VIRTUAL_ENV \
  && chmod g+s $VIRTUAL_ENV \
  && chown $UID:$GID $VIRTUAL_ENV \
- && python3.10 -m venv $VIRTUAL_ENV
+ && python3.10 -m venv --upgrade-deps $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install dependencies.
-COPY requirements.txt ./
 RUN --mount=type=cache,target=/root/.cache/pip \
-    export PIP_ROOT_USER_ACTION=ignore \
- && python -m pip install --upgrade pip \
- && pip install -r requirements.txt \
- && rm requirements.txt
+    --mount=type=bind,source=requirements.txt,target=/requirements.txt \
+    PIP_ROOT_USER_ACTION=ignore pip install -r /requirements.txt
 
 WORKDIR /home/localuser
 USER localuser
