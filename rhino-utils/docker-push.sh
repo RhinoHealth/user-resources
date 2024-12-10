@@ -59,7 +59,7 @@ if [ ${#docker_build_args[@]} -gt 0 ]; then
 fi
 
 set -x
-DOCKER_BUILDKIT=1 "${docker_build_base_cmd[@]}" -t "$container_image_uri" .
+DOCKER_BUILDKIT=1 "${docker_build_base_cmd[@]}" --provenance=false -t "$container_image_uri" .
 docker push "$container_image_uri"
 
 { set +x; } 2>/dev/null
