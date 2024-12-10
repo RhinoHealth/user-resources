@@ -241,7 +241,7 @@ chmod +x $tmpdir/prep_poc.sh
 
 # Run poc preparation in the container, as root (see explanation above).
 mkdir $tmpdir/poc
-if ! docker run --rm -v "$tmpdir/unzip:/home/localuser/bin/unzip" -v "$tmpdir/prep_poc.sh:/home/localuser/bin/prep_poc.sh" -v "$tmpdir/poc:/home/localuser/poc" --network none -u0:0 "rhino-nvflare-localrun" /bin/sh -c 'PATH=/home/localuser/bin:$PATH prep_poc.sh '"$n_clients"; then
+if ! docker run --rm -v "$tmpdir/unzip:/home/localuser/bin/unzip" -v "$tmpdir/prep_poc.sh:/home/localuser/bin/prep_poc.sh" -v "$tmpdir/poc:/home/localuser/poc" --network none -u0:0 "rhino-nvflare-localrun" /bin/sh -c 'PATH=/home/localuser/bin:$PATH prep_poc.sh '"$n_clients" >/dev/null; then
   rc=$?
   echo 'Running NVFlARE'"'"'s poc script failed.'
   echo 'Make sure NVFLARE is installed in the container,'
@@ -294,7 +294,7 @@ for startup_dir in base_path.glob('**/startup'):
     signatures = sign_all(str(startup_dir), root_pri_key)
     (startup_dir / 'signature.json').write_text(json.dumps(signatures))
 "
-    if ! docker run --rm -v "$tmpdir/poc:/home/localuser/poc" --network none "rhino-nvflare-localrun" python -c "$python_sign_configs_script"; then
+    if ! docker run --rm -v "$tmpdir/poc:/home/localuser/poc" --network none "rhino-nvflare-localrun" python -c "$python_sign_configs_script" >/dev/null; then
       rc=$?
       echo 'Running config signing script failed.'
       exit $rc
@@ -394,7 +394,7 @@ if [ $auto -eq 1 ]; then
   echo "To view client logs from client #1: less $tmpdir/site-1_log.txt"
   echo '(Tip: Type F (shift + f) in less to continuously read new data and scroll down.)'
   SCRIPTDIR="$( cd "$(dirname "$0")" && pwd )"
-  docker run --rm -v "$SCRIPTDIR/drive_admin_api.py:/home/localuser/drive_admin_api.py" -v "$poc_admin_dir:/home/localuser/admin" --workdir /home/localuser/admin --network rhino-nvflare-localrun "rhino-nvflare-localrun" python -u /home/localuser/drive_admin_api.py --host rhino-nvflare-localrun-server --port 8003 --num-clients "$n_clients" --timeout "$timeout_seconds" "$app_name"
+  docker run --rm -v "$SCRIPTDIR/drive_admin_api.py:/home/localuser/drive_admin_api.py" -v "$poc_admin_dir:/home/localuser/admin" --workdir /home/localuser/admin --network rhino-nvflare-localrun --entrypoint= "rhino-nvflare-localrun" python -u /home/localuser/drive_admin_api.py --host rhino-nvflare-localrun-server --port 8003 --num-clients "$n_clients" --timeout "$timeout_seconds" "$app_name"
   echo "App completed running successfully!"
   echo "Outputs should be found in: $output_dir"
 
