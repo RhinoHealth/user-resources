@@ -4,7 +4,7 @@ import sys
 import pandas as pd
 import torch
 import torchvision
-from network import PneumoniaModel
+from app.custom.network import PneumoniaModel
 from torch.utils.data.dataloader import DataLoader
 from torchvision.transforms import CenterCrop, Compose, Normalize, RandomRotation, Resize, ToTensor
 
@@ -39,7 +39,7 @@ def infer(model_params_file_path):
             predictions = model(images)
             batch_scores = torch.select(predictions, 1, 1)
             scores.extend([score.item() for score in batch_scores])
-    tabular_data["Model_Score"] = scores
+    tabular_data["Model Score"] = scores
 
     tabular_data.to_csv("/output/dataset.csv", index=False)
 

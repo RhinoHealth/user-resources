@@ -80,13 +80,13 @@ class PneumoniaTrainer(Executor):
         dataset_dirs = [x for x in Path("/input/datasets/").iterdir() if x.resolve().is_dir()]
         dataset_dfs = [pd.read_csv(dataset_dir / "dataset.csv") for dataset_dir in dataset_dirs]
         for dataset_dir, df in zip(dataset_dirs, dataset_dfs):
-            df["PNG_file_abspath"] = dataset_dir / "file_data" / df["PNG_file"]
+            df["JPG file_abspath"] = dataset_dir / "file_data" / df["JPG file"]
 
         # Random train/test split.
         combined_df = pd.concat(dataset_dfs)
         train_df, test_df = train_test_split(combined_df, test_size=self._test_set_percentage / 100)
-        train_image_file_paths = train_df["PNG_file_abspath"]
-        test_image_file_paths = test_df["PNG_file_abspath"]
+        train_image_file_paths = train_df["JPG file_abspath"]
+        test_image_file_paths = test_df["JPG file_abspath"]
 
         # Load datasets by creating directories with symlinks to actual images.
         train_dataset_folder = Path("/tmp/train_images_symlinks")

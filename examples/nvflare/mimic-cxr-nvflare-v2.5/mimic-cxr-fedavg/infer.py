@@ -4,7 +4,7 @@ import sys
 import pandas as pd
 import torch
 import torchvision
-from network import PneumoniaModel
+from app.custom.network import PneumoniaModel
 from torch.utils.data.dataloader import DataLoader
 from torchvision.transforms import CenterCrop, Compose, Normalize, RandomRotation, Resize, ToTensor
 
