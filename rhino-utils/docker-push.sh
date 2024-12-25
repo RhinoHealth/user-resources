@@ -2,7 +2,7 @@
 set -eu -o pipefail
 
 function usage() {
-  echo "Usage: $0 [OPTIONS] <image-repo-name> <docker-image-tag> [gcp-project-id]"
+  echo "Usage: $0 [OPTIONS] <image-repo-name> <docker-image-tag>"
   echo
   echo "Available options:"
   echo " -f FILE                Dockerfile to use for building the container image."
