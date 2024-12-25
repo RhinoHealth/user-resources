@@ -68,6 +68,7 @@ if [[ "$rhino_domain" == "rhinohealth.com" ]]; then
   image_registry="913123821419.dkr.ecr.us-east-1.amazonaws.com"
   container_image_uri="$image_registry/$image_repo_name:$docker_image_tag"
 else
+  # In gcp, the image registry is specific to the project (as opposed to AWS where it's all under the infra account).
   image_registry="europe-west4-docker.pkg.dev/$gcp_project_id"
   container_image_uri="$image_registry/$image_repo_name/images:$docker_image_tag"
 fi
