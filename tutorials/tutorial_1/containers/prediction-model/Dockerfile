@@ -1,4 +1,4 @@
-# !! EDIT THIS: Set base Docker image to be used.
+# Set base Docker image to be used.
 FROM nvcr.io/nvidia/cuda:12.6.3-runtime-ubuntu24.04
 
 # Set env vars to be able to run apt-get commands without issues.
