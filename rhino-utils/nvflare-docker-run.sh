@@ -224,7 +224,7 @@ elif [ "${nvflare_version_parts[1]}" -eq 2 ] || [ "${nvflare_version_parts[1]}" 
   export NVFLARE_POC_WORKSPACE=/tmp/nvflare/poc
   echo y | runuser -u localuser -- nvflare poc --prepare -n "$n_clients" >/dev/null
   mv /tmp/nvflare/poc/* poc/
-elif [ "${nvflare_version_parts[1]}" -eq 4 ]; then
+elif [ "${nvflare_version_parts[1]}" -eq 4 ] || [ "${nvflare_version_parts[1]}" -eq 5 ]; then
   # Override the host name used for the server in poc mode in NVFlare's local_cert.py.
   nvflare_src_dir="\$(python -c 'import nvflare, os; print(os.path.dirname(nvflare.__file__))')"
   sed 's/"localhost"/"rhino-nvflare-localrun-server"/' "\$nvflare_src_dir"/lighter/impl/local_cert.py > /tmp/local_cert.py
@@ -233,7 +233,7 @@ elif [ "${nvflare_version_parts[1]}" -eq 4 ]; then
   echo y | runuser -u localuser -- nvflare poc prepare -n "$n_clients" >/dev/null
   mv /tmp/nvflare/poc/* poc/
 else
-  echo >&2 "Only versions 2.0, 2.2, 2.3 and 2.4 of NVFLARE are supported."
+  echo >&2 "Only versions 2.0, 2.2, 2.3, 2.4 and 2.5 of NVFLARE are supported."
   exit 1
 fi
 EOF
@@ -241,14 +241,14 @@ chmod +x $tmpdir/prep_poc.sh
 
 # Run poc preparation in the container, as root (see explanation above).
 mkdir $tmpdir/poc
-if ! docker run --rm -v "$tmpdir/unzip:/home/localuser/bin/unzip" -v "$tmpdir/prep_poc.sh:/home/localuser/bin/prep_poc.sh" -v "$tmpdir/poc:/home/localuser/poc" --network none -u0:0 "rhino-nvflare-localrun" /bin/sh -c 'PATH=/home/localuser/bin:$PATH prep_poc.sh '"$n_clients"; then
+if ! docker run --rm -v "$tmpdir/unzip:/home/localuser/bin/unzip" -v "$tmpdir/prep_poc.sh:/home/localuser/bin/prep_poc.sh" -v "$tmpdir/poc:/home/localuser/poc" --network none -u0:0 "rhino-nvflare-localrun" /bin/sh -c 'PATH=/home/localuser/bin:$PATH prep_poc.sh '"$n_clients" >/dev/null; then
   rc=$?
   echo 'Running NVFlARE'"'"'s poc script failed.'
   echo 'Make sure NVFLARE is installed in the container,'
   echo 'and that the `poc` executable is available on $PATH in the container.'
   exit $rc
 fi
-if [[ "$nvflare_version" == 2.4.* ]]; then
+if [[ "$nvflare_version" == 2.4.* ]] || [[ "$nvflare_version" == 2.5.* ]]; then
   poc_dir="$tmpdir/poc/example_project/prod_00"
   poc_admin_dir="$poc_dir/admin@nvidia.com"
 else
@@ -269,14 +269,14 @@ done
 # Ensure fl_admin.sh is executable.
 chmod +x "$poc_admin_dir/startup/fl_admin.sh"
 # Override the host name used for the server in poc mode in NVFlare's local_cert.py.
-if [[ "$nvflare_version" == 2.2.* ]] || [[ "$nvflare_version" == 2.3.* ]] || [[ "$nvflare_version" == 2.4.* ]]; then
+if [[ "$nvflare_version" == 2.2.* ]] || [[ "$nvflare_version" == 2.3.* ]] || [[ "$nvflare_version" == 2.4.* ]] || [[ "$nvflare_version" == 2.5.* ]]; then
   find "$poc_dir/" -type f -name 'fed_*.json' \
     -exec sed -i.bak 's/localhost:8002/rhino-nvflare-localrun-server:8002/' {} \; \
     -exec rm {}.bak \;
   find "$poc_dir/" -type f -name 'fed_server.json' \
     -exec sed -i.bak 's/"localhost"/"rhino-nvflare-localrun-server"/' {} \; \
     -exec rm {}.bak \;
-  if [[ "$nvflare_version" == 2.4.* ]]; then
+  if [[ "$nvflare_version" == 2.4.* ]] || [[ "$nvflare_version" == 2.5.* ]]; then
     # Re-sign the files after having edited the config files.
     python_sign_configs_script="import json
 from pathlib import Path
@@ -294,7 +294,7 @@ for startup_dir in base_path.glob('**/startup'):
     signatures = sign_all(str(startup_dir), root_pri_key)
     (startup_dir / 'signature.json').write_text(json.dumps(signatures))
 "
-    if ! docker run --rm -v "$tmpdir/poc:/home/localuser/poc" --network none "rhino-nvflare-localrun" python -c "$python_sign_configs_script"; then
+    if ! docker run --rm -v "$tmpdir/poc:/home/localuser/poc" --network none "rhino-nvflare-localrun" python -c "$python_sign_configs_script" >/dev/null; then
       rc=$?
       echo 'Running config signing script failed.'
       exit $rc
@@ -336,10 +336,10 @@ echo ""
 # Run clients.
 if [[ "$nvflare_version" == 2.0.* ]]; then
   nvflare_server_connection_str="rhino-nvflare-localrun-server"
-elif [[ "$nvflare_version" == 2.2.* ]] || [[ "$nvflare_version" == 2.3.* ]] || [[ "$nvflare_version" == 2.4.* ]]; then
+elif [[ "$nvflare_version" == 2.2.* ]] || [[ "$nvflare_version" == 2.3.* ]] || [[ "$nvflare_version" == 2.4.* ]] || [[ "$nvflare_version" == 2.5.* ]]; then
   nvflare_server_connection_str="rhino-nvflare-localrun-server:8002:8002"
 else
-  echo >&2 "Only versions 2.0, 2.2, 2.3 and 2.4 of NVFLARE are supported."
+  echo >&2 "Only versions 2.0, 2.2, 2.3, 2.4 and 2.5 of NVFLARE are supported."
   exit 1
 fi
 for clientnum in $(seq 1 "$n_clients"); do
@@ -353,13 +353,13 @@ echo "Server and $clientnum clients running."
 # Prepare to start the NVFlare app. #
 #####################################
 
-if [[ "$nvflare_version" == 2.4.* ]]; then
+if [[ "$nvflare_version" == 2.4.* ]] || [[ "$nvflare_version" == 2.5.* ]]; then
   app_dir="job/$app_name"
 else
   app_dir="$app_name"
 fi
 mkdir -p "$poc_admin_dir/transfer/$app_dir"
-if [[ "$nvflare_version" == 2.4.* ]]; then
+if [[ "$nvflare_version" == 2.4.* ]] || [[ "$nvflare_version" == 2.5.* ]]; then
   cp ./meta.* "$poc_admin_dir/transfer/job/"
 fi
 cp -r ./"$config_dir" "$poc_admin_dir/transfer/$app_dir/config"
@@ -394,7 +394,7 @@ if [ $auto -eq 1 ]; then
   echo "To view client logs from client #1: less $tmpdir/site-1_log.txt"
   echo '(Tip: Type F (shift + f) in less to continuously read new data and scroll down.)'
   SCRIPTDIR="$( cd "$(dirname "$0")" && pwd )"
-  docker run --rm -v "$SCRIPTDIR/drive_admin_api.py:/home/localuser/drive_admin_api.py" -v "$poc_admin_dir:/home/localuser/admin" --workdir /home/localuser/admin --network rhino-nvflare-localrun "rhino-nvflare-localrun" python -u /home/localuser/drive_admin_api.py --host rhino-nvflare-localrun-server --port 8003 --num-clients "$n_clients" --timeout "$timeout_seconds" "$app_name"
+  docker run --rm -v "$SCRIPTDIR/drive_admin_api.py:/home/localuser/drive_admin_api.py" -v "$poc_admin_dir:/home/localuser/admin" --workdir /home/localuser/admin --network rhino-nvflare-localrun --entrypoint= "rhino-nvflare-localrun" python -u /home/localuser/drive_admin_api.py --host rhino-nvflare-localrun-server --port 8003 --num-clients "$n_clients" --timeout "$timeout_seconds" "$app_name"
   echo "App completed running successfully!"
   echo "Outputs should be found in: $output_dir"
 
@@ -418,7 +418,7 @@ EOF
   chmod +x "fl_terminate.sh"
 
   # Print instructions for manual mode.
-  if [[ "$nvflare_version" == 2.4.* ]]; then
+  if [[ "$nvflare_version" == 2.4.* ]] || [[ "$nvflare_version" == 2.5.* ]]; then
     echo "Connect to the admin interface by running ./fl_admin.sh and"
     echo "entering "'"'"admin@nvidia.com"'"'" for the username and "'"'"admin"'"'" for the password."
   else
