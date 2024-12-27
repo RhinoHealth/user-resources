@@ -1,0 +1,9 @@
+Variable Name,SeriesUID,Height,Weight,Gender,Pneumonia,BMI,JPG file,Model Score
+Identifier,,,,,,,,
+Description,DICOM Series UID of the CXR,Patient Height,Patient Weight,Patient Gender,Whether or not the patient had pneumonia,Patient BMI,CXR JPG image,Model score on validation set
+Role,Input,Input,Input,Metadata,Output,Input,Input,Output
+Type,String,ConstrainedFloat,PositiveFloat,Enum,Boolean,NonNegativeFloat,Filename,Float
+Type Parameters,,"{""gt"": 0, ""le"": 2.3}",,"{""choices"": [""M"", ""F""]}",,,,
+Units,,m,kg,,,kg/m^2,,
+May Contain PHI?,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+Permissions,Default,Default,Default,Default,Default,Default,Default,Default
