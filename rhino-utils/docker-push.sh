@@ -8,6 +8,7 @@ function usage() {
   echo " -f FILE                Dockerfile to use for building the container image."
   echo ' --progress STYLE       Output style to pass to `docker build`: auto (default) or plain.'
   echo " --rhino-domain DOMAIN  Domain to use for the registry: rhinohealth.com (default) or rhinofcp.com."
+  echo " --image_registry URI   URI of an image registry to use instead of the default one derived from the domain."
 }
 
 # Default values
@@ -39,6 +40,11 @@ while [[ $# -ne 0 ]] && [[ "$1" == -* ]]; do
     [ $# -eq 0 ] && usage && exit 1
     rhino_domain="$1"
     ;;
+    --image_registry)
+    shift
+    [ $# -eq 0 ] && usage && exit 1
+    image_registry="$1"
+    ;;
   *)
     echo "Unrecognized option $1."
     usage
@@ -65,11 +71,15 @@ fi
 
 # Set the container_image_uri based on rhino_domain
 if [[ "$rhino_domain" == "rhinohealth.com" ]]; then
-  image_registry="913123821419.dkr.ecr.us-east-1.amazonaws.com"
+  if [[ "$image_registry" == "" ]]; then
+    image_registry="913123821419.dkr.ecr.us-east-1.amazonaws.com"
+  fi
   container_image_uri="$image_registry/$image_repo_name:$docker_image_tag"
 else
-  # In gcp, the image registry is specific to the project (as opposed to AWS where it's all under the infra account).
-  image_registry="europe-west4-docker.pkg.dev/$gcp_project_id"
+  if [[ "$image_registry" == "" ]]; then
+      # In gcp, the image registry is specific to the project (as opposed to AWS where it's all under the infra account).
+      image_registry="europe-west4-docker.pkg.dev/$gcp_project_id"
+  fi
   container_image_uri="$image_registry/$image_repo_name/images:$docker_image_tag"
 fi
 
