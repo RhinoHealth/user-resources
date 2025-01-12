@@ -112,7 +112,13 @@ class GLMTrainer(Executor):
 
     def _validate_input(self):
         """
-        Validate the following: # TODO: add
+        Validate the input parameters for the model, including:
+        - Ensure that either formula or x_values and y_values are provided.
+        - Ensure that the supplied variables (either from formula or x_values and y_values) are present in the dataset.
+        - Ensure that the supplied variables do not contain invalid signs that will cause the model to fail.
+        - Ensure that the offset is only used with the Poisson distribution family.
+
+
         """
         # Validate either formula or explicit columns are supplied
         if not self.formula and not (self.x_values and self.y_values):
