@@ -35,6 +35,13 @@ from nvflare.security.logging import secure_format_exception
 
 from coeff_optimizer import OPTIMIZERS
 
+INVALID_SIGNS = [
+    '<', '>', '=',
+    '+', '-', '*', '/', '//', '%', '**',
+    '(', ')', ':', '~', '|', '^', ',',
+    '.', "'", '"', '@', '#', '$',
+    '[', ']', '{', '}', '?', '!', ' '
+]  # These are signs that will fail the smf.glm function if they appear in the column name
 
 class GLMTrainer(Executor):
     def __init__(
@@ -123,9 +130,8 @@ class GLMTrainer(Executor):
         if missing_parts:
             raise ValueError(
                 f"The given {"formula" if formla else "y_values or x values"} contains variables that are missing from the data columns: {missing_parts}")
-        INVALID_SIGNS = ["/", ">", "<"] # TODO: add problematic signs
         if any(sign in part for part in formula_parts for sign in INVALID_SIGNS):
-            raise ValueError(f"Column headers with the signs {INVALID_SIGNS} are invalid, please modify the dataset columns and the formula.")
+            raise ValueError(f"Column headers with the signs {INVALID_SIGNS} are invalid, please modify the dataset columns and the model's formula.")
 
         # Validate use of offset
         if self.offset and self.family_class != sm.families.Poisson:
