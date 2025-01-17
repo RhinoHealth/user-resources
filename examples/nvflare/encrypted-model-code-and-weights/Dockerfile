@@ -59,6 +59,9 @@ USER localuser
 # Note: For directories, have a separate COPY command for each top-level directory.
 COPY --chown=$UID:$GID ./app ./app
 COPY --chown=$UID:$GID ./infer.py ./meta.json ./
+COPY --chown=$UID:$GID ./entrypoint.sh ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
 ENV PYTHONPATH="/home/localuser/app/custom"
 ENV PYTHONUNBUFFERED=1
+ENTRYPOINT ["./entrypoint.sh"]
