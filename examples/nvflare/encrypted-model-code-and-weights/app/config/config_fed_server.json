@@ -9,7 +9,7 @@
   "components": [
     {
       "id": "persistor",
-      "path": "rhino_pt_model_persistor.PTFileModelPersistorAllCheckpoints",
+      "path": "pt_secured_model_persistor.PTSecuredModelPersistor",
       "args": {
         "model": {
           "path": "network.PneumoniaModel"

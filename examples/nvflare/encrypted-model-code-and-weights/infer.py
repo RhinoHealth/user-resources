@@ -5,6 +5,8 @@ import pandas as pd
 import torch
 import torchvision
 from network import PneumoniaModel
+from pathlib import Path
+from cryptography.fernet import Fernet
 from torch.utils.data.dataloader import DataLoader
 from torchvision.transforms import (
     CenterCrop,
@@ -16,10 +18,24 @@ from torchvision.transforms import (
 )
 
 
+def decrypt_weights(model_parameters_path):
+    secret_run_params_file_path = Path("/input/secret_run_params.json")
+    if secret_run_params_file_path.is_file():
+        with secret_run_params_file_path.open("rb") as secret_run_params_file:
+            secret_run_params = json.load(secret_run_params_file)
+            key = secret_run_params["key"]
+            fernet = Fernet(key)
+            encrypted = Path(model_parameters_path).read_bytes()
+            decrypted = fernet.decrypt(encrypted)
+            model_parameters_path = "/output/model_parameters.pt"
+            Path(model_parameters_path).write_bytes(decrypted)
+    return model_parameters_path
+
+
 def infer(model_params_file_path):
     # Setup the model
     model = PneumoniaModel()
-    model.load_state_dict(torch.load(model_params_file_path)["model"])
+    model.load_state_dict(torch.load(decrypt_weights(model_params_file_path))["model"])
     model.eval()
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
