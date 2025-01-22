@@ -61,6 +61,7 @@ COPY --chown=$UID:$GID ./app ./app
 COPY --chown=$UID:$GID ./infer.py ./meta.json ./
 COPY --chown=$UID:$GID ./entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
+RUN chmod +x ./infer.py
 
 ENV PYTHONPATH="/home/localuser/app/custom"
 ENV PYTHONUNBUFFERED=1
