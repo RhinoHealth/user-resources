@@ -5,7 +5,7 @@
 
 This example provides files that can be used with the Rhino Health Generalized Compute capability to remotely merge any number of input datasets into a single output dataset on a Rhino Client.
 
-The Code Object to use with this code should have one input that is marked as "Multiple" and one output (not marked as "Multiple").
+The Code Object to use with this code should have one input that is marked as "List" and one output (not marked as "List").
 
 It shows how to:
 * Process an arbitrary number of input CSV files
