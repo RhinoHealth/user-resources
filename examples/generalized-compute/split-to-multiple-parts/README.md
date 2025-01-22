@@ -5,7 +5,7 @@
 
 This example provides files that can be used with the Rhino Health Generalized Compute capability to remotely split an input dataset into an arbitrary number of output datasets on a Rhino Client.
 
-The Code Object to use with this code should have one input (not marked as "Multiple") and one output that is marked as "Multiple".
+The Code Object to use with this code should have one input (not marked as "List") and one output that is marked as "List".
 
 When running this Code Object, pass in a run-time parameter called "num_parts" to configure the number of output parts. For example: `{"num_parts": 4}` will split the input dataset into 4 parts. The code has a default value of 3 parts to be used if no "num_parts" parameter is provided.
 
