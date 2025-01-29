@@ -13,45 +13,107 @@
 # limitations under the License.
 from collections import OrderedDict
 from logging import INFO
+import os
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from flwr.common.logger import log
 from torch.utils.data import DataLoader
-from torchvision.datasets import CIFAR10
-from torchvision.transforms import Compose, Normalize, ToTensor
+from torchvision.datasets import ImageFolder
+from torchvision.transforms import CenterCrop, Compose, Normalize, RandomRotation, Resize, ToTensor
 
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 class Net(nn.Module):
-    """Model (simple CNN adapted from 'PyTorch: A 60 Minute Blitz')"""
-
-    def __init__(self) -> None:
+    def __init__(self, num_classes=2):
         super(Net, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 5)
+
+        # Conv Layer 1
+        self.conv1 = nn.Conv2d(3, 12, 3, padding=1)
+        self.bn1 = nn.BatchNorm2d(12)
+        self.relu1 = nn.ReLU()
+
+        # Conv Layer 2
+        self.conv2 = nn.Conv2d(12, 20, 3, padding=1)
+        self.relu2 = nn.ReLU()
+
+        # Conv Layer 3
+        self.conv3 = nn.Conv2d(20, 32, 3, padding=1)
+        self.bn3 = nn.BatchNorm2d(32)
+        self.relu3 = nn.ReLU()
+
+        # Fully Connected Layer
+        self.fc = nn.Linear(32 * 112 * 112, num_classes)
+
+        # Max Pooling
         self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(6, 16, 5)
-        self.fc1 = nn.Linear(16 * 5 * 5, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = x.view(-1, 16 * 5 * 5)
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        return self.fc3(x)
+        # Pass through Conv1
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.relu1(x)
+        x = self.pool(x)
+
+        # Pass through Conv2
+        x = self.conv2(x)
+        x = self.relu2(x)
+
+        # Pass through Conv3
+        x = self.conv3(x)
+        x = self.bn3(x)
+        x = self.relu3(x)
+
+        # Flatten before passing to fully connected layer
+        x = x.view(-1, 32 * 112 * 112)
+
+        # Pass through Fully Connected Layer
+        x = self.fc(x)
+
+        return x
 
 
 def load_data():
-    """Load CIFAR-10 (training and test set)."""
-    trf = Compose([ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
-    trainset = CIFAR10("./data", train=True, download=True, transform=trf)
-    testset = CIFAR10("./data", train=False, download=True, transform=trf)
-    return DataLoader(trainset, batch_size=32, shuffle=True), DataLoader(testset)
+
+    # Create data loaders for the training and testing sets.
+    trf = Compose(
+        [
+            Resize(size=(256, 256)),
+            RandomRotation(degrees=(-20, +20)),
+            CenterCrop(size=224),
+            ToTensor(),
+            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+        ]
+    )
+
+    # Get the list of dataset UIDs, assuming each client has separate train and test datasets
+    dataset_uids = next(os.walk('/input/datasets'))[1]
+
+    # Ensure there are at least two datasets
+    if len(dataset_uids) < 2:
+        raise ValueError("Not enough datasets found in '/input/datasets'.")
+
+    # Assign train and test UIDs
+    train_uid = dataset_uids[0]
+    test_uid = dataset_uids[1]
+
+    # Define paths
+    train_path = f'/input/datasets/{train_uid}/file_data/'
+    test_path = f'/input/datasets/{test_uid}/file_data/'
+
+    print("Train Path:", train_path)
+    print("Test Path:", test_path)
+
+    # Load datasets using ImageFolder
+    trainset = ImageFolder(root=train_path, transform=trf)
+    testset = ImageFolder(root=test_path, transform=trf)
+
+    # Create DataLoaders
+    train_loader = DataLoader(trainset, batch_size=32, shuffle=True)
+    test_loader = DataLoader(testset, batch_size=32, shuffle=False)
+
+    return train_loader, test_loader
 
 
 def train(net, trainloader, valloader, epochs, device):
@@ -104,3 +166,5 @@ def set_weights(net, parameters):
     params_dict = zip(net.state_dict().keys(), parameters)
     state_dict = OrderedDict({k: torch.tensor(v) for k, v in params_dict})
     net.load_state_dict(state_dict, strict=True)
+
+

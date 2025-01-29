@@ -8,7 +8,10 @@
         {
             "id": "ctl",
             "path": "nvflare.app_opt.flower.controller.FlowerController",
-            "args": {}
+            "args": {
+                "superlink_ready_timeout": 600
+            }
         }
     ]
 }
+

@@ -12,7 +12,12 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     export DEBIAN_FRONTEND=noninteractive \
  && apt-get update -qq \
- && apt-get install -q -y --no-install-recommends -q python3 python3-dev python3-venv
+ && apt-get install -q -y --no-install-recommends python3 python3-dev python3-venv
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    export DEBIAN_FRONTEND=noninteractive \
+ && apt-get install -q -y --no-install-recommends patch
 
 # Set up user and group.
 ARG UID=5642
@@ -49,8 +54,13 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Install dependencies.
 RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=bind,source=./app/custom/flwr-pt,target=/flwt-pt \
-    PIP_ROOT_USER_ACTION=ignore pip install /flwr-pt/flwr_pt
+    --mount=type=bind,source=./app/custom,target=/flwr_pt \
+    PIP_ROOT_USER_ACTION=ignore pip install /flwr_pt
+
+# Patch NVFlare to pass the correct path of the custom dir to the Flower "supernode" subprocess.
+RUN --mount=type=bind,source=./nvflare.patch,target=/nvflare.patch \
+    cd /venv/lib/python3.12/site-packages/nvflare \
+ && patch -p 2 < /nvflare.patch
 
 WORKDIR /home/localuser
 USER localuser
@@ -58,8 +68,8 @@ USER localuser
 # !! EDIT THIS: Copy the needed local files (code and otherwise) into the container work directory.
 # Note: For directories, have a separate COPY command for each top-level directory.
 COPY --chown=$UID:$GID ./app ./app
-#COPY --chown=$UID:$GID ./infer.py ./meta.json ./
-COPY --chown=$UID:$GID ./meta.json ./
+COPY --chown=$UID:$GID ./infer.py ./meta.json ./
 
-ENV PYTHONPATH="/home/localuser/app/flwr-pt"
+ENV PYTHONPATH="/home/localuser/app/custom" 
 ENV PYTHONUNBUFFERED=1
+

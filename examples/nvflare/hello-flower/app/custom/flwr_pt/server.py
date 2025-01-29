@@ -15,10 +15,8 @@ from typing import List, Tuple
 
 from flwr.common import Context, Metrics, ndarrays_to_parameters
 from flwr.server import ServerApp, ServerAppComponents, ServerConfig
-from flwr.server.strategy import FedAvg
-
 from .task import Net, get_weights
-
+from .strategy import SaveModelStrategy
 
 # Define metric aggregation function
 def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
@@ -43,16 +41,14 @@ def weighted_average(metrics: List[Tuple[int, Metrics]]) -> Metrics:
 ndarrays = get_weights(Net())
 parameters = ndarrays_to_parameters(ndarrays)
 
-
 # Define strategy
-strategy = FedAvg(
+strategy = SaveModelStrategy(
     fraction_fit=1.0,  # Select all available clients
     fraction_evaluate=0.0,  # Disable evaluation
     min_available_clients=2,
     fit_metrics_aggregation_fn=weighted_average,
     initial_parameters=parameters,
 )
-
 
 # Flower ServerApp
 def server_fn(context: Context):
@@ -67,3 +63,4 @@ def server_fn(context: Context):
 
 # Create ServerApp
 app = ServerApp(server_fn=server_fn)
+
