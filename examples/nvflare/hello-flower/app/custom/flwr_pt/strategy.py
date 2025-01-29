@@ -1,6 +1,6 @@
 # Original file modified by Rhino to adapt it to the Rhino Federated Computing Platform.
 # Original file: https://github.com/adap/flower/blob/main/framework/docs/source/how-to-save-and-load-model-checkpoints.rst shared under the Apache 2.0 license
-
+#
 # Copyright 2024 Flower Labs GmbH. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
