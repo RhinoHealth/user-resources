@@ -10,10 +10,6 @@ from .task import Net, DEVICE
 
 
 class SaveModelStrategy(fl.server.strategy.FedAvg):
-    def __init__(self, save_dir: str = "/output/model_parameters/"):
-        super().__init__()
-        self.save_dir = Path(save_dir)
-        self.save_dir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
 
     def aggregate_fit(
         self,
@@ -30,6 +26,10 @@ class SaveModelStrategy(fl.server.strategy.FedAvg):
             server_round, results, failures
         )
 
+
+        save_dir = Path( "/output/model_parameters/")
+        save_dir.mkdir(parents=True, exist_ok=True)  # Ensure directory exists
+
         if aggregated_parameters is not None:
             print(f"Saving round {server_round} aggregated_parameters...")
 
@@ -44,7 +44,7 @@ class SaveModelStrategy(fl.server.strategy.FedAvg):
             net.load_state_dict(state_dict, strict=True)
 
             # Save per-round checkpoint
-            round_path = self.save_dir / f"model_round_{server_round}.pth"
+            round_path = save_dir / f"model_round_{server_round}.pth"
             torch.save(net.state_dict(), round_path)
             print(f"Saved round {server_round} aggregated_parameters to {round_path}.")
 
