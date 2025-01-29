@@ -11,7 +11,7 @@ from flwr_pt.task import Net
 def infer(model_params_file_path):
     # Setup the model
     model = Net()
-    model.load_state_dict(torch.load(model_params_file_path))#["model"])
+    model.load_state_dict(torch.load(model_params_file_path))
     model.eval()
     device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
     model.to(device)
