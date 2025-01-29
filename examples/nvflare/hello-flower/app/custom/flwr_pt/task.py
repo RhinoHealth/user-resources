@@ -1,3 +1,6 @@
+# Copyright (c) 2025, Rhino HealthTech, Inc.
+# Original file modified by Rhino to adapt it to the Rhino Federated Computing Platform.
+# 
 # Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
