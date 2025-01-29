@@ -1,4 +1,4 @@
-# NVIDIA FLARE Example - Hello Flower example with NVIDIA FLARE v2.5
+# NVIDIA FLARE Example - Using Flower with NVIDIA FLARE v2.5
 <br/>
 
 ### **Description**
