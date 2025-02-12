@@ -82,11 +82,11 @@ Note that for the purposes of this example, we've done the bare minimum to defin
 
 ### Inference
 
-Our inference script is in `xgboost_local/predict.py` and can be run locally after running the [training script](#training) by updating the `prefix` variable in `xgboost_local/config.py` (valid values are "centralized", "A", and "B") and running:
+Our inference script is in `xgboost_local/infer.py` and can be run locally after running the [training script](#training) by updating the `prefix` variable in `xgboost_local/config.py` (valid values are "centralized", "A", and "B") and running:
 
 ```bash
 cd xgboost_local
-python predict.py
+python infer.py
 ```
 
 The script itself is composed of 3 components.
