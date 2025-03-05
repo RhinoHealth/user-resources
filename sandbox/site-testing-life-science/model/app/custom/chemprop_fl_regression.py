@@ -55,7 +55,7 @@ def _get_train_validation_split(input_data, split=(0.79, 0.2, 0.01)):
 
 def _get_model_and_loaders(datapath):
     # input data needs to be split in train/validation for the chemprop algorithm
-    input_data = _load_data_from_path(datapath, "smiles", ["normalized"])
+    input_data = _load_data_from_path(datapath, "smiles", ["cyp3a4"])
     train_data, val_data = _get_train_validation_split(input_data)
 
     # create features from data
