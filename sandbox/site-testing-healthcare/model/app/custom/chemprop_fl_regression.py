@@ -5,10 +5,9 @@ from pathlib import Path
 
 from chemprop import data, featurizers, models, nn
 from chemprop.nn.metrics import (
-    BCEMetric,
-    BinaryAUROCMetric,
-    BinaryAUPRCMetric,
-    BinaryAccuracyMetric,
+    R2Metric,
+    MSEMetric,
+    MAEMetric,
 )
 from lightning import pytorch as pl
 import pandas as pd
@@ -19,30 +18,29 @@ import nvflare.client.lightning as flare
 pl.seed_everything(42, workers=True)
 
 
-class ClassificationMPNN(models.MPNN):
+class RegressionMPNN(models.MPNN):
     def __init__(
         self,
     ):
-        mets = [
-            BCEMetric(),
-            BinaryAUROCMetric(),
-            BinaryAUPRCMetric(),
-            BinaryAccuracyMetric(),
-        ]
         mp = nn.BondMessagePassing()
         agg = nn.MeanAggregation()
-        ffn = nn.BinaryClassificationFFN()
+        ffn = nn.RegressionFFN()
+        mets = [
+            MSEMetric(),
+            MAEMetric(),
+            R2Metric(),
+        ]
         super().__init__(mp, agg, ffn, metrics=mets)
 
 
-def load_data_from_path(filepath, smiles_column, target_columns):
+def _load_data_from_path(filepath, smiles_column, target_columns):
     df = pd.read_csv(filepath)
     smis = df.loc[:, smiles_column].values
     ys = df.loc[:, target_columns].values
     return [data.MoleculeDatapoint.from_smi(smi, y) for smi, y in zip(smis, ys)]
 
 
-def get_train_validation_split(input_data, split=(0.8, 0.2, 0)):
+def _get_train_validation_split(input_data, split=(0.79, 0.2, 0.01)):
     mols = [
         d.mol for d in input_data
     ]  # RDkit Mol objects are use for structure based splits
@@ -55,10 +53,10 @@ def get_train_validation_split(input_data, split=(0.8, 0.2, 0)):
     return train_data, val_data
 
 
-def get_model_and_loaders(datapath):
+def _get_model_and_loaders(datapath):
     # input data needs to be split in train/validation for the chemprop algorithm
-    input_data = load_data_from_path(datapath, "smiles", ["cyp3a4"])
-    train_data, val_data = get_train_validation_split(input_data)
+    input_data = _load_data_from_path(datapath, "smiles", ["normalized"])
+    train_data, val_data = _get_train_validation_split(input_data)
 
     # create features from data
     featurizer = featurizers.SimpleMoleculeMolGraphFeaturizer()
@@ -66,12 +64,10 @@ def get_model_and_loaders(datapath):
     val_dset = data.MoleculeDataset(val_data, featurizer)
 
     # instantiate data loaders
-    train_loader = data.build_dataloader(
-        train_dset, num_workers=0, seed=42, class_balance=True
-    )
+    train_loader = data.build_dataloader(train_dset, num_workers=0, seed=42)
     val_loader = data.build_dataloader(val_dset, num_workers=0, shuffle=False, seed=42)
 
-    mpnn = ClassificationMPNN()
+    mpnn = RegressionMPNN()
 
     return mpnn, train_loader, val_loader
 
@@ -81,7 +77,7 @@ def main():
         x for x in Path("/input/datasets/").iterdir() if x.resolve().is_dir()
     ]
     DATASET_PATH = Path(dataset_dirs[0] / "dataset.csv")
-    mpnn, train_loader, val_loader = get_model_and_loaders(DATASET_PATH)
+    mpnn, train_loader, val_loader = _get_model_and_loaders(DATASET_PATH)
 
     trainer = pl.Trainer(
         logger=False,
@@ -89,7 +85,7 @@ def main():
         enable_progress_bar=True,
         accelerator="auto",
         devices=1,
-        max_epochs=50,  # number of epochs to train for
+        max_epochs=20,  # number of epochs to train for
         deterministic=True,
     )
 
