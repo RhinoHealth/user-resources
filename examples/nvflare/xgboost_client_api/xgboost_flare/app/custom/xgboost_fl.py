@@ -12,9 +12,11 @@ from fl_config import (
     NUMERIC_COLS,
     CATEGORICAL_COLS,
     LABEL_COL,
-    TRAIN_DATA_PATH,
     NUM_ROUNDS,
 )
+
+data_dirs = [x for x in Path("/input/datasets/").iterdir() if x.resolve().is_dir()]
+TRAIN_DATA_PATH = Path(data_dirs[0] / "dataset.csv")
 
 if __name__ == "__main__":
     # (2) initializes NVFlare client API

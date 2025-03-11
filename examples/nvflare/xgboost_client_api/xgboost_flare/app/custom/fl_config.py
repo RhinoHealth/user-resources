@@ -1,8 +1,6 @@
 from pathlib import Path
 
 # Change to Rhino filepaths
-data_dirs = [x for x in Path("/input/datasets/").iterdir() if x.resolve().is_dir()]
-TRAIN_DATA_PATH = Path(data_dirs[0] / "dataset.csv")
 TEST_DATA_PATH = "/input/dataset.csv"
 PREDICTION_PATH = "/output/dataset.csv"
 
