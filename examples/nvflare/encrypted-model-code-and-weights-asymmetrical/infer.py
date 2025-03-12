@@ -8,7 +8,8 @@ import json
 
 from network import PneumoniaModel
 from pathlib import Path
-from cryptography.fernet import Fernet
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_OAEP, AES
 from torch.utils.data.dataloader import DataLoader
 from torchvision.transforms import (
     CenterCrop,
@@ -23,14 +24,30 @@ from torchvision.transforms import (
 def decrypt_weights(model_parameters_path):
     secret_run_params_file_path = Path("/input/secret_run_params.json")
     if secret_run_params_file_path.is_file():
+        # Load private key from JSON
         with secret_run_params_file_path.open("rb") as secret_run_params_file:
             secret_run_params = json.load(secret_run_params_file)
-            key = secret_run_params["key"]
-            fernet = Fernet(key)
-            encrypted = Path(model_parameters_path).read_bytes()
-            decrypted = fernet.decrypt(encrypted)
-            model_parameters_path = "/output/model_parameters.pt"
-            Path(model_parameters_path).write_bytes(decrypted)
+            private_key = RSA.import_key(secret_run_params["decrypt_key"])
+
+        # Read encrypted file
+        with open(model_parameters_path, 'rb') as f:
+            enc_session_key = f.read(private_key.size_in_bytes())
+            nonce = f.read(16)
+            tag = f.read(16)
+            ciphertext = f.read()
+
+        # Decrypt session key
+        cipher_rsa = PKCS1_OAEP.new(private_key)
+        session_key = cipher_rsa.decrypt(enc_session_key)
+
+        # Decrypt data
+        cipher_aes = AES.new(session_key, AES.MODE_EAX, nonce)
+        decrypted = cipher_aes.decrypt_and_verify(ciphertext, tag)
+
+        # Save decrypted data
+        output_path = '/output/model_parameters.pt'
+        Path(output_path).write_bytes(decrypted)
+        return output_path
     return model_parameters_path
 
 
