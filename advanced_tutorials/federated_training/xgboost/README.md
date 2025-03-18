@@ -188,8 +188,8 @@ First, we adapted the training script itself. See the modified script at `xgboos
     flare.send(output_model)
     ```
 9. We also adapted the "local" config file. See the modified file at `xgboost_flare/app/custom/fl_config.py`. In this file, we made two key changes:
-- We removed the filepath constants and added them to the individual training and inference scripts. We've also updated the filepaths to locations in the `/input/` and `/output/` directories - which is where datasets are accessed when running code on the Rhino FCP. See our [tutorial](https://docs.rhinohealth.com/hc/en-us/articles/8088478664349-Tutorial-1-Rhino-Health-Federated-Computing-Platform-Hello-World-Basic-Usage) for explanation of filepaths on the Rhino FCP.
-- Set `NUM_ROUNDS` to 1 - in federated XGBoost we do one round of boosting at a time.
+    - We removed the filepath constants and added them to the individual training and inference scripts. We've also updated the filepaths to locations in the `/input/` and `/output/` directories - which is where datasets are accessed when running code on the Rhino FCP. See our [tutorial](https://docs.rhinohealth.com/hc/en-us/articles/8088478664349-Tutorial-1-Rhino-Health-Federated-Computing-Platform-Hello-World-Basic-Usage) for explanation of filepaths on the Rhino FCP.
+    - Set `NUM_ROUNDS` to 1 - in federated XGBoost we do one round of boosting at a time.
 
 
 ### Creating NVFlare configs
