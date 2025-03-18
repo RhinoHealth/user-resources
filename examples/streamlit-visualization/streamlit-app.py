@@ -8,7 +8,7 @@ from rhino_health.lib.metrics.basic import Count, StandardDeviation
 from typing import Dict, Any, List
 
 from config import (COLOR_PALETTE, MEASURES, RACE_CODES, REGION_MAPPING, 
-                   CURRENT_YEAR, BIRTH_YEAR_DIVISOR)
+                   DATASET_EXPORT_YEAR, BIRTH_YEAR_DIVISOR)
 from utils import plot_measure_comparison
 
 # Create cache key function
@@ -42,7 +42,8 @@ if not st.session_state.get("authenticated", False):
         try:
             session = rh.login(
                 username=username,
-                password=password
+                password=password,
+                rhino_api_url=ApiEnvironment.STAGING_AWS_URL
             )
             if session is not None:
                 st.session_state.authenticated = True
@@ -77,7 +78,7 @@ else:
         return hospitals, measures
 
     session = initialize_session()
-    project, available_names = get_hospital_data(session, 'streamlit project')
+    project, available_names = get_hospital_data(session, 'medinexo project 1')
     comparison_hospitals, selected_measures = display_sidebar(available_names)
 
     # Get dataset UIDs for selected comparison hospitals only
@@ -173,7 +174,7 @@ else:
                         
                         std_dev = get_cached_metric(dataset_uid, age_std)
                         
-                        mean_age = CURRENT_YEAR - std_dev['mean'] / BIRTH_YEAR_DIVISOR
+                        mean_age = DATASET_EXPORT_YEAR - std_dev['mean'] / BIRTH_YEAR_DIVISOR
                         st.write(f"{hospital_name}: {mean_age:.1f} ± {std_dev['stddev']/BIRTH_YEAR_DIVISOR:.1f} years")
 
                 with race_col:

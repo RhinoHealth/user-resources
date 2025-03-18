@@ -3,7 +3,7 @@ from typing import Dict
 # Visualization constants
 FIGURE_SIZE = (12, 6)
 BAR_WIDTH_FACTOR = 0.8
-CURRENT_YEAR = 2025
+DATASET_EXPORT_YEAR = 2008
 BIRTH_YEAR_DIVISOR = 10000
 
 # Color scheme
