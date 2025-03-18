@@ -42,8 +42,7 @@ if not st.session_state.get("authenticated", False):
         try:
             session = rh.login(
                 username=username,
-                password=password,
-                rhino_api_url=ApiEnvironment.STAGING_AWS_URL
+                password=password
             )
             if session is not None:
                 st.session_state.authenticated = True
@@ -78,7 +77,7 @@ else:
         return hospitals, measures
 
     session = initialize_session()
-    project, available_names = get_hospital_data(session, 'medinexo project 1')
+    project, available_names = get_hospital_data(session, 'streamlit project')
     comparison_hospitals, selected_measures = display_sidebar(available_names)
 
     # Get dataset UIDs for selected comparison hospitals only
