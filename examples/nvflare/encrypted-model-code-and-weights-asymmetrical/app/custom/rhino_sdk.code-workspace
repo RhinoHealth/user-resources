@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"path": "../../../../../../rhino_sdk"
+		},
+		{
+			"name": "experimental",
+			"path": "../../../../../../experimental"
+		},
+		{
+			"path": "../../../../.."
+		},
+		{
+			"path": "../../../../../../cloud-infrastructure"
+		},
+		{
+			"name": "ichom",
+			"path": "../../../../../../ichom"
+		},
+		{
+			"name": "medinexo",
+			"path": "../../../../../../medinexo"
+		},
+		{
+			"path": "../../../../../../sdk_ichom"
+		},
+		{
+			"path": "../../../../../../sdk_medinexo"
+		}
+	],
+	"settings": {}
+}
