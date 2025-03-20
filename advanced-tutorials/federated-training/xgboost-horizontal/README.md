@@ -100,7 +100,7 @@ model = xgb.Booster()
 model.load_model(MODEL_PATH)
 ```
 
-The third is is a few lines of code to create the predictions and save them to a file:
+The third is a few lines of code to create the predictions and save them to a file:
 
 ```python
 scores = model.predict(dtest)
@@ -229,7 +229,7 @@ We made a number of changes to make the template compatible with our code and th
 
 ### Creating the Dockerfile
 
-To create the Dockerfile, we highly recommend using an existing example from our [user resources](https://github.com/RhinoHealth/user-resources/tree/main/examples/nvflare) and modifying the last few lines as needed. 
+To create the Dockerfile, we highly recommend using an existing example from our [user resources](./xgboost_flare/Dockerfile) and modifying the last few lines as needed. 
 
 In this case, the entire Dockerfile is boilerplate, except for the two lines that copy in our NVFlare job to the container:
 
@@ -237,6 +237,15 @@ In this case, the entire Dockerfile is boilerplate, except for the two lines tha
 COPY --chown=$UID:$GID ./app ./app/
 COPY --chown=$UID:$GID ./meta.conf ./infer.py ./
 ```
+
+You can also avoid creating your own Dockerfile by using Rhino's auto-container functionality. To do this:
+- Navigate to the `Code` page in your project
+- Select "Create New Code Object"
+- Select "NVIDIA Flare" as the type
+- Select "New container image"
+- Choose your python/CUDA versions
+- Upload your `app/` folder (make sure you select "browse folders" to do so), `meta.conf` file, and `infer.py` file
+- Enter your requirements and click "create new code object"
 
 ### Running model training on Rhino
 
