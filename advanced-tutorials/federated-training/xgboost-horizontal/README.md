@@ -242,6 +242,7 @@ You can also avoid creating your own Dockerfile by using Rhino's auto-container 
 - Navigate to the `Code` page in your project
 - Select "Create New Code Object"
 - Select "NVIDIA Flare" as the type
+- Select NVFlare Version 2.4
 - Select "New container image"
 - Choose your python/CUDA versions
 - Upload your `app/` folder (make sure you select "browse folders" to do so), `meta.conf` file, and `infer.py` file
