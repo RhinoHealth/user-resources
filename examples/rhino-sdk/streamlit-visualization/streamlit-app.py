@@ -1,3 +1,18 @@
+# Copyright (c) 2025, Rhino HealthTech, Inc.
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
 import textwrap
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -14,7 +29,7 @@ from utils import plot_measure_comparison
 # Create cache key function
 def get_cache_key(dataset_uid, metric_config):
     """Generate a unique cache key for a metric call"""
-    return f"{dataset_uid}_{hash(str(metric_config.__dict__))}"
+    return f"{dataset_uid}_{hash(str(metric_config.model_dump()))}"
 
 # Cache any SDK calls to avoid redundant API requests
 def get_cached_metric(dataset_uid, metric_config):
@@ -27,7 +42,7 @@ def get_cached_metric(dataset_uid, metric_config):
         return st.session_state.metric_cache[cache_key]
     except Exception as e:
         st.error(f"Error fetching metric: {str(e)}")
-        return None
+        return {}
 
 
 # Check if user is authenticated
@@ -42,6 +57,7 @@ if not st.session_state.get("authenticated", False):
         try:
             session = rh.login(
                 username=username,
+                rhino_api_url=ApiEnvironment.STAGING_AWS_URL,
                 password=password
             )
             if session is not None:
@@ -94,7 +110,6 @@ else:
     hospital_measure_counts = {hospital: {} for hospital in comparison_hospitals}
     hospital_totals = {hospital: {} for hospital in comparison_hospitals}
     
-    # Update the metric calculations to use cache
     for measure_name in selected_measures:
         measure_var = MEASURES.get(measure_name)
         data_filters=[{"filter_column":measure_var, "filter_value":1}]
@@ -103,11 +118,11 @@ else:
         
         for hospital_name, dataset_uid in hospital_datasets.items():
             # Get cached incidence count
-            count = get_cached_metric(dataset_uid, incidence_config)['count']
+            count = get_cached_metric(dataset_uid, incidence_config).get('count', None)
             hospital_measure_counts[hospital_name][measure_name] = count
 
             # Get cached total count
-            total = get_cached_metric(dataset_uid, total_config)['count']
+            total = get_cached_metric(dataset_uid, total_config).get('count', None)
             hospital_totals[hospital_name][measure_name] = total
 
     tab0, tab1, tab2 = st.tabs(["Total Cases", "Incidence Rate", "Demographics"])
@@ -117,9 +132,16 @@ else:
         else:
             # Prepare data for plotting
             plot_data = {
-                hospital: [counts[measure] for measure in selected_measures]
+                hospital: [counts.get(measure) for measure in selected_measures]
                 for hospital, counts in hospital_measure_counts.items()
             }
+
+            # Show warning for hospitals with no data
+            no_data_hospitals = [h for h, counts in plot_data.items() 
+                               if all(v is None for v in counts)]
+            if no_data_hospitals:
+                st.warning(f"No data available for: {', '.join(no_data_hospitals)}")
+                
             fig = plot_measure_comparison(
                 plot_data, 
                 selected_measures, 
@@ -135,8 +157,8 @@ else:
             # Prepare data for plotting
             plot_data = {}
             for hospital in hospital_measure_counts:
-                values = np.array([hospital_measure_counts[hospital][m] for m in selected_measures])
-                totals = np.array([hospital_totals[hospital][m] for m in selected_measures])
+                values = np.array([hospital_measure_counts.get(hospital, {}).get(m, np.nan) for m in selected_measures])
+                totals = np.array([hospital_totals.get(hospital, {}).get(m, np.nan) for m in selected_measures])
                 rates = np.divide(values, totals, 
                                 out=np.zeros_like(values, dtype=float),
                                 where=totals!=0)

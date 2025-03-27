@@ -16,14 +16,14 @@ streamlit hello
 ## Rhino Project Setup
 For this example, you must have set up the following:
  * A project on the Rhino FC platform by the name of ``streamlit project``
- * Within that project, load the 5 files listed in [./data](./data/) as datasets
+ * Within that project, load the 5 files listed in [./data](./data/) as datasets. These datasets consist of the [Desynpuf Synthetic Datasets from CMS](https://www.cms.gov/research-statistics-data-and-systems/downloadable-public-use-files/synpufs/downloads/synpuf_dug.pdf).
 
 ## Running and Deploying a Streamlit Project
 To run the project locally, open a command line prompt in this directory, then run
 ```
 streamlit run streamlit-app.py
 ```
-If you wish to deploy to Streamlit's community cloud, you can follow the instructions [here](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy)
+If you wish to deploy to Streamlit's community cloud, you can follow the instructions [here](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy).
 
 ## Getting Help
 For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
