@@ -1,3 +1,2 @@
-pandas
-matplotlib
-rhino_health
+matplotlib==3.10.0
+rhino_health==1.4.1
