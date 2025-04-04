@@ -1,4 +1,4 @@
-# Concatenate Two Datasets
+# Test Train Split
 <br/>
 
 ### **Description**
@@ -6,8 +6,9 @@
 This example provides Python code that can be used to remotely concatenate two input datasets into a single output dataset on a Rhino Client.
 
 It shows how to:
-* Process multiple input CSV files
-* Merge the inputs into a single output CSV file
+* Receive a single CSV as input
+* Split the CSV into two output datasets
+* Save two datasets as output
 
 ### **Instructions**
 1. Give your Code Object a name
@@ -16,12 +17,11 @@ It shows how to:
 4. In the 'Code' box, select 'Standalone file'
 5. Copy & paste contents of code.py into the code window
 6. Specify the following requirements via Pip format
-    pandas==1.3.4
-    sklearn==0.0
-    sklearn-pandas==1.8.0
-    scikit-learn==1.0.2
+    numpy == 1.22.*
+    pandas ~= 1.4.2
+    scikit-learn==1.6.1
 
-    
+
 ![Create Code Object](./screenshot.png)
 
 
