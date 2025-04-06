@@ -73,6 +73,7 @@ class NewtonRaphson(CoeffOptimizer):
         if self.abort_signal:
             # If Abort triggerred - collect log likelihood
             add_results["log_likelihood_sum"] += data["prev_global_loglik"]
+            print(add_results["log_likelihood_sum"])
         else:
             if contribution_round == 0:
                 add_results["beta_opt"] += data["beta"]

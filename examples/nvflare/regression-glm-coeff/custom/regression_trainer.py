@@ -147,7 +147,6 @@ class GLMTrainer(Executor):
 
         try:
             optimizer = OPTIMIZERS[self.method]()
-            # TODO check maybe here to calc the log likelihood on source model
             optimizer.get_local_coeffs(current_round, np_data, self.formula, self.offset, self.family_class, self.log_warning, self.data, self.data_y, self.data_x, self.site_info)
 
         except KeyError:
