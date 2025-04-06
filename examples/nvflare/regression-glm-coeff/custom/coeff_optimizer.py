@@ -3,7 +3,6 @@ import statsmodels.formula.api as smf
 import numpy as np
 import pandas as pd
 
-
 class CoeffOptimizer:
 
     def name(self):
@@ -50,6 +49,10 @@ class NewtonRaphson(CoeffOptimizer):
         elif 'beta' in np_data:
             fed_beta = np_data['beta']
             glm = self.get_glm_obj(formula, offset, family_class, data, data_y, data_x)
+            # Calculate log-likelihood of the global beta on local data
+            log_likelihood = glm.loglike(params=fed_beta)
+            np_data["prev_global_loglik"] = log_likelihood
+
             first_derivative = glm.score(params=fed_beta)
             second_derivative = glm.hessian(params=fed_beta)
             np_data["first_derivative"] = first_derivative
@@ -67,12 +70,16 @@ class NewtonRaphson(CoeffOptimizer):
         }
 
     def add(self, data, add_results, contribution_round):
-        if contribution_round == 0:
-            add_results["beta_opt"] += data["beta"]
-            add_results["count_clients"] += 1
+        if self.abort_signal:
+            # If Abort triggerred - collect log likelihood
+            add_results["log_likelihood_sum"] += data["prev_global_loglik"]
         else:
-            add_results["first_derivative_sum"] += data["first_derivative"]
-            add_results["second_derivative_sum"] += data["second_derivative"]
+            if contribution_round == 0:
+                add_results["beta_opt"] += data["beta"]
+                add_results["count_clients"] += 1
+            else:
+                add_results["first_derivative_sum"] += data["first_derivative"]
+                add_results["second_derivative_sum"] += data["second_derivative"]
 
     def get_accuracy_threshold(self, target_accuracy, prev_beta, **kwargs):
         return np.absolute(target_accuracy * prev_beta)
@@ -216,6 +223,10 @@ class IRLS(CoeffOptimizer):
             np_data["exog_names"] = glm.exog_names
         else:
             site_info["params"] = np_data["site_info"]["params"]
+            # Calculate log-likelihood of the global beta on local data
+            fed_beta = site_info["params"]
+            log_likelihood = glm.loglike(params=fed_beta)
+            np_data["prev_global_loglik"] = log_likelihood
         np_data["site_hessian"] = glm.hessian(params=np_data.get("site_info", {}).get("params", np_data.get("initial_beta")))
         np_data["site_ols_params"] = self._site_irls_iteration(site_info, logger_warnings)
 
@@ -229,11 +240,15 @@ class IRLS(CoeffOptimizer):
         }
 
     def add(self, data, add_results, contribution_round):
-        if add_results["beta_opt"] is None:
-            add_results["beta_opt"] = data.get("initial_beta")  # Should be sent in the first round
-        add_results["A_sum"] += data["site_ols_params"]['A']
-        add_results["B_sum"] += data["site_ols_params"]['B']
-        add_results["combined_hessian"] += data["site_hessian"]
+        if self.abort_signal:
+            # If Abort triggerred - collect log likelihood
+            add_results["log_likelihood_sum"] += data["prev_global_loglik"]
+        else:
+            if add_results["beta_opt"] is None:
+                add_results["beta_opt"] = data.get("initial_beta")  # Should be sent in the first round
+            add_results["A_sum"] += data["site_ols_params"]['A']
+            add_results["B_sum"] += data["site_ols_params"]['B']
+            add_results["combined_hessian"] += data["site_hessian"]
 
     def get_result(self, add_results, contribution_round, target_accuracy, **kwargs):
         next_beta = np.linalg.inv(add_results["A_sum"]).dot(add_results["B_sum"])

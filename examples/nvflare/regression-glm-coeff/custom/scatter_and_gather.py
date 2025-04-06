@@ -135,6 +135,7 @@ class ScatterAndGather(Controller):
         # config data
         self._min_clients = min_clients
         self._num_rounds = num_rounds
+        self._last_round = False
         self._wait_time_after_min_received = wait_time_after_min_received
         self._start_round = start_round
         self._train_timeout = train_timeout
@@ -147,6 +148,7 @@ class ScatterAndGather(Controller):
         self._phase = AppConstants.PHASE_INIT
         self._global_weights = None
         self._current_round = None
+
 
     def start_controller(self, fl_ctx: FLContext) -> None:
         self.log_info(fl_ctx, "Initializing ScatterAndGather workflow.")
@@ -238,9 +240,14 @@ class ScatterAndGather(Controller):
                 np_data = incoming_dxo.data
                 try:
                     if 'signal' in np_data:
-                        if np_data['signal'] == 'ABORT':
+                        if self._last_round:
                             self.log_error(fl_ctx, "Reached accuracy threshold. Training is DONE")
                             break
+
+                        if np_data['signal'] == 'ABORT':
+                            # One last round for AIC calculation
+                            self._last_round = True
+
                 except:
                     pass
 

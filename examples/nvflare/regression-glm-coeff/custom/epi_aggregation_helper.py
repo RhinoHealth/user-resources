@@ -53,6 +53,8 @@ class EPIAggregationHelper(object):
         self.method = None
         self.optimizer = None
         self.exog_names = None
+        self.abort_signal = False
+        self.last_result = None
 
     def reset_stats(self):
         self.total = dict()
@@ -84,11 +86,12 @@ class EPIAggregationHelper(object):
                 raise ValueError(f"No optimizer found for method: {self.method}.")
 
     def add(self, data, weight, contributor_name, contribution_round):
+        # TODO - Contribution round minus 1??
         """Compute sum of weights."""
         self.contribution_round = contribution_round
         with self.lock:
             self.optimizer.add(data, self.add_results, contribution_round)
-
+        # TODO change this to condition not if abort signal
         self.history.append(
             {
                 "contributor_name": contributor_name,
@@ -98,11 +101,25 @@ class EPIAggregationHelper(object):
         )
 
     def get_result(self):
+        # Ori here is the aggregation from all sites
+        # Ori - Check if already optimized - calculate AIC for the model the get_results shouldn't triggered but the aic
+        """If already aborted"""
+        if self.abort_signal:
+            result = self.last_result
+            k = len(self.last_result["beta"])  # number of parameters
+            aic = 2 * k - 2 * self.add_results["log_likelihood_sum"]
+            result["aic"] = aic
+            print('CHECK AIC : ', result)
+            return result
+
         """Aggregate from all sites"""
         with self.lock:
             accuracy_threshold, result = self.optimizer.get_result(self.add_results, self.contribution_round,
                                                                    self.target_accuracy, betas_list=self.betas_list,
                                                                    accuracy_threshold=self.accuracy_threshold)
+            if result.get("signal") == "ABORT":
+                self.abort_signal = True
+                self.last_result = result
             self.accuracy_threshold = accuracy_threshold  # This is only relevant for NR optimizer
             self.reset_stats()
             return result
