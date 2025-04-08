@@ -70,9 +70,11 @@ class NewtonRaphson(CoeffOptimizer):
         }
 
     def add(self, data, add_results, contribution_round):
-        if self.abort_signal:
+        # if self.abort_signal:
+        if data.get("signal") == "ABORT":
             # If Abort triggerred - collect log likelihood
             add_results["log_likelihood_sum"] += data["prev_global_loglik"]
+            print('add_results["log_likelihood_sum"]')
             print(add_results["log_likelihood_sum"])
         else:
             if contribution_round == 0:
@@ -98,6 +100,8 @@ class NewtonRaphson(CoeffOptimizer):
             iteration_step = np.matmul(add_results["first_derivative_sum"], second_derivative_sum_inverse) * -1
             next_beta = prev_beta + iteration_step
             accuracy = np.absolute(next_beta - prev_beta)
+            print('***accuracy')
+            print(accuracy)
 
             # calculate federated stderror
             fisher = -1 * add_results["second_derivative_sum"]
@@ -107,6 +111,7 @@ class NewtonRaphson(CoeffOptimizer):
             # Stop if the result is already accurate enough
             if np.all(np.greater(accuracy_threshold, accuracy)):
                 print(f"Reached accuracy threshold")
+                add_results["log_likelihood_sum"] = 0
                 return accuracy_threshold, {"beta": next_beta, "fed_stderror": fed_stderror, "signal": 'ABORT', "Reached accuracy threshold": True}
 
         add_results["first_derivative_sum"] = 0
@@ -223,12 +228,27 @@ class IRLS(CoeffOptimizer):
             np_data["initial_beta"] = np.zeros(glm.exog.shape[1])
             np_data["exog_names"] = glm.exog_names
         else:
-            site_info["params"] = np_data["site_info"]["params"]
-            # Calculate log-likelihood of the global beta on local data
-            fed_beta = site_info["params"]
+            site_params = np_data.get("site_info", {}).get("params")
+            if site_params is not None:
+                fed_beta = site_params
+            else:
+                fed_beta = np_data.get("beta")
+            if fed_beta is None:
+                raise ValueError("Could not find model parameters in np_data.")
+
             log_likelihood = glm.loglike(params=fed_beta)
             np_data["prev_global_loglik"] = log_likelihood
-        np_data["site_hessian"] = glm.hessian(params=np_data.get("site_info", {}).get("params", np_data.get("initial_beta")))
+
+        # np_data["site_hessian"] = glm.hessian(params=np_data.get("site_info", {}).get("params", np_data.get("initial_beta")))
+        site_params = np_data.get("site_info", {}).get("params")
+        if site_params is None:
+            site_params = np_data.get("initial_beta")
+        if site_params is None:
+            site_params = np_data.get("beta")
+        if site_params is None:
+            raise ValueError("No parameters found to compute Hessian.")
+
+        np_data["site_hessian"] = glm.hessian(params=site_params)
         np_data["site_ols_params"] = self._site_irls_iteration(site_info, logger_warnings)
 
     @staticmethod
@@ -241,9 +261,12 @@ class IRLS(CoeffOptimizer):
         }
 
     def add(self, data, add_results, contribution_round):
-        if self.abort_signal:
+        # if self.abort_signal:
+        if data.get("signal") == "ABORT":
             # If Abort triggerred - collect log likelihood
             add_results["log_likelihood_sum"] += data["prev_global_loglik"]
+            print('add_results["log_likelihood_sum"]')
+            print(add_results["log_likelihood_sum"])
         else:
             if add_results["beta_opt"] is None:
                 add_results["beta_opt"] = data.get("initial_beta")  # Should be sent in the first round
@@ -255,6 +278,9 @@ class IRLS(CoeffOptimizer):
         next_beta = np.linalg.inv(add_results["A_sum"]).dot(add_results["B_sum"])
         # Prepare for next iteration
         accuracy = np.absolute(next_beta - add_results["beta_opt"])
+        print('***accuracy')
+        print(accuracy)
+
         add_results["beta_opt"] = next_beta
         fisher_info = -1 * add_results["combined_hessian"]
         fisher_info_inv = np.linalg.inv(fisher_info)
@@ -262,6 +288,7 @@ class IRLS(CoeffOptimizer):
         # Stop if the result is already accurate enough
         if np.all(np.greater(target_accuracy, accuracy)):
             print(f"Reached accuracy threshold")
+            add_results["log_likelihood_sum"] = 0
             return None, {"beta": next_beta, "fed_stderror": fed_stderror, "signal": 'ABORT', "Reached accuracy threshold": True}
 
         add_results["A_sum"] = 0

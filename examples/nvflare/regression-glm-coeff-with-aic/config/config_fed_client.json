@@ -1,0 +1,34 @@
+{
+  "format_version": 2,
+  "executors": [
+    {
+      "tasks": [
+        "train"
+      ],
+      "executor": {
+        "path": "regression_trainer.GLMTrainer",
+        "args": {
+          "glm_type": "Binomial",
+          "method": "IRLS",
+          "x_values": [
+            "AGE_CATEG", "IS_MALE", "SES", "SOCIAL_SECTOR", "CVA", "MI", "AF", "CHF", "IHD_NO_MI", "PVD",
+            "HYPERTENSIO", "DM", "IMMUNOSUP", "CKD", "IBD", "HIV", "PREV_AUTISM", "CANCER", "HYPOTHYR",
+            "HYPERTHYR", "THYRODIT", "CCI_CAT", "PREV_DEP_EPI_C", "PREV_ANXIETY_DISORDER",
+            "PREV_ADJUSTMENT_DIFF", "PREV_PERSONALITY_DISORDER", "PREV_SELF_INJURY", "PREV_POSTPARTUM_DEP",
+            "PREV_SLEEP_DISORDER", "PREV_DRUG_ABUSE", "PREV_ALCOHOL_ABUSE", "PREV_PTSD", "PREV_FIBROMYALGIA",
+            "PREV_HYPERKINESIS", "L_PPC2", "PREV_CORTICO_3M", "BMI_CATEG", "SMOKING_STATUS", "DEMENTIA",
+            "NURSE_HOME", "BASELINE_HOSP", "family_categ", "psychiatry_categ", "psychology_categ",
+            "DAYS_SINCE_LAST_C", "L_PREV_TREAT_DAYS", "PREV_TCA", "PREV_NASSA", "PREV_SSRI", "PREV_SNRI",
+            "PREV_NDRI", "PREV_NMDA", "PREV_NaRI", "PREV_SARI", "PREV_ADD_ON_MEDS", "GAP_DAYS", "CYEAR2"
+          ],
+          "y_values": ["TRD"],
+          "cast_to_string_fields": [],
+          "add_intercept": true
+        }
+      }
+    }
+  ],
+  "task_result_filters": [],
+  "task_data_filters": [],
+  "components": []
+}

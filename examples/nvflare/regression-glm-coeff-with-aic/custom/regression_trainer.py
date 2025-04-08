@@ -100,16 +100,33 @@ class GLMTrainer(Executor):
                 self.data[field] = self.data[field].astype(str)
         self.data_x = None
         self.data_y = None
+        # if self.x_values and self.y_values:
+        #     self.data_x = self.data[self.x_values]
+        #     self.data_y = self.data[self.y_values]
+        #
+        # # Add Intercept
+        # if self._add_intercept:
+        #     print("Adding intercept column to data.")
+        #     self.data["Intercept"] = 1
+        #     if self.data_x is not None:
+        #         self.data_x["Intercept"] = 1
         if self.x_values and self.y_values:
-            self.data_x = self.data[self.x_values]
-            self.data_y = self.data[self.y_values]
+            # One-hot encode categorical variables (drop first level)
+            print("Encoding categorical variables with one-hot encoding...")
+            self.data_x = pd.get_dummies(self.data[self.x_values], drop_first=True)
 
-        # Add Intercept
-        if self._add_intercept:
-            print("Adding intercept column to data.")
-            self.data["Intercept"] = 1
-            if self.data_x is not None:
+            # Add intercept column if needed
+            if self._add_intercept:
+                print("Adding intercept column to data.")
+                self.data_x = self.data_x.copy()
                 self.data_x["Intercept"] = 1
+
+            # Extract and cast target variable
+            self.data_y = self.data[self.y_values].astype(int)
+
+            print(f"Using {self.data_x.shape[1]} features after encoding.")
+            print("Target class distribution:")
+            print(self.data_y.value_counts())
 
     def handle_event(self, event_type: str, fl_ctx: FLContext):
         pass

@@ -120,6 +120,7 @@ class EPIAggregationHelper(object):
             if result.get("signal") == "ABORT":
                 self.abort_signal = True
                 self.last_result = result
+                print('!!!DONE!!!')
             self.accuracy_threshold = accuracy_threshold  # This is only relevant for NR optimizer
             self.reset_stats()
             return result
