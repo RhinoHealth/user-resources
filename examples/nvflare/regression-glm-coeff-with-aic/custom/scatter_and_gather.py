@@ -245,7 +245,7 @@ class ScatterAndGather(Controller):
                             break
 
                         if np_data['signal'] == 'ABORT':
-                            # One last round for AIC calculation
+                            # Perform one final round to compute AIC before aborting
                             self._last_round = True
 
                 except:
