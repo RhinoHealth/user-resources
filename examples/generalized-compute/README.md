@@ -12,6 +12,10 @@ This folder contains examples for using Rhino Health's Generalized Compute capab
 - [split-to-multiple-parts](./split-to-multiple-parts/README.md) - Process an input CSV and split it into an arbitrary number of output CSVs, based on a run-time parameter
 - [train-test-split](./train-test-split/README.md) - Process an input CSV and split it into two output CSVs
 
+## How to build and push Generalized Compute Containers
+Prior to running these interactive containers remotely on a Rhino client, the containers will need to be built locally and then uploaded to Amazon Elastic Container Registry (ECR). If you haven't done so already, you should [Configure Your Environment](https://docs.rhinohealth.com/hc/en-us/articles/12385555709085-Configuring-your-Environment) in order to push code to ECR.
+
+Once you've succesfully configured your environment, we recommending using [Rhino's utilities](../../rhino-utils/) to assist in building container images and pushing them to ECR. 
 
 ## Getting Help
 For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).

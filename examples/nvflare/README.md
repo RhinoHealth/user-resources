@@ -20,5 +20,10 @@ This folder contains examples for using Rhino Health's integration with NVIDIA F
 - [encrypted-model-code-and-weights](./encrypted-model-code-and-weights/README.md) - Locally encrypt your model code and build a container image using just the encrypted code (and not the source code). Set up the model to encrypt the model parameters so that they are stored in an encrypted manner on FCP. Add an `infer.py` script to perform inference on the trained model, decrypting the model parameters during inference using a key provided during run time
 <br><br>
 
+## How to build and push NVFlare Containers
+Prior to running these interactive containers remotely on a Rhino client, the containers will need to be built locally and then uploaded to Amazon Elastic Container Registry (ECR). If you haven't done so already, you should [Configure Your Environment](https://docs.rhinohealth.com/hc/en-us/articles/12385555709085-Configuring-your-Environment) in order to push code to ECR.
+
+Once you've succesfully configured your environment, we recommending using [Rhino's utilities](../../rhino-utils/) to assist in building container images and pushing them to ECR. 
+
 # Getting Help
 For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
