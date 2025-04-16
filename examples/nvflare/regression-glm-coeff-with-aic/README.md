@@ -4,7 +4,7 @@
 ### **Description**
 
  
-This example demonstrates how to fit a federated Generalized Linear Model (GLM) and perform Akaike Information Criterion (AIC)-based feature selection using Rhino Federated Computing Platform (FCP) with NVIDIA FLARE (NVFLARE).
+This example demonstrates how to fit a federated Generalized Linear Model (GLM) and perform Akaike Information Criterion (AIC)-based feature selection using Rhino's Federated Computing Platform (FCP) with NVIDIA FLARE (NVFLARE).
 
 
 It shows how to:
@@ -34,7 +34,7 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
   - `coeff_optimizer.py` - The custom code used for optimizing and aggregate each client's results for the GLM coefficient estimation model. This code is used by the server to aggregate the results from each client by a known optimizing, and examples are provided for Newton-Raphson (labeled as "NR") and IRLS 
 - `Dockerfile` - This is the Dockerfile to be used for building the container image
 - `requirements.txt` - The python requirements for this project when building with pip
-- `aic_user_example_notebook.ipynb` - A Jupyter notebook with an example of how to run an initial full GLM model, iteratively eliminate features based on AIC, track and store AIC scores across iterations, and identify the optimal feature subset in a federated environment.
+- `aic_user_example_notebook.ipynb` - A Jupyter notebook with an example of how to use the Rhino SDK to run an initial full GLM model, iteratively eliminate features based on AIC, track and store AIC scores across iterations, and identify the optimal feature subset in a federated environment.
 
 
 

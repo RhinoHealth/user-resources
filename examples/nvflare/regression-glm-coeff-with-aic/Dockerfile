@@ -1,4 +1,4 @@
-# !! EDIT THIS: Set base Docker image to be used.
+# Set base Docker image to be used.
 FROM nvidia/cuda:11.3.1-cudnn8-runtime-ubuntu20.04
 
 # Set env vars to be able to run apt-get commands without issues.
@@ -42,8 +42,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 WORKDIR /home/localuser
 USER localuser
 
-# !! EDIT THIS: Copy the needed local files (code and otherwise) into the container work directory.
-# Note: For directories, have a separate COPY command for each top-level directory.
+# Copy the needed local files (code and otherwise) into the container work directory.
 COPY --chown=$UID:$GID config ./config
 COPY --chown=$UID:$GID custom ./custom
 
