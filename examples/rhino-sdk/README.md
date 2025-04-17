@@ -1,9 +1,13 @@
 # Rhino Health Examples - Rhino SDK
-This folder contains examples for interacting with Rhino Health's Federated Computing Platform (FCP) using the Python SDK
+
+This folder contains examples for interacting with Rhino Health's Federated Computing Platform (FCP) using the Python SDK.
+
+Each notebook demonstrates how to use the SDK to authenticate your user session, select a project, and perform a variety of federated analytics or compute tasks.
 <br>
 
 # Table of Contents
-- `aggregate_quantile_example.ipynb` - Demonstrate the Rhino Helath SDK's ability to calculate federated percentiles with differential privacy
+
+- `aggregate_quantile_example.ipynb` - Demonstrates how to calculate federated percentiles with differential privacy using the Rhino Health SDK, including interactive project and dataset selection.
 - `cox.ipynb` - Demostrate calculation of Cox proportional hazard with federated data
 - `eda.ipynb` - Demonstrate usage of the Rhino Health Python SDK for performing Exploratory Data Analysis (EDA) using federated analytics
 - `metrics_examples.ipynb` - Examples of calculating metrics using federated analytics, including mean, odds ratio, chi square test, t-test, one way anova, and 2x2 matrix
@@ -15,4 +19,5 @@ This folder contains examples for interacting with Rhino Health's Federated Comp
 <br><br>
 
 # Getting Help
+
 For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
