@@ -1,0 +1,27 @@
+Weight,Pneumonia,Smoking,Inflammation Level,Sp02 Level
+84.0,True,False,Low,0.3
+97.0,True,True,Medium,0.51
+91.0,True,False,Medium,0.12
+90.0,False,False,High,0.03
+124.0,False,True,High,0.413
+97.0,True,True,High,0.3
+84.0,True,False,Low,0.3
+97.0,True,True,Medium,0.51
+91.0,True,False,Medium,0.12
+90.0,False,False,High,0.03
+124.0,False,True,High,0.413
+97.0,True,True,High,0.3
+84.0,True,False,Low,0.3
+97.0,True,True,Medium,0.51
+91.0,True,False,Medium,0.12
+90.0,False,False,High,0.03
+124.0,False,True,High,0.413
+97.0,True,True,High,0.3
+84.0,True,False,Low,0.3
+97.0,True,True,Medium,0.51
+91.0,True,False,Medium,0.12
+90.0,False,False,High,0.03
+124.0,False,True,High,0.413
+97.0,True,True,High,0.3
+84.0,True,False,Low,0.3
+97.0,True,True,Medium,0.51
