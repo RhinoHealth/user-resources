@@ -2,8 +2,8 @@ FROM ubuntu:22.04 AS ollama-download
 
 ADD https://github.com/ollama/ollama/releases/download/v0.1.24/ollama-linux-amd64 /ollama
 
-
-FROM 913123821419.dkr.ecr.us-east-1.amazonaws.com/rhino-gc-workgroup-rhino-health-dev:rhino-ubuntu-22.04-cuda-desktop-lxde
+# Use the image ID instead of the ECR URI
+FROM a11ed61bfddd
 
 ## Disable VNC clipboard and selection.
 #RUN sed -i 's/command=x11vnc/command=x11vnc -nosel -noprimary -noclipboard/' /etc/supervisor/conf.d/supervisord.conf
@@ -45,3 +45,7 @@ ENV OLLAMA_MODELS=/external_data/ollama/models/
 COPY ./jupyter-notebook.desktop /usr/share/applications/
 COPY ./jupyter-notebook-link.desktop /root/Desktop/
 COPY ./jupyter-notebook.png /usr/share/pixmaps/
+
+# Copy Jupyter notebooks
+COPY ./explore_dataset_ollama.ipynb /root/notebooks/
+COPY ./parse_clinical_notes.ipynb /root/notebooks/

@@ -1,0 +1,8 @@
+ipywidgets
+notebook
+numpy
+open-interpreter==0.1.18
+pandas
+matplotlib
+seaborn
+scipy
