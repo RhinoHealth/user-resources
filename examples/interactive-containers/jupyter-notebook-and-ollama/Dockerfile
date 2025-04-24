@@ -1,6 +1,6 @@
-FROM ubuntu:22.04 as ollama-download
+FROM ubuntu:22.04 AS ollama-download
 
-ADD https://ollama.com/download/ollama-linux-amd64 /ollama
+ADD https://ollama.com/download/ollama-linux-amd64.tgz /ollama-linux-amd64.tgz
 
 
 FROM public.ecr.aws/u7h0g2s9/rhino/interactive-containers-base-image:ubuntu-22.04-cuda-desktop-lxde
@@ -27,19 +27,19 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 # Create venv.
 ENV VIRTUAL_ENV="/venv"
 RUN mkdir -p $VIRTUAL_ENV \
- && python3.11 -m venv $VIRTUAL_ENV
+ && python3.11 -m venv --upgrade-deps $VIRTUAL_ENV
 
 # Install Jupyter Notebook and its dependencies.
 RUN --mount=type=bind,source=requirements.txt,target=/requirements.txt \
-    "$VIRTUAL_ENV/bin/python" -m pip install --no-cache-dir --upgrade pip setuptools wheel \
- && "$VIRTUAL_ENV/bin/pip" install --no-cache-dir -r /requirements.txt
+    "$VIRTUAL_ENV/bin/pip" install --no-cache-dir -r /requirements.txt
 
 # Install Ollama.
-COPY --from=ollama-download --chmod=0755 /ollama /usr/local/bin/ollama
+RUN --mount=type=bind,from=ollama-download,source=/ollama-linux-amd64.tgz,target=/ollama-linux-amd64.tgz \
+    tar -C /usr -xzf /ollama-linux-amd64.tgz
 RUN useradd -r -s /bin/false -m -d /usr/share/ollama ollama
 COPY ./ollama.supervisord.conf /etc/supervisor/conf.d/ollama.conf
 COPY --chmod=0755 --chown=ollama ./rhino_ollama_serve.sh /usr/share/ollama/rhino_ollama_serve.sh
-ENV OLLAMA_MODELS "/external_data/ollama/models/"
+ENV OLLAMA_MODELS="/external_data/ollama/models/"
 
 # Install Jupyter Notebook app menu item and desktop shortcut.
 COPY ./jupyter-notebook.desktop /usr/share/applications/

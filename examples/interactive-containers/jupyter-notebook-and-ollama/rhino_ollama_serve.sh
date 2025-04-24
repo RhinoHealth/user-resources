@@ -20,4 +20,4 @@ if [[ -n "$models_dir" ]]; then
   export OLLAMA_MODELS
 fi
 
-exec /usr/local/bin/ollama serve
+exec /usr/bin/ollama serve
