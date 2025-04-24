@@ -1,6 +1,6 @@
 FROM dorowu/ubuntu-desktop-lxde-vnc:focal
 
-FROM 913123821419.dkr.ecr.us-east-1.amazonaws.com/rhino-gc-workgroup-rhino-health-dev:rhino-ubuntu-22.04-cuda-desktop-lxde
+FROM public.ecr.aws/u7h0g2s9/rhino/interactive-containers-base-image:ubuntu-22.04-cuda-desktop-lxde
 
 # Set env vars to be able to run apt-get commands without issues.
 ENV LC_ALL="C.UTF-8"
@@ -41,4 +41,3 @@ RUN sed -i 's#cp -r /root/{.config,#cp -r /root/{.config,Desktop,#' /startup.sh
 # Copy files to the container.
 COPY ./rhino_inference_helpers.py /root/Desktop/
 COPY ./llm_inference.ipynb /root/Desktop
-

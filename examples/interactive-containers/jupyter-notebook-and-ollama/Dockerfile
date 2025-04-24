@@ -3,7 +3,7 @@ FROM ubuntu:22.04 as ollama-download
 ADD https://ollama.com/download/ollama-linux-amd64 /ollama
 
 
-FROM 913123821419.dkr.ecr.us-east-1.amazonaws.com/rhino-gc-workgroup-rhino-health-dev:rhino-ubuntu-22.04-cuda-desktop-lxde
+FROM public.ecr.aws/u7h0g2s9/rhino/interactive-containers-base-image:ubuntu-22.04-cuda-desktop-lxde
 
 ## Disable VNC clipboard and selection.
 #RUN sed -i 's/command=x11vnc/command=x11vnc -nosel -noprimary -noclipboard/' /etc/supervisor/conf.d/supervisord.conf

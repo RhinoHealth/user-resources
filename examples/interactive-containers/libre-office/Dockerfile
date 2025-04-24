@@ -15,4 +15,3 @@ RUN apt-get update -q && apt-get install -q -y libreoffice
 COPY ./libreoffice.desktop /usr/share/applications/
 COPY ./libreoffice-link.desktop /root/Desktop/
 COPY ./libreoffice-logo.png /usr/share/pixmaps/
-
