@@ -54,19 +54,33 @@ class LinearLearner(Learner):
         self.y_valid = None
 
     def load_data(self):
-        # Get data
+        # Get dataset UID from input path
         dataset_uid = next(os.walk(self.data_path))[1][0]
+
+        # Build full path to CSV
+        csv_path = f'{self.data_path}/{dataset_uid}/dataset.csv'
+
+        # Append label column to the list of features for reading from CSV
         if self.features_columns:
             self.features_columns.append(self.label_column)
-            df_train = pd.read_csv(f'{self.data_path}/{dataset_uid}/dataset.csv', usecols=self.features_columns)
+            df_train = pd.read_csv(csv_path, usecols=self.features_columns)
         else:
-            df_train = pd.read_csv(f'{self.data_path}/{dataset_uid}/dataset.csv')
+            df_train = pd.read_csv(csv_path)
+
+        # Convert label column from TRUE/FALSE strings to 1/0 integers
+        df_train[self.label_column] = df_train[self.label_column].astype(str).str.upper().map({"TRUE": 1, "FALSE": 0})
+
+        # Drop rows with missing data in features or label
+        df_train.dropna(inplace=True)
+
+        # Optionally split into train/validation if test_size > 0
         x_valid, y_valid = None, None
         if self.test_size > 0:
             df_train, df_valid = train_test_split(df_train, test_size=self.test_size, random_state=self.random_state)
             x_valid = df_valid.drop(self.label_column, axis=1).values
             y_valid = df_valid[self.label_column].values
 
+        # Separate features and label
         x_train = df_train.drop(self.label_column, axis=1).values
         y_train = df_train[self.label_column].values
         return x_train, y_train, x_valid, y_valid
