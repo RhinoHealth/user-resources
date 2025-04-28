@@ -39,19 +39,42 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     && rm requirements.txt
 
 
-WORKDIR /home/localuser
+# WORKDIR /home/localuser
+# USER localuser
+
+# # !! EDIT THIS: Copy the needed local files (code and otherwise) into the container work directory.
+# # Note: For directories, have a separate COPY command for each top-level directory.
+# # COPY --chown=$UID:$GID config ./config
+# # COPY --chown=$UID:$GID config /app/config
+# COPY --chown=$UID:$GID config/logistic_config_fed_server.json /app/config/config_fed_server.json
+# COPY --chown=$UID:$GID config/logistic_config_fed_client.json /app/config/config_fed_client.json
+# COPY --chown=$UID:$GID custom ./custom
+
+# COPY --chown=$UID:$GID custom ./custom
+# # COPY --chown=$UID:$GID infer.py ./infer.py
+
+# # !! EDIT THIS: Ensure files are executable.
+# # RUN chmod +x ./infer.py
+
+# ENV PYTHONPATH="/home/localuser/custom"
+# ENV PYTHONUNBUFFERED=1
+# Set working directory
+WORKDIR /app
+
+# Create needed folders and set permissions
+RUN mkdir -p /app/client && chown -R $UID:$GID /app
+
+# Copy config files into /app/config/ with correct filenames
+COPY --chown=$UID:$GID config/logistic_config_fed_server.json /app/config/config_fed_server.json
+COPY --chown=$UID:$GID config/logistic_config_fed_client.json /app/config/config_fed_client.json
+
+# Copy custom learner code
+COPY --chown=$UID:$GID custom /app/custom
+
+# Switch to non-root user
 USER localuser
 
-# !! EDIT THIS: Copy the needed local files (code and otherwise) into the container work directory.
-# Note: For directories, have a separate COPY command for each top-level directory.
-COPY --chown=$UID:$GID config ./config
-COPY --chown=$UID:$GID custom ./custom
-# COPY --chown=$UID:$GID infer.py ./infer.py
-
-# !! EDIT THIS: Ensure files are executable.
-# RUN chmod +x ./infer.py
-
-ENV PYTHONPATH="/home/localuser/custom"
+# Set environment variables
+ENV PYTHONPATH="/app/custom"
 ENV PYTHONUNBUFFERED=1
-
 
