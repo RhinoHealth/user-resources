@@ -1,4 +1,4 @@
-Weight,Pneumonia,Smoking,Inflammation Level,Sp02 Level
+Weight,Pneumonia,Smoking,Inflammation Level,Spo2 Level
 84.0,True,False,Low,0.3
 97.0,True,True,Medium,0.51
 91.0,True,False,Medium,0.12
