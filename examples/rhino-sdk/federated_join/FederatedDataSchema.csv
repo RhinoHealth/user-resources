@@ -4,6 +4,6 @@ Description,Join Field Patient UID,The age of the patient in years,The height of
 Role,Input,Input,Input,Output,Metadata,Metadata
 Type,String,Age,Integer,Float,Enum,Enum
 Type Parameters,null,null,null,null,"{""choices"": [""m"", ""f"", ""o""]}","{""choices"": [""a"", ""b"", ""o"", ""ab""]}"
-Permissions,default,default,default,default,local_only,local_only
+Permissions,default,local_only,default,default,local_only,local_only
 May Contain PHI?,FALSE,TRUE,FALSE,FALSE,FALSE,FALSE
 Units,,,cm,%,,
