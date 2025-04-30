@@ -25,8 +25,8 @@
         "data_path": "/input/cohorts",
         "random_state": 42,
         "test_size": 0,
-        "features_columns": ["Height", "Weight"],
-        "label_column": "Pneumonia",
+        "features_columns":["Xc","c"],
+        "label_column":"Ys",
         "max_iter" : 100
       }
     }

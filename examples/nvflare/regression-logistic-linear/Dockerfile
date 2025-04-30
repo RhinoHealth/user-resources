@@ -74,7 +74,23 @@ COPY --chown=$UID:$GID custom /app/custom
 # Switch to non-root user
 USER localuser
 
+<<<<<<< HEAD
 # Set environment variables
 ENV PYTHONPATH="/app/custom"
+=======
+# !! EDIT THIS: Copy the needed local files (code and otherwise) into the container work directory.
+# Note: For directories, have a separate COPY command for each top-level directory.
+# COPY --chown=$UID:$GID config ./config
+COPY --chown=$UID:$GID custom ./custom
+# COPY --chown=$UID:$GID infer.py ./infer.py //not relevant for now, create a bug
+COPY --chown=$UID:$GID config/linear_config_fed_client.json ./config/config_fed_client.json
+COPY --chown=$UID:$GID config/linear_config_fed_server.json ./config/config_fed_server.json
+
+
+# !! EDIT THIS: Ensure files are executable.
+# RUN chmod +x ./infer.py
+
+ENV PYTHONPATH="/home/localuser/custom"
+>>>>>>> 72bf24d (sucsesfully runned example to predict phneomonia)
 ENV PYTHONUNBUFFERED=1
 
