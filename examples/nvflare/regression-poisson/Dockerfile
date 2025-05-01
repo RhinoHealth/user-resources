@@ -46,10 +46,10 @@ USER localuser
 # Note: For directories, have a separate COPY command for each top-level directory.
 COPY --chown=$UID:$GID config ./config
 COPY --chown=$UID:$GID custom ./custom
-COPY --chown=$UID:$GID infer.py ./infer.py
+# COPY --chown=$UID:$GID infer.py ./infer.py
 
 # !! EDIT THIS: Ensure files are executable.
-RUN chmod +x ./infer.py
+# RUN chmod +x ./infer.py
 
 ENV PYTHONPATH="/home/localuser/custom"
 ENV PYTHONUNBUFFERED=1
