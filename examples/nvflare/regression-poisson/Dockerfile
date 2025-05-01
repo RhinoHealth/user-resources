@@ -9,19 +9,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Install Python 3.8
 RUN --mount=type=cache,id=apt,target=/var/cache/apt \
     rm -f /etc/apt/apt.conf.d/docker-clean \
- && apt-get update \
- && apt-get install -y -q software-properties-common \
- && add-apt-repository ppa:deadsnakes/ppa \
- && apt-get update \
- && apt-get install -y -q python3.8 python3.8-dev python3.8-venv \
- && apt-get remove -y --autoremove software-properties-common \
- && rm -rf /var/lib/apt/lists/*
+    && apt-get update \
+    && apt-get install -y -q software-properties-common \
+    && add-apt-repository ppa:deadsnakes/ppa \
+    && apt-get update \
+    && apt-get install -y -q python3.8 python3.8-dev python3.8-venv \
+    && apt-get remove -y --autoremove software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set up non-root user and group.
 ARG UID=5642
 ARG GID=5642
 RUN ( getent group $GID >/dev/null || groupadd -r -g $GID localgroup ) \
- && useradd -m -l -s /bin/bash -g $GID -N -u $UID localuser
+    && useradd -m -l -s /bin/bash -g $GID -N -u $UID localuser
 
 # Create and "activate" venv.
 ENV VIRTUAL_ENV="/venv"
@@ -39,19 +39,26 @@ RUN --mount=type=cache,target=/root/.cache/pip \
  && rm requirements.txt
 
 
-WORKDIR /home/localuser
-USER localuser
+# WORKDIR /home/localuser
+# USER localuser
+
+WORKDIR /app
+
+# Create needed folders and set permissions
+RUN mkdir -p /app/client && chown -R $UID:$GID /app
 
 # !! EDIT THIS: Copy the needed local files (code and otherwise) into the container work directory.
 # Note: For directories, have a separate COPY command for each top-level directory.
 COPY --chown=$UID:$GID config ./config
 COPY --chown=$UID:$GID custom ./custom
+# COPY --chown=$UID:$GID config/config_fed_client.json ./config/config_fed_client.json
+# COPY --chown=$UID:$GID config/config_fed_server.json ./config/config_fed_server.json
 # COPY --chown=$UID:$GID infer.py ./infer.py
 
 # !! EDIT THIS: Ensure files are executable.
 # RUN chmod +x ./infer.py
 
-ENV PYTHONPATH="/home/localuser/custom"
+ENV PYTHONPATH="/app/custom"
 ENV PYTHONUNBUFFERED=1
 
 
