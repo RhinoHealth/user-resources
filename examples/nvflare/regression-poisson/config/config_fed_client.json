@@ -23,8 +23,8 @@
         "data_path": "/input/cohorts",
         "random_state": 42,
         "test_size": 0,
-        "features_columns":["Xc","c"],
-        "label_column":"Ys"
+        "features_columns":["Weight","Smoking","Spo2 Level"],
+        "label_column":"Pneumonia"
       }
     }
   ]

@@ -38,14 +38,14 @@ RUN --mount=type=cache,target=/root/.cache/pip \
  && pip install -r requirements.txt \
  && rm requirements.txt
 
-
-# WORKDIR /home/localuser
-# USER localuser
-
 WORKDIR /app
 
 # Create needed folders and set permissions
-RUN mkdir -p /app/client && chown -R $UID:$GID /app
+# This needs to run as root before switching user
+# RUN mkdir -p /app/client && chown -R $UID:$GID /app
+
+# Switch to non-root user
+USER localuser
 
 # !! EDIT THIS: Copy the needed local files (code and otherwise) into the container work directory.
 # Note: For directories, have a separate COPY command for each top-level directory.
@@ -60,6 +60,3 @@ COPY --chown=$UID:$GID custom ./custom
 
 ENV PYTHONPATH="/app/custom"
 ENV PYTHONUNBUFFERED=1
-
-
-
