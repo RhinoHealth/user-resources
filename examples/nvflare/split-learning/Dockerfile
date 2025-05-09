@@ -38,6 +38,9 @@ RUN --mount=type=cache,target=/root/.cache/pip \
  && pip install -r requirements.txt \
  && rm requirements.txt
 
+# Required by FCP: Ensure input/output folders exist
+RUN mkdir -p /input /output
+
 WORKDIR /home/localuser
 USER localuser
 
