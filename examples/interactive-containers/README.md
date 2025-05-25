@@ -10,5 +10,10 @@ This folder contains examples for using Rhino Health's Interactive Containers ca
 - [jupyter-notebook-and-ollama](./jupyter-notebook-and-ollama/README.md) - Interact with LLM models via open-interpreter and Ollama.
 - [libre-office](./libre-office/README.md) - Use Office (e.g. spreadsheets) to interact with remote data on a Rhino Client.
 
+## How to build and push Interactive Containers
+Prior to running these interactive containers remotely on a Rhino client, the containers will need to be built locally and then uploaded to Amazon Elastic Container Registry (ECR). If you haven't done so already, you should [Configure Your Environment](https://docs.rhinohealth.com/hc/en-us/articles/12385555709085-Configuring-your-Environment) in order to push code to ECR.
+
+Once you've succesfully configured your environment, we recommending using [Rhino's utilities](../../rhino-utils/) to assist in building container images and pushing them to ECR. 
+
 ## Getting Help
 For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).

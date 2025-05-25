@@ -23,5 +23,10 @@ This folder contains examples for using Rhino's Federated Computing Platform (FC
 - [split-learning](./split-learning/README.md) - Adapts NVIDIA's [Split Learning](https://github.com/NVIDIA/NVFlare/tree/2.3/examples/advanced/vertical_federated_learning) NVFlare v2.3 example to run on FCP
 <br><br>
 
+## How to build and push NVFlare Containers
+Prior to running these interactive containers remotely on a Rhino client, the containers will need to be built locally and then uploaded to Amazon Elastic Container Registry (ECR). If you haven't done so already, you should [Configure Your Environment](https://docs.rhinohealth.com/hc/en-us/articles/12385555709085-Configuring-your-Environment) in order to push code to ECR.
+
+Once you've succesfully configured your environment, we recommending using [Rhino's utilities](../../rhino-utils/) to assist in building container images and pushing them to ECR. 
+
 # Getting Help
 For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
