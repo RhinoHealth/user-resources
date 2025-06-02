@@ -32,7 +32,7 @@ def dataset_dcm_to_jpg(dataset_df):
 		if not os.path.exists(class_folder):
 			os.makedirs(class_folder)
 		image.save('/'.join([class_folder, jpg_file_name]))
-		dataset_df.loc[idx, 'JPG file'] = '/'.join([ground_truth, jpg_file_name])
+		dataset_df.loc[idx, 'JPG_file'] = '/'.join([ground_truth, jpg_file_name])
 
 	return dataset_df
 
