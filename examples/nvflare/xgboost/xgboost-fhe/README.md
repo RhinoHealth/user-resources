@@ -13,7 +13,7 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
 <br/><br/>
 
 ### **Resources**
-- `encryption_plugins` - These are the encryption plugins provided by NVFlare. Note that we have by default disabled building the CUDA plugin.
+- `encryption_plugins` - These are the encryption plugins [provided by NVFlare](https://github.com/NVIDIA/NVFlare/tree/2.5/integration/xgboost/encryption_plugins). Note that we have by default disabled building the CUDA plugin.
 - `app` - This is the standard NVFlare directory for containing NVFlare configs and custom code
 - `app/config` - This is the standard NVFlare directory for config files
   - `config_fed_client.json` - The standard NVFlare federated client config 
