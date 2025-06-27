@@ -1,3 +1,6 @@
+# Copyright (c) 2025, Rhino Federated Computing, Inc.
+# Original file modified by Rhino Federated to adapt it to exclude the CUDA plugin by default.
+
 cmake_minimum_required(VERSION 3.19)
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_CXX_STANDARD 17)

@@ -25,7 +25,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 RUN apt-get update
 RUN apt install -y g++ libgmp3-dev make
 RUN pip install cmake==3.22.1
-COPY ./encryption_plugins ./encryption_plugins/
+COPY ./vendor/encryption_plugins ./encryption_plugins/
 ENV CMAKE_MAKE_PROGRAM="make"
 ENV CMAKE_CXX_COMPILER="g++"
 RUN cd encryption_plugins/build/ && \
