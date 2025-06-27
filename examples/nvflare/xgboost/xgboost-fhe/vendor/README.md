@@ -1,0 +1,2 @@
+Contents:
+- `encryption_plugins/`:  contains nvflare encryption plugins from [NVFLare 2.5](https://github.com/NVIDIA/NVFlare/tree/2.5/integration/xgboost/encryption_plugins). We have removed the cuda plugin directory, as well as the test files and editor config from the nvflare plugin directory. We have also modified the top-level [CMakeLists.txt](./encryption_plugins/CMakeLists.txt) - see header for details.
