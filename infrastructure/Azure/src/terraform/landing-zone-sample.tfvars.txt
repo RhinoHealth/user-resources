@@ -1,0 +1,80 @@
+#
+# Sample: landing-zone-sample.tfvars
+#
+# This sample demonstrates creating a new application virtual network and
+# connecting it to an existing landing zone virtual network.
+#
+# It assumes that on-prem connectivity is in place and provided by a gateway.  
+#
+
+project_name = "cloud-application-01"
+environment  = "dev"
+
+allow_landing_zone_updates   = true
+confirm_landing_zone_changes = true
+
+landing_zone_subscription_id                = "00000000-0000-0000-0000-000000000000"
+landing_zone_virtual_network_resource_group = "landing-zone-resource-group"
+landing_zone_virtual_network_name           = "landing-zone-virtual-network"
+
+apply_landing_zone_private_dns_updates  = true
+apply_application_private_dns           = false
+landing_zone_private_dns_resource_group = "landing-zone-resource-group"
+landing_zone_private_dns_zones_exist    = false
+
+application_subscription_id       = "00000000-0000-0000-0000-000000000001"
+application_location              = "East US"
+create_application_resource_group = true
+application_resource_group_name   = "application-resource-group"
+
+create_application_virtual_network         = true
+application_virtual_network_name           = "application-virtual-network"
+application_virtual_network_resource_group = "application-virtual-network-rg"
+application_virtual_network_address_space  = ["10.1.0.0/16"]
+enable_vnet_peering_to_landing_zone        = true
+landing_zone_has_gateway                   = true
+enable_application_to_onprem_connectivity  = true
+
+create_application_subnet             = true
+application_subnet_name               = "application-subnet"
+application_subnet_address_prefix     = "10.1.1.0/24"
+create_application_subnet_nsg         = true
+application_subnet_nsg_name           = "application-subnet-nsg"
+create_application_subnet_route_table = true
+application_subnet_route_table_name   = "application-subnet-route-table"
+application_subnet_routes             = [{
+  address_prefix = "0.0.0.0/0"
+  name = "route-to-firewall"
+  next_hop_in_ip_address = "10.0.1.4"
+  next_hop_type = "VirtualAppliance"
+}]
+
+create_private_endpoint_subnet         = true
+private_endpoint_subnet_name           = "private-endpoint-subnet"
+private_endpoint_subnet_address_prefix = "10.1.2.0/24"
+create_private_endpoint_subnet_nsg     = true
+private_endpoint_subnet_nsg_name       = "private-endpoint-subnet-nsg"
+
+storage_account_name                       = "appstorage0000000042"
+storage_account_tier                       = "Standard"
+storage_account_replication_type           = "LRS"
+storage_account_kind                       = "StorageV2"
+storage_account_access_tier                = "Hot"
+enable_data_lake_gen2                      = true
+storage_private_endpoint_name              = "pe-appstorage0000000042"
+storage_private_endpoint_subresource_names = ["blob", "dfs"]
+
+virtual_machine_name = "app-vm-0000000042"
+virtual_machine_size = "Standard_D4s_v5"
+admin_username       = "azureuser"
+authentication_type  = "Password"
+admin_password       = "P@ssw0rd1234!" # Ensure this meets your password policy requirements
+ssh_public_key       = null
+os_disk_size_gb      = 250
+os_disk_type         = "Premium_LRS"
+create_data_disk     = true
+data_disk_size_gb    = 512
+data_disk_type       = "Premium_LRS"
+data_disk_caching    = "ReadWrite"
+install_gpu_drivers  = false
+gpu_driver_type      = "CUDA"
