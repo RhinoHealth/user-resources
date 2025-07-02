@@ -1,0 +1,4 @@
+nvflare>=2.5.0,<2.6.0
+chemprop==2.0.5
+torch==2.5.1
+pycryptodome==3.21.0
