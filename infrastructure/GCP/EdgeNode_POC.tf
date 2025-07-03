@@ -39,6 +39,21 @@ variable "zone" {
   type        = string
 }
 
+# --- Naming Convention Variables ---
+variable "workgroup_name" {
+  description = "The workgroup name for resource naming convention (e.g., 'example-workgroup')."
+  type        = string
+}
+variable "environment" {
+  description = "The environment for resource naming convention (e.g., 'prod', 'dev', 'test')."
+  type        = string
+}
+variable "sequence_number" {
+  description = "The sequence number for resource naming convention (e.g., '1', '2')."
+  type        = string
+  default     = "1"
+}
+
 # --- Storage Variables ---
 variable "bucket_name_cancercenter_data" {
   description = "The globally unique name for the Cloud Storage bucket containing the source data from the cancer center."
@@ -58,22 +73,10 @@ variable "subnet_ip_cidr_range" {
   description = "The internal IP address range for the subnet in CIDR notation (e.g., '10.0.0.0/20')."
   type        = string
 }
-variable "subnet_name" {
-  description = "The name for the subnet created within the custom VPC."
-  type        = string
-}
-variable "vpc_network_name" {
-  description = "The name for the custom Virtual Private Cloud (VPC) network."
-  type        = string
-}
 
 # --- VM Variables ---
 variable "vm_image" {
   description = "The source image for the VM's boot disk (e.g., 'ubuntu-os-cloud/ubuntu-2204-lts')."
-  type        = string
-}
-variable "vm_instance_name" {
-  description = "The name for the Confidential Compute Virtual Machine instance."
   type        = string
 }
 variable "vm_machine_type" {
@@ -100,11 +103,39 @@ variable "rhino_package_registry_password" {
   sensitive   = true
 }
 
+# --- Local Values for Naming Convention ---
+locals {
+  # VPC Network: {workgroup name}-rhino-client-{environment}-vpc-{seq#}
+  vpc_network_name = "${var.workgroup_name}-rhino-client-${var.environment}-vpc-${var.sequence_number}"
+  
+  # Subnet: {workgroup name}-rhino-client-{environment}-vpc-{seq#}-subnet-{seq#}
+  subnet_name = "${var.workgroup_name}-rhino-client-${var.environment}-vpc-${var.sequence_number}-subnet-${var.sequence_number}"
+  
+  # VM: {workgroup name}-rhino-client-{environment}-{seq#}
+  vm_instance_name = "${var.workgroup_name}-rhino-client-${var.environment}-${var.sequence_number}"
+  
+  # Firewall: {workgroup name}-rhino-client-{protocol}-{port}-{action}
+  firewall_egress_name = "${var.workgroup_name}-rhino-client-tcp-443-allow"
+  
+  # Buckets: {workgroup name}-rhino-client-{type}-{seq#}
+  bucket_output_logs_name = "${var.workgroup_name}-rhino-client-output-data-${var.sequence_number}"
+  bucket_source_data_name = "${var.workgroup_name}-rhino-client-input-data-${var.sequence_number}"
+  bucket_logs_name = "${var.workgroup_name}-rhino-client-log-${var.sequence_number}"
+  
+  # Standard tags for cost aggregation
+  common_tags = {
+    workgroup   = var.workgroup_name
+    environment = var.environment
+    purpose     = "rhino-client"
+    managed_by  = "terraform"
+  }
+}
+
 # --- Networking ------------------------------------------------------------------------------------------------------------------
 # Creates a custom mode Virtual Private Cloud (VPC) network to provide an isolated environment.
 resource "google_compute_network" "main" {
   project                       = var.project_id
-  name                          = var.vpc_network_name
+  name                          = local.vpc_network_name
   auto_create_subnetworks       = false
   routing_mode                  = "REGIONAL"
   delete_default_routes_on_create = false
@@ -113,7 +144,7 @@ resource "google_compute_network" "main" {
 # Creates a subnet within the VPC, defining its IP range and enabling Private Google Access and Flow Logs.
 resource "google_compute_subnetwork" "main" {
   project                  = var.project_id
-  name                     = var.subnet_name
+  name                     = local.subnet_name
   ip_cidr_range            = var.subnet_ip_cidr_range
   region                   = var.region
   network                  = google_compute_network.main.self_link
@@ -130,7 +161,7 @@ resource "google_compute_subnetwork" "main" {
 # Allows SSH traffic from any source IP address (highly discouraged for production).
 # resource "google_compute_firewall" "allow_ssh" {
 #   project       = var.project_id
-#   name          = "${var.vpc_network_name}-allow-ssh"
+#   name          = "${local.vpc_network_name}-allow-ssh"
 #   network       = google_compute_network.main.name
 #   description   = "Allows SSH access to instances."
 #   source_ranges = ["0.0.0.0/0"]
@@ -148,7 +179,7 @@ resource "google_compute_subnetwork" "main" {
 # Allows outbound (egress) TCP traffic on port 443 to specified destination IPs.
 resource "google_compute_firewall" "allow_egress_rhino" {
   project            = var.project_id
-  name               = "${var.vpc_network_name}-allow-egress-rhino"
+  name               = local.firewall_egress_name
   network            = google_compute_network.main.name
   description        = "Allows egress traffic to the Rhino orchestrator."
   destination_ranges = var.rhino_orechestrator_ip_range
@@ -167,7 +198,7 @@ resource "google_compute_firewall" "allow_egress_rhino" {
 # Creates a Cloud Router, which is a prerequisite for using Cloud NAT.
 resource "google_compute_router" "main" {
   project = var.project_id
-  name    = "${var.vpc_network_name}-router"
+  name    = "${local.vpc_network_name}-router"
   region  = var.region
   network = google_compute_network.main.self_link
 }
@@ -175,7 +206,7 @@ resource "google_compute_router" "main" {
 # Configures Cloud NAT to allow VM instances with no public IPs to access the internet.
 resource "google_compute_router_nat" "main" {
   project                            = var.project_id
-  name                               = "${var.vpc_network_name}-nat"
+  name                               = "${local.vpc_network_name}-nat"
   router                             = google_compute_router.main.name
   region                             = google_compute_router.main.region
   nat_ip_allocate_option             = "AUTO_ONLY"
@@ -190,29 +221,45 @@ resource "google_compute_router_nat" "main" {
 # --- Storage ------------------------------------------------------------------------------------------------------------------
 # Creates the Cloud Storage bucket for storing outputs and logs.
 resource "google_storage_bucket" "output_logs" {
-  name                        = var.bucket_name_output_and_logs
+  name                        = local.bucket_output_logs_name
   location                    = var.region
   storage_class               = "STANDARD"
   project                     = var.project_id
   public_access_prevention    = "enforced"
   uniform_bucket_level_access = true
+  
+  labels = local.common_tags
 }
 
 # Creates the Cloud Storage bucket for storing the source cancer center data.
 resource "google_storage_bucket" "source_data" {
-  name                        = var.bucket_name_cancercenter_data
+  name                        = local.bucket_source_data_name
   location                    = var.region
   storage_class               = "STANDARD"
   project                     = var.project_id
   public_access_prevention    = "enforced"
   uniform_bucket_level_access = true
+  
+  labels = local.common_tags
+}
+
+# Creates the Cloud Storage bucket for storing logs.
+resource "google_storage_bucket" "logs" {
+  name                        = local.bucket_logs_name
+  location                    = var.region
+  storage_class               = "STANDARD"
+  project                     = var.project_id
+  public_access_prevention    = "enforced"
+  uniform_bucket_level_access = true
+  
+  labels = local.common_tags
 }
 
 # --- IAM & Service Accounts ------------------------------------------------------------------------------------------------------------------
 # Creates a dedicated service account for the Confidential Compute VM.
 resource "google_service_account" "vm" {
   project      = var.project_id
-  account_id   = "vm-storage-accessor"
+  account_id   = "${var.workgroup_name}-rhino-client-${var.environment}-sa"
   display_name = "VM Storage Access Service Account"
 }
 
@@ -249,16 +296,18 @@ resource "google_storage_bucket_iam_member" "vm_rw_on_output_logs" {
 # Creates a standard persistent disk (HDD) to be attached to the VM instance.
 resource "google_compute_disk" "secondary" {
   project = var.project_id
-  name    = "${var.vm_instance_name}-secondary-hdd"
+  name    = "${local.vm_instance_name}-secondary-hdd"
   type    = "pd-standard"
   zone    = var.zone
   size    = 2048 # 2TB
+  
+  labels = local.common_tags
 }
 
 # Creates the Confidential Compute VM instance with specified hardware and software settings.
 resource "google_compute_instance" "main" {
   project                   = var.project_id
-  name                      = var.vm_instance_name
+  name                      = local.vm_instance_name
   machine_type              = var.vm_machine_type
   zone                      = var.zone
   allow_stopping_for_update = true
@@ -303,10 +352,9 @@ resource "google_compute_instance" "main" {
     var.rhino_package_registry_password
   )
 
-  labels = {
-    environment = "dev"
-    purpose     = "confidential-compute"
-  }
+  labels = merge(local.common_tags, {
+    purpose = "confidential-compute"
+  })
 
   depends_on = [google_compute_disk.secondary]
 }
@@ -314,15 +362,15 @@ resource "google_compute_instance" "main" {
 # --- Logging & Auditing ---------------------------------------------------------------------------------------------
 # Creates a log sink to export all project logs to the designated Cloud Storage bucket.
 resource "google_logging_project_sink" "to_gcs" {
-  name                   = "project-logs-to-gcs-sink"
+  name                   = "${var.workgroup_name}-rhino-client-${var.environment}-log-sink"
   project                = var.project_id
-  destination            = "storage.googleapis.com/${google_storage_bucket.output_logs.name}"
+  destination            = "storage.googleapis.com/${google_storage_bucket.logs.name}"
   unique_writer_identity = true
 }
 
 # Grants the log sink's unique service account permission to create objects in the bucket.
 resource "google_storage_bucket_iam_member" "log_sink_writer" {
-  bucket = google_storage_bucket.output_logs.name
+  bucket = google_storage_bucket.logs.name
   role   = "roles/storage.objectCreator"
   member = google_logging_project_sink.to_gcs.writer_identity
 }
