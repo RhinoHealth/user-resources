@@ -55,25 +55,6 @@ def get_train_validation_split(input_data, split=(0.8, 0.2, 0)):
     )
     return train_data, val_data
 
-# def get_model_and_loaders(datapath):
-#     # input data needs to be split in train/validation for the chemprop algorithm
-#     input_data = load_data_from_path(datapath, "smiles", ["cyp3a4"])
-#     train_data, val_data = get_train_validation_split(input_data)
-
-#     # create features from data
-#     featurizer = featurizers.SimpleMoleculeMolGraphFeaturizer()
-#     train_dset = data.MoleculeDataset(train_data, featurizer)
-#     val_dset = data.MoleculeDataset(val_data, featurizer)
-
-#     # instantiate data loaders
-#     train_loader = data.build_dataloader(
-#         train_dset, num_workers=0, seed=42, class_balance=True
-#     )
-#     val_loader = data.build_dataloader(val_dset, num_workers=0, shuffle=False, seed=42)
-
-#     mpnn = ClassificationMPNN()
-
-#     return mpnn, train_loader, val_loader
 def get_model_and_loaders(datapath):
     # input data needs to be split in train/validation for the chemprop algorithm
     input_data = load_data_from_path(datapath, "smiles", ["cyp3a4"])

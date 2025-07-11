@@ -11,23 +11,31 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 
 class SecretsManager:
     def __init__(self, role_arn, region='us-east-1'):
-        self.role_arn = role_arn
-        self.client = self._get_client(region)
+        try:
+            self.role_arn = role_arn
+            self.client = self._get_client(region)
+        except Exception as e:
+            logging.error(f"Failed to initialize secrets manager: {str(e)}")
+            raise
 
     def _get_client(self, region):
-        sts_client = boto3.client('sts')
-        credentials = sts_client.assume_role(
-            RoleArn=self.role_arn,
-            RoleSessionName='KeyGenerationSession'
-        )['Credentials']
-        
-        session = boto3.session.Session(
-            aws_access_key_id=credentials['AccessKeyId'],
-            aws_secret_access_key=credentials['SecretAccessKey'],
-            aws_session_token=credentials['SessionToken'],
-            region_name=region
-        )
-        return session.client('secretsmanager')
+        try:
+            sts_client = boto3.client('sts')
+            credentials = sts_client.assume_role(
+                RoleArn=self.role_arn,
+                RoleSessionName='KeyGenerationSession'
+            )['Credentials']
+            
+            session = boto3.session.Session(
+                aws_access_key_id=credentials['AccessKeyId'],
+                aws_secret_access_key=credentials['SecretAccessKey'],
+                aws_session_token=credentials['SessionToken'],
+                region_name=region
+            )
+            return session.client('secretsmanager')
+        except Exception as e:
+            logging.error(f"Failed to get client: {str(e)}")
+            raise
 
     def get_or_create_key(self, key_name):
         """Get existing or create new public key"""
@@ -35,8 +43,25 @@ class SecretsManager:
             # Try to get existing secret
             try:
                 secret = self.client.get_secret_value(SecretId=key_name)
-                secret_dict = json.loads(secret['SecretString'])
-                return RSA.import_key(secret_dict['encrypt_key'])
+                
+                # Validate secret response structure
+                if 'SecretString' not in secret:
+                    raise ValueError(f"Secret '{key_name}' does not contain SecretString")
+                
+                try:
+                    secret_dict = json.loads(secret['SecretString'])
+                except json.JSONDecodeError as e:
+                    raise ValueError(f"Secret '{key_name}' contains invalid JSON: {str(e)}")
+                
+                # Validate required keys exist
+                if 'encrypt_key' not in secret_dict:
+                    raise ValueError(f"Secret '{key_name}' does not contain 'encrypt_key'")
+                
+                try:
+                    return RSA.import_key(secret_dict['encrypt_key'])
+                except (ValueError, TypeError) as e:
+                    raise ValueError(f"Secret '{key_name}' contains invalid RSA public key: {str(e)}")
+                    
             except self.client.exceptions.ResourceNotFoundException:
                 # Secret doesn't exist, create new key pair
                 return self._create_new_key_pair(key_name)
