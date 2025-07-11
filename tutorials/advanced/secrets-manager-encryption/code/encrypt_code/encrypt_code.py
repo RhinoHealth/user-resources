@@ -57,12 +57,16 @@ class SecretsManager:
             'decrypt_key': private_key.export_key().decode('utf-8')
         }
         
-        # Create new secret in AWS Secrets Manager
-        self.client.create_secret(
-            Name=key_name,
-            SecretString=json.dumps(secret_dict),
-            Description=f'RSA key pair for {key_name}'
-        )
+        try:
+            # Create new secret in AWS Secrets Manager
+            self.client.create_secret(
+                Name=key_name,
+                SecretString=json.dumps(secret_dict),
+                Description=f'RSA key pair for {key_name}'
+            )
+        except Exception as e:
+            logging.error(f"Failed to create new key pair: {str(e)}")
+            raise
         
         logging.info(f"Generated and stored new key pair for '{key_name}'")
         return public_key
@@ -80,14 +84,22 @@ def encrypt_file(input_file, key_name, output_file, delete_input=False):
     ACCOUNT_ID = '<account_id>'
     ROLE_NAME = '<role_name>'
 
-    # Initialize secrets manager
-    secrets = SecretsManager(
-        role_arn=f'arn:aws:iam::{ACCOUNT_ID}:role/{ROLE_NAME}'
-    )
-    
-    # Read input file
-    with open(input_file, 'rb') as f:
-        data = f.read()
+    try:
+        # Initialize secrets manager
+        secrets = SecretsManager(
+            role_arn=f'arn:aws:iam::{ACCOUNT_ID}:role/{ROLE_NAME}'
+        )
+    except Exception as e:
+        logging.error(f"Failed to initialize secrets manager: {str(e)}")
+        raise
+
+    try:
+        # Read input file
+        with open(input_file, 'rb') as f:
+            data = f.read()
+    except Exception as e:
+        logging.error(f"Failed to read input file: {str(e)}")
+        raise
 
     # Get public key and generate session key
     public_key = secrets.get_or_create_key(key_name)

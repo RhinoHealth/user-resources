@@ -48,15 +48,6 @@ secrets-manager-encryption/
 - Access to Rhino FCP platform
 - Access to a third party Secrets Manager platform (this example uses AWS Secrets Manager)
 
-## Dependencies
-
-The application requires the following Python packages:
-- `nvflare>=2.5.0,<2.6.0` - Federated learning framework
-- `chemprop==2.0.5` - Molecular property prediction
-- `torch==2.5.1` - Deep learning framework
-- `pycryptodome==3.21.0` - Cryptographic operations
-- `boto3` - AWS SDK for Python (for Secrets Manager integration)
-
 ## Quick Start
 
 ### 1. Configure AWS Secrets Manager

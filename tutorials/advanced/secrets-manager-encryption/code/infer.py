@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import json
 import sys
+import logging
 from pathlib import Path
 
 from lightning import pytorch as pl
@@ -16,19 +17,27 @@ from chemprop_fl_classification import ClassificationMPNN, load_data_from_path
 def decrypt_weights(model_parameters_path):
     secret_run_params_file_path = Path("/input/secret_run_params.json")
     if secret_run_params_file_path.is_file():
-        # Load private key from JSON
-        with secret_run_params_file_path.open("r") as secret_run_params_file:
-            secret_run_params = json.load(secret_run_params_file)
-            private_key = RSA.import_key(secret_run_params["decrypt_key"])
+        try:
+            # Load private key from JSON
+            with secret_run_params_file_path.open("r") as secret_run_params_file:
+                secret_run_params = json.load(secret_run_params_file)
+                private_key = RSA.import_key(secret_run_params["decrypt_key"])
+        except Exception as e:
+            logging.error(f"Failed to load private key: {str(e)}")
+            raise
 
-        # Read the encrypted file
-        with open(model_parameters_path, 'rb') as f:
-            # Read the RSA-encrypted session key
-            enc_session_key = f.read(private_key.size_in_bytes())
-            # Read the rest of the encryption data
-            nonce = f.read(16)
-            tag = f.read(16)
-            ciphertext = f.read()
+        try:
+            # Read the encrypted file
+            with open(model_parameters_path, 'rb') as f:
+                # Read the RSA-encrypted session key
+                enc_session_key = f.read(private_key.size_in_bytes())
+                # Read the rest of the encryption data
+                nonce = f.read(16)
+                tag = f.read(16)
+                ciphertext = f.read()
+        except Exception as e:
+            logging.error(f"Failed to read encrypted file: {str(e)}")
+            raise
 
         # Decrypt the session key
         cipher_rsa = PKCS1_OAEP.new(private_key)

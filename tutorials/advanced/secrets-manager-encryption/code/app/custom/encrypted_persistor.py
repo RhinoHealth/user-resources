@@ -18,10 +18,13 @@ class EncryptedPersistor(mp.PTFileModelPersistor):
         with open(secret_path, 'r') as f:
             params = json.load(f)
             
-        if 'encrypt_key' not in params:
-            raise ValueError("encrypt_key not found in secret params")
-            
-        return RSA.import_key(params['encrypt_key'])
+        try:
+            if 'encrypt_key' not in params:
+                raise ValueError("encrypt_key not found in secret params")
+                
+            return RSA.import_key(params['encrypt_key'])
+        except Exception as e:
+            raise ValueError(f"Failed to load encryption key: {str(e)}")
 
     def save_model_file(self, save_path: str):
         """Override save_model_file to encrypt the model using RSA/AES hybrid encryption."""
