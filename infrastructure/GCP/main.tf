@@ -17,120 +17,6 @@
 # - This code should not be used in a production environment and should be treated as demonstration/example code 
 # - You will need to enable Compute Engine API, IAM API, Cloud Logging API, and Cloud Resource Manager API
 
-# Defines the Google Cloud provider and sets the default project, region, and zone for all resources.
-provider "google" {
-  project = var.project_id
-  region  = var.region
-  zone    = var.zone
-}
-
-# --- Variables ---------------------------------------------------------------------------------------------------------------
-# --- General Project Variables ---
-variable "project_id" {
-  description = "The unique identifier for your Google Cloud project."
-  type        = string
-}
-variable "region" {
-  description = "The Google Cloud region where resources will be deployed (e.g., 'us-central1')."
-  type        = string
-}
-variable "zone" {
-  description = "The specific zone within the Google Cloud region to deploy zonal resources like the VM (e.g., 'us-central1-c')."
-  type        = string
-}
-
-# --- Naming Convention Variables ---
-variable "workgroup_name" {
-  description = "The workgroup name for resource naming convention (e.g., 'example-workgroup')."
-  type        = string
-}
-variable "environment" {
-  description = "The environment for resource naming convention (e.g., 'prod', 'dev', 'test')."
-  type        = string
-}
-variable "sequence_number" {
-  description = "The sequence number for resource naming convention (e.g., '1', '2')."
-  type        = string
-  default     = "1"
-}
-
-# --- Storage Variables ---
-variable "bucket_name_cancercenter_data" {
-  description = "The globally unique name for the Cloud Storage bucket containing the source data from the cancer center."
-  type        = string
-}
-variable "bucket_name_output_and_logs" {
-  description = "The globally unique name for the Cloud Storage bucket that will store processed outputs and exported logs."
-  type        = string
-}
-
-# --- Network Variables ---
-variable "rhino_orechestrator_ip_range" {
-  description = "A list of IP ranges in CIDR notation allowed for egress traffic to the Rhino orchestrator."
-  type        = list(string)
-}
-variable "subnet_ip_cidr_range" {
-  description = "The internal IP address range for the subnet in CIDR notation (e.g., '10.0.0.0/20')."
-  type        = string
-}
-
-# --- VM Variables ---
-variable "vm_image" {
-  description = "The source image for the VM's boot disk (e.g., 'ubuntu-os-cloud/ubuntu-2204-lts')."
-  type        = string
-}
-variable "vm_machine_type" {
-  description = "The machine type for the VM, which must support Confidential Computing (e.g., 'n2d-standard-2')."
-  type        = string
-}
-
-# --- VM & Script Variables ---
-variable "rhino_agent_id" {
-  description = "The agent ID for the Rhino Health installation."
-  type        = string
-  sensitive   = true
-}
-
-variable "rhino_package_registry_user" {
-  description = "The user for the Rhino Health package registry."
-  type        = string
-  sensitive   = true
-}
-
-variable "rhino_package_registry_password" {
-  description = "The password for the Rhino Health package registry."
-  type        = string
-  sensitive   = true
-}
-
-# --- Local Values for Naming Convention ---
-locals {
-  # VPC Network: {workgroup name}-rhino-client-{environment}-vpc-{seq#}
-  vpc_network_name = "${var.workgroup_name}-rhino-client-${var.environment}-vpc-${var.sequence_number}"
-  
-  # Subnet: {workgroup name}-rhino-client-{environment}-vpc-{seq#}-subnet-{seq#}
-  subnet_name = "${var.workgroup_name}-rhino-client-${var.environment}-vpc-${var.sequence_number}-subnet-${var.sequence_number}"
-  
-  # VM: {workgroup name}-rhino-client-{environment}-{seq#}
-  vm_instance_name = "${var.workgroup_name}-rhino-client-${var.environment}-${var.sequence_number}"
-  
-  # Firewall: {workgroup name}-rhino-client-{protocol}-{port}-{action}
-  firewall_egress_name = "${var.workgroup_name}-rhino-client-tcp-443-allow"
-  
-  # Buckets: {workgroup name}-rhino-client-{type}-{seq#}
-  bucket_output_logs_name = "${var.workgroup_name}-rhino-client-output-data-${var.sequence_number}"
-  bucket_source_data_name = "${var.workgroup_name}-rhino-client-input-data-${var.sequence_number}"
-  bucket_logs_name = "${var.workgroup_name}-rhino-client-log-${var.sequence_number}"
-  
-  # Standard tags for cost aggregation
-  common_tags = {
-    workgroup   = var.workgroup_name
-    environment = var.environment
-    purpose     = "rhino-client"
-    managed_by  = "terraform"
-  }
-}
-
 # --- Networking ------------------------------------------------------------------------------------------------------------------
 # Creates a custom mode Virtual Private Cloud (VPC) network to provide an isolated environment.
 resource "google_compute_network" "main" {
@@ -299,7 +185,7 @@ resource "google_compute_disk" "secondary" {
   name    = "${local.vm_instance_name}-secondary-hdd"
   type    = "pd-standard"
   zone    = var.zone
-  size    = 2048 # 2TB
+  size    = var.secondary_disk_size_gb
   
   labels = local.common_tags
 }
@@ -330,7 +216,7 @@ resource "google_compute_instance" "main" {
   boot_disk {
     initialize_params {
       image = var.vm_image
-      size  = 250
+      size  = var.boot_disk_size_gb
       type  = "pd-ssd"
     }
   }
