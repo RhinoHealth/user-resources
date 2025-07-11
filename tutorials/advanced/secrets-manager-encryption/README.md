@@ -46,7 +46,7 @@ secrets-manager-encryption/
 - Python 3.12+
 - Docker
 - Access to Rhino FCP platform
-- Access to a third party Secrets Manager platform (this example uses AWS Secrests Manager)
+- Access to a third party Secrets Manager platform (this example uses AWS Secrets Manager)
 
 ## Dependencies
 
