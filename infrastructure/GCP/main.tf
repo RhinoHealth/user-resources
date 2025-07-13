@@ -145,7 +145,7 @@ resource "google_storage_bucket" "logs" {
 # Creates a dedicated service account for the Confidential Compute VM.
 resource "google_service_account" "vm" {
   project      = var.project_id
-  account_id   = "${var.workgroup_name}-rhino-client-${var.environment}-sa"
+  account_id   = "${var.workgroup_name}-rhino-${var.environment}-sa"
   display_name = "VM Storage Access Service Account"
 }
 
@@ -248,7 +248,7 @@ resource "google_compute_instance" "main" {
 # --- Logging & Auditing ---------------------------------------------------------------------------------------------
 # Creates a log sink to export all project logs to the designated Cloud Storage bucket.
 resource "google_logging_project_sink" "to_gcs" {
-  name                   = "${var.workgroup_name}-rhino-client-${var.environment}-log-sink"
+  name                   = "${var.workgroup_name}-rhino-${var.environment}-log-sink"
   project                = var.project_id
   destination            = "storage.googleapis.com/${google_storage_bucket.logs.name}"
   unique_writer_identity = true

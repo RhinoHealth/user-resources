@@ -27,7 +27,7 @@ This directory contains Terraform configuration files for deploying infrastructu
 
 3. **Edit `terraform.tfvars` and create `secret.auto.tfvars`**
    - Set your `project_id`, `region`, and other variables as needed in `terraform.tfvars`.
-   - Ensure `rhino_orechestrator_ip_range` includes all required IPs.
+   - Ensure `rhino_orchestrator_ip_range` includes all required IPs.
    - Create a file named `secret.auto.tfvars` (not committed to git) and set sensitive variables like:
      ```hcl
      rhino_package_registry_user     = "<rhino-provided-username>"
