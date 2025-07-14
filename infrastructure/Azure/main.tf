@@ -149,7 +149,7 @@ resource "azurerm_storage_account" "output_logs" {
 # Creates a container for output logs
 resource "azurerm_storage_container" "output_logs" {
   name                  = "output-logs"
-  storage_account_name  = azurerm_storage_account.output_logs.name
+  storage_account_id    = azurerm_storage_account.output_logs.id
   container_access_type = "private"
 }
 
@@ -175,7 +175,7 @@ resource "azurerm_storage_account" "source_data" {
 # Creates a container for source data
 resource "azurerm_storage_container" "source_data" {
   name                  = "source-data"
-  storage_account_name  = azurerm_storage_account.source_data.name
+  storage_account_id    = azurerm_storage_account.source_data.id
   container_access_type = "private"
 }
 
@@ -201,7 +201,7 @@ resource "azurerm_storage_account" "logs" {
 # Creates a container for logs
 resource "azurerm_storage_container" "logs" {
   name                  = "logs"
-  storage_account_name  = azurerm_storage_account.logs.name
+  storage_account_id    = azurerm_storage_account.logs.id
   container_access_type = "private"
 }
 
@@ -341,16 +341,6 @@ resource "azurerm_monitor_diagnostic_setting" "vm" {
   enabled_log {
     category = "SerialConsole"
   }
-
-  metric {
-    category = "AllMetrics"
-    enabled  = true
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
-  }
 }
 
 # Creates a diagnostic setting for the storage accounts
@@ -369,15 +359,5 @@ resource "azurerm_monitor_diagnostic_setting" "storage_logs" {
 
   enabled_log {
     category = "StorageDelete"
-  }
-
-  metric {
-    category = "Transaction"
-    enabled  = true
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
   }
 } 
