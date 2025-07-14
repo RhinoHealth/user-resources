@@ -334,24 +334,12 @@ resource "azurerm_monitor_diagnostic_setting" "vm" {
   target_resource_id         = azurerm_linux_virtual_machine.main.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
 
-  log {
+  enabled_log {
     category = "BootDiagnostics"
-    enabled  = true
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
   }
 
-  log {
+  enabled_log {
     category = "SerialConsole"
-    enabled  = true
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
   }
 
   metric {
@@ -371,34 +359,16 @@ resource "azurerm_monitor_diagnostic_setting" "storage_logs" {
   target_resource_id         = azurerm_storage_account.logs.id
   log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
 
-  log {
+  enabled_log {
     category = "StorageRead"
-    enabled  = true
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
   }
 
-  log {
+  enabled_log {
     category = "StorageWrite"
-    enabled  = true
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
   }
 
-  log {
+  enabled_log {
     category = "StorageDelete"
-    enabled  = true
-
-    retention_policy {
-      enabled = true
-      days    = 30
-    }
   }
 
   metric {
