@@ -13,6 +13,7 @@ Get started today and see how Rhino Health's client resources can help you build
   - [Pneumonia Predicition](./sandbox/pneumonia-prediction/README,md)
 - [Rhino Utils](./rhino-utils/README.md) - Utilities for locally running and pushing containers to your workgroup's ECR for both FCP Generalized Compute and NVFlare models
 - [Examples](./examples/README.md) - User examples for generalized compute and NVFlare containers and the Rhino Health Python SDK
+- [Infrastructure](./infrastructure/GCP/README.md) - Infrastrucutre terraform scripts for Rhino clients
 
 
 ## Getting Help
