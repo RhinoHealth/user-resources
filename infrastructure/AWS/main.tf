@@ -28,15 +28,29 @@ resource "aws_vpc" "main" {
   })
 }
 
-# Creates a subnet within the VPC
-resource "aws_subnet" "main" {
+# Creates a public subnet for NAT Gateway
+resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.subnet_cidr_block
+  cidr_block              = var.public_subnet_cidr_block
+  availability_zone       = var.availability_zone
+  map_public_ip_on_launch = true
+
+  tags = merge(local.common_tags, {
+    Name = "${local.vpc_name}-public"
+    Type = "Public"
+  })
+}
+
+# Creates a private subnet for EC2 instances
+resource "aws_subnet" "private" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.private_subnet_cidr_block
   availability_zone       = var.availability_zone
   map_public_ip_on_launch = false
 
   tags = merge(local.common_tags, {
     Name = local.subnet_name
+    Type = "Private"
   })
 }
 
@@ -49,10 +63,30 @@ resource "aws_internet_gateway" "main" {
   })
 }
 
+# Creates a route table for public subnet
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.main.id
+  }
+
+  tags = merge(local.common_tags, {
+    Name = "${local.vpc_name}-public-rt"
+  })
+}
+
+# Associates the public route table with the public subnet
+resource "aws_route_table_association" "public" {
+  subnet_id      = aws_subnet.public.id
+  route_table_id = aws_route_table.public.id
+}
+
 # Creates a NAT Gateway for private subnet internet access
 resource "aws_eip" "nat" {
   domain = "vpc"
-  
+
   tags = merge(local.common_tags, {
     Name = "${local.vpc_name}-nat-eip"
   })
@@ -60,7 +94,7 @@ resource "aws_eip" "nat" {
 
 resource "aws_nat_gateway" "main" {
   allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.main.id
+  subnet_id     = aws_subnet.public.id
 
   tags = merge(local.common_tags, {
     Name = "${local.vpc_name}-nat"
@@ -69,8 +103,8 @@ resource "aws_nat_gateway" "main" {
   depends_on = [aws_internet_gateway.main]
 }
 
-# Creates a route table for the VPC
-resource "aws_route_table" "main" {
+# Creates a route table for the private subnet
+resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
   route {
@@ -79,14 +113,14 @@ resource "aws_route_table" "main" {
   }
 
   tags = merge(local.common_tags, {
-    Name = "${local.vpc_name}-rt"
+    Name = "${local.vpc_name}-private-rt"
   })
 }
 
-# Associates the route table with the subnet
-resource "aws_route_table_association" "main" {
-  subnet_id      = aws_subnet.main.id
-  route_table_id = aws_route_table.main.id
+# Associates the private route table with the private subnet
+resource "aws_route_table_association" "private" {
+  subnet_id      = aws_subnet.private.id
+  route_table_id = aws_route_table.private.id
 }
 
 # Creates a security group for the EC2 instance
@@ -156,6 +190,38 @@ resource "aws_s3_bucket_public_access_block" "output_logs" {
   restrict_public_buckets = true
 }
 
+# Configures bucket ownership controls
+resource "aws_s3_bucket_ownership_controls" "output_logs" {
+  bucket = aws_s3_bucket.output_logs.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+# Configures bucket lifecycle policy
+resource "aws_s3_bucket_lifecycle_configuration" "output_logs" {
+  bucket = aws_s3_bucket.output_logs.id
+
+  rule {
+    id     = "log_retention"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    expiration {
+      days = 90  # 3 months
+    }
+  }
+}
+
 # Creates S3 bucket for storing source data
 resource "aws_s3_bucket" "source_data" {
   bucket = local.bucket_source_data_name
@@ -192,6 +258,15 @@ resource "aws_s3_bucket_public_access_block" "source_data" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+# Configures bucket ownership controls
+resource "aws_s3_bucket_ownership_controls" "source_data" {
+  bucket = aws_s3_bucket.source_data.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
 }
 
 # Creates S3 bucket for storing logs
@@ -232,17 +307,49 @@ resource "aws_s3_bucket_public_access_block" "logs" {
   restrict_public_buckets = true
 }
 
+# Configures bucket ownership controls
+resource "aws_s3_bucket_ownership_controls" "logs" {
+  bucket = aws_s3_bucket.logs.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
+# Configures bucket lifecycle policy
+resource "aws_s3_bucket_lifecycle_configuration" "logs" {
+  bucket = aws_s3_bucket.logs.id
+
+  rule {
+    id     = "log_retention"
+    status = "Enabled"
+
+    filter {
+      prefix = ""
+    }
+
+    transition {
+      days          = 30
+      storage_class = "STANDARD_IA"
+    }
+
+    expiration {
+      days = 90  # 3 months
+    }
+  }
+}
+
 # --- IAM & Service Accounts ------------------------------------------------------------------------------------------------------------------
 # Creates an IAM role for the EC2 instance
 resource "aws_iam_role" "ec2" {
   name = "${var.workgroup_name}-rhino-${var.environment}-ec2-role"
 
   assume_role_policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
+        Action    = "sts:AssumeRole"
+        Effect    = "Allow"
         Principal = {
           Service = "ec2.amazonaws.com"
         }
@@ -259,7 +366,7 @@ resource "aws_iam_policy" "s3_access" {
   description = "Policy for S3 bucket access"
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       {
         Effect = "Allow"
@@ -284,6 +391,63 @@ resource "aws_iam_policy" "s3_access" {
           aws_s3_bucket.output_logs.arn,
           "${aws_s3_bucket.output_logs.arn}/*"
         ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          aws_s3_bucket.logs.arn,
+          "${aws_s3_bucket.logs.arn}/*"
+        ]
+      }
+    ]
+  })
+}
+
+# Creates an IAM policy for CloudWatch Logs
+resource "aws_iam_policy" "cloudwatch_logs" {
+  name        = "${var.workgroup_name}-rhino-${var.environment}-cloudwatch-policy"
+  description = "Policy for CloudWatch Logs access"
+
+  policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents",
+          "logs:DescribeLogStreams"
+        ]
+        Resource = [
+          "${aws_cloudwatch_log_group.main.arn}:*"
+        ]
+      }
+    ]
+  })
+}
+
+# Creates an IAM policy for KMS access
+resource "aws_iam_policy" "kms_access" {
+  name        = "${var.workgroup_name}-rhino-${var.environment}-kms-policy"
+  description = "Policy for KMS decrypt access"
+
+  policy = jsonencode({
+    Version   = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "kms:Decrypt",
+          "kms:DescribeKey",
+          "kms:GenerateDataKey"
+        ]
+        Resource = "*"
       }
     ]
   })
@@ -293,6 +457,24 @@ resource "aws_iam_policy" "s3_access" {
 resource "aws_iam_role_policy_attachment" "ec2_s3" {
   role       = aws_iam_role.ec2.name
   policy_arn = aws_iam_policy.s3_access.arn
+}
+
+# Attaches the CloudWatch policy to the EC2 role
+resource "aws_iam_role_policy_attachment" "ec2_cloudwatch" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = aws_iam_policy.cloudwatch_logs.arn
+}
+
+# Attaches the KMS policy to the EC2 role
+resource "aws_iam_role_policy_attachment" "ec2_kms" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = aws_iam_policy.kms_access.arn
+}
+
+# Attaches the AWS managed policy for SSM to the EC2 role
+resource "aws_iam_role_policy_attachment" "ec2_ssm" {
+  role       = aws_iam_role.ec2.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 # Creates an instance profile for the EC2 instance
@@ -316,11 +498,12 @@ resource "aws_ebs_volume" "secondary" {
 
 # Creates the EC2 instance
 resource "aws_instance" "main" {
-  ami                    = var.vm_image
+  ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.vm_machine_type
-  subnet_id              = aws_subnet.main.id
+  subnet_id              = aws_subnet.private.id
   vpc_security_group_ids = [aws_security_group.main.id]
   iam_instance_profile   = aws_iam_instance_profile.ec2.name
+  monitoring             = true
 
   root_block_device {
     volume_size = var.boot_disk_size_gb
@@ -329,13 +512,15 @@ resource "aws_instance" "main" {
   }
 
   user_data = base64encode(templatefile("${path.module}/user_data.sh", {
+    vm_instance_name                = local.vm_instance_name
     rhino_agent_id                  = var.rhino_agent_id
     rhino_package_registry_user     = var.rhino_package_registry_user
     rhino_package_registry_password = var.rhino_package_registry_password
   }))
 
   metadata_options {
-    http_tokens = "required"
+    http_tokens   = "required"
+    http_endpoint = "enabled"
   }
 
   tags = merge(local.common_tags, {
@@ -364,14 +549,14 @@ resource "aws_cloudwatch_log_group" "main" {
 # Creates a CloudTrail for audit logging
 resource "aws_cloudtrail" "main" {
   name                          = "${var.workgroup_name}-rhino-${var.environment}-trail"
-  s3_bucket_name               = aws_s3_bucket.logs.bucket
+  s3_bucket_name                = aws_s3_bucket.logs.bucket
   include_global_service_events = true
-  is_multi_region_trail        = false
-  enable_logging               = true
+  is_multi_region_trail         = false
+  enable_logging                = true
 
   event_selector {
-    read_write_type                 = "All"
-    include_management_events       = true
+    read_write_type           = "All"
+    include_management_events = true
     data_resource {
       type   = "AWS::S3::Object"
       values = ["${aws_s3_bucket.source_data.arn}/*"]
@@ -390,11 +575,11 @@ resource "aws_s3_bucket_policy" "logs" {
   bucket = aws_s3_bucket.logs.id
 
   policy = jsonencode({
-    Version = "2012-10-17"
+    Version   = "2012-10-17"
     Statement = [
       {
-        Sid    = "AWSCloudTrailAclCheck"
-        Effect = "Allow"
+        Sid       = "AWSCloudTrailAclCheck"
+        Effect    = "Allow"
         Principal = {
           Service = "cloudtrail.amazonaws.com"
         }
@@ -402,13 +587,13 @@ resource "aws_s3_bucket_policy" "logs" {
         Resource = aws_s3_bucket.logs.arn
       },
       {
-        Sid    = "AWSCloudTrailWrite"
-        Effect = "Allow"
+        Sid       = "AWSCloudTrailWrite"
+        Effect    = "Allow"
         Principal = {
           Service = "cloudtrail.amazonaws.com"
         }
-        Action   = "s3:PutObject"
-        Resource = "${aws_s3_bucket.logs.arn}/*"
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.logs.arn}/*"
         Condition = {
           StringEquals = {
             "s3:x-amz-acl" = "bucket-owner-full-control"

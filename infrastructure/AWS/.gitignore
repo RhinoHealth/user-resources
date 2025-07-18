@@ -3,6 +3,8 @@
 *.tfstate.*
 .terraform/
 .terraform.lock.hcl
+tf.plan
+tf.destroy
 
 # Sensitive files
 secret.auto.tfvars
@@ -11,4 +13,21 @@ secret.auto.tfvars
 
 # OS files
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Log files
+*.log
+
+# Backup files
+*.backup
+*.bak
+
+# Temporary files
+*.tmp
+*.temp
