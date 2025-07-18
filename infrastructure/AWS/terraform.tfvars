@@ -3,7 +3,7 @@ availability_zone                 = "us-east-1a"
 
 # Naming Convention Variables
 workgroup_name                    = "workgroup"
-environment                       = "dev"
+environment                       = "prod"
 sequence_number                   = "1"
 
 # Network Configuration
@@ -15,7 +15,7 @@ ubuntu_version                    = "24.04"
 
 # Rhino Specific Information
 rhino_orchestrator_ip_range       = ["0.0.0.0/0"] # Rhino to provide list of IPs in the future
-rhino_agent_id                    = "rh-aws-test"
+rhino_agent_id                    = ""
 
 # Disk size configuration (in GB)
 boot_disk_size_gb                 = 250
