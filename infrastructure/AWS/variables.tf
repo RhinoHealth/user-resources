@@ -33,8 +33,13 @@ variable "vpc_cidr_block" {
   type        = string
 }
 
-variable "subnet_cidr_block" {
-  description = "The internal IP address range for the subnet in CIDR notation (e.g., '10.0.0.0/20')."
+variable "public_subnet_cidr_block" {
+  description = "The CIDR block for the public subnet where NAT Gateway will be deployed (e.g., '10.0.1.0/24')."
+  type        = string
+}
+
+variable "private_subnet_cidr_block" {
+  description = "The CIDR block for the private subnet where EC2 instances will be deployed (e.g., '10.0.2.0/24')."
   type        = string
 }
 
@@ -44,23 +49,23 @@ variable "rhino_orchestrator_ip_range" {
 }
 
 # --- VM Variables ---
-variable "vm_image" {
-  description = "The AMI ID for the EC2 instance (e.g., 'ami-12345678')."
-  type        = string
-}
-
 variable "vm_machine_type" {
   description = "The instance type for the EC2 instance (e.g., 't3.medium')."
   type        = string
 }
 
-# --- VM & Script Variables ---
+variable "ubuntu_version" {
+  description = "The Ubuntu version to use for the EC2 instance. Supported versions: 20.04 (Focal), 22.04 (Jammy), 24.04 (Noble)."
+  type        = string
+}
+
+# --- Rhino Configuration Variables ---
 variable "rhino_agent_id" {
   description = "The agent ID for the Rhino Health installation."
   type        = string
-  sensitive   = true
 }
 
+# --- Sensitive Variables ---
 variable "rhino_package_registry_user" {
   description = "The user for the Rhino Health package registry."
   type        = string
@@ -82,4 +87,4 @@ variable "boot_disk_size_gb" {
 variable "secondary_disk_size_gb" {
   description = "The size of the secondary EBS volume in GB."
   type        = number
-} 
+}

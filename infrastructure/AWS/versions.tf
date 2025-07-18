@@ -19,4 +19,4 @@ terraform {
 # Defines the AWS provider and sets the default region for all resources.
 provider "aws" {
   region = var.aws_region
-} 
+}
