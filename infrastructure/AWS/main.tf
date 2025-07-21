@@ -217,7 +217,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "output_logs" {
     }
 
     expiration {
-      days = 90  # 3 months
+      days = 90 # 3 months
     }
   }
 }
@@ -334,7 +334,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "logs" {
     }
 
     expiration {
-      days = 90  # 3 months
+      days = 90 # 3 months
     }
   }
 }
@@ -345,11 +345,11 @@ resource "aws_iam_role" "ec2" {
   name = "${var.workgroup_name}-rhino-${var.environment}-ec2-role"
 
   assume_role_policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
-        Action    = "sts:AssumeRole"
-        Effect    = "Allow"
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
         Principal = {
           Service = "ec2.amazonaws.com"
         }
@@ -366,7 +366,7 @@ resource "aws_iam_policy" "s3_access" {
   description = "Policy for S3 bucket access"
 
   policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
         Effect = "Allow"
@@ -414,7 +414,7 @@ resource "aws_iam_policy" "kms_access" {
   description = "Policy for KMS decrypt access"
 
   policy = jsonencode({
-    Version   = "2012-10-17"
+    Version = "2012-10-17"
     Statement = [
       {
         Effect = "Allow"

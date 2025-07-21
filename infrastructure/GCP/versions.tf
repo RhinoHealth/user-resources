@@ -1,9 +1,9 @@
 # Defines the providers and versions used in the Terraform configuration for Google Cloud Platform (GCP).
 terraform {
-#  backend "gcs" {
-#    bucket  = "<YOUR_BUCKET_NAME>"
-#    prefix  = "<YOUR_STATE_FILE_PREFIX>"
-#  }
+  #  backend "gcs" {
+  #    bucket  = "<YOUR_BUCKET_NAME>"
+  #    prefix  = "<YOUR_STATE_FILE_PREFIX>"
+  #  }
 
   required_providers {
     google = {
