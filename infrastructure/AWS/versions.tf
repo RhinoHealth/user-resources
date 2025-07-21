@@ -1,10 +1,10 @@
 # Defines the providers and versions used in the Terraform configuration for Amazon Web Services (AWS).
 terraform {
-#  backend "s3" {
-#    bucket  = "<YOUR_BUCKET_NAME>"
-#    key     = "<YOUR_STATE_FILE_KEY>"
-#    region  = "<YOUR_BUCKET_REGION>"
-#  }
+  #  backend "s3" {
+  #    bucket  = "<YOUR_BUCKET_NAME>"
+  #    key     = "<YOUR_STATE_FILE_KEY>"
+  #    region  = "<YOUR_BUCKET_REGION>"
+  #  }
 
   required_providers {
     aws = {
