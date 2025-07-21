@@ -1,14 +1,6 @@
-# Terraform files
-*.tfstate
-*.tfstate.*
-.terraform/
-.terraform.lock.hcl
-
-# Sensitive files
+# Ignore secret variable files
 secret.auto.tfvars
-*.pem
-*.key
 
-# OS files
-.DS_Store
-Thumbs.db 
+# Ignore Terraform state files
+.terraform
+*.tfstate*

@@ -24,4 +24,4 @@ locals {
     purpose     = "rhino-client"
     managed_by  = "terraform"
   }
-} 
+}

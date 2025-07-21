@@ -9,14 +9,14 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0" # Pin to a specific version or range
+      version = "~> 6.4" # Pin to a specific version or range
     }
   }
 
-  required_version = ">= 1.0"
+  required_version = ">= 1.10"
 }
 
 # Defines the AWS provider and sets the default region for all resources.
 provider "aws" {
   region = var.aws_region
-} 
+}

@@ -11,6 +11,8 @@ terraform {
       version = "~> 6.4" # Pin to a specific version or range
     }
   }
+
+  required_version = ">= 1.10"
 }
 
 # Defines the Google Cloud provider and sets the default project, region, and zone for all resources.

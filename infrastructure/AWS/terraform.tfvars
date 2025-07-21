@@ -8,13 +8,13 @@ sequence_number                   = "1"
 
 # Network Configuration
 vpc_cidr_block                    = "10.0.0.0/16"
-subnet_cidr_block                 = "10.0.0.0/20"
-vm_machine_type                   = "t3.medium"
-vm_image                          = "ami-0c02fb55956c7d316" # Ubuntu 22.04 LTS in us-east-1
+public_subnet_cidr_block          = "10.0.1.0/24"
+private_subnet_cidr_block         = "10.0.2.0/24"
+vm_machine_type                   = "c7a.xlarge"
+vm_image                          = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"
 
 # Rhino Specific Information
 rhino_orchestrator_ip_range       = ["0.0.0.0/0"] # Rhino to provide list of IPs in the future
-rhino_agent_id                    = ""
 
 # Disk size configuration (in GB)
 boot_disk_size_gb                 = 250

@@ -3,3 +3,4 @@ secret.auto.tfvars
 
 # Ignore Terraform state files
 .terraform
+*.tfstate*
