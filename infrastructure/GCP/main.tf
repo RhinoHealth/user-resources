@@ -20,10 +20,10 @@
 # --- Networking ------------------------------------------------------------------------------------------------------------------
 # Creates a custom mode Virtual Private Cloud (VPC) network to provide an isolated environment.
 resource "google_compute_network" "main" {
-  project                       = var.project_id
-  name                          = local.vpc_network_name
-  auto_create_subnetworks       = false
-  routing_mode                  = "REGIONAL"
+  project                         = var.project_id
+  name                            = local.vpc_network_name
+  auto_create_subnetworks         = false
+  routing_mode                    = "REGIONAL"
   delete_default_routes_on_create = false
 }
 
@@ -68,7 +68,7 @@ resource "google_compute_firewall" "allow_egress_rhino" {
   name               = local.firewall_egress_name
   network            = google_compute_network.main.name
   description        = "Allows egress traffic to the Rhino orchestrator."
-  destination_ranges = var.rhino_orechestrator_ip_range
+  destination_ranges = var.rhino_orchestrator_ip_rangee
   direction          = "EGRESS"
 
   allow {
@@ -113,7 +113,7 @@ resource "google_storage_bucket" "output_logs" {
   project                     = var.project_id
   public_access_prevention    = "enforced"
   uniform_bucket_level_access = true
-  
+
   labels = local.common_tags
 }
 
@@ -125,7 +125,7 @@ resource "google_storage_bucket" "source_data" {
   project                     = var.project_id
   public_access_prevention    = "enforced"
   uniform_bucket_level_access = true
-  
+
   labels = local.common_tags
 }
 
@@ -137,7 +137,7 @@ resource "google_storage_bucket" "logs" {
   project                     = var.project_id
   public_access_prevention    = "enforced"
   uniform_bucket_level_access = true
-  
+
   labels = local.common_tags
 }
 
@@ -186,7 +186,7 @@ resource "google_compute_disk" "secondary" {
   type    = "pd-standard"
   zone    = var.zone
   size    = var.secondary_disk_size_gb
-  
+
   labels = local.common_tags
 }
 
