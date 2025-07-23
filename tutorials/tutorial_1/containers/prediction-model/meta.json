@@ -1,9 +1,7 @@
 {
   "name": "job",
   "resource_spec": {},
-  "min_clients": 1,
-  "interface": "client",
-  "entry_point": "app/custom/client.py",
+  "min_clients" : 1,
   "deploy_map": {
     "app": [
       "@ALL"

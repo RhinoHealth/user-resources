@@ -1,4 +1,4 @@
-# Set base Docker image to be used.
+# Set base Docker image
 FROM nvcr.io/nvidia/cuda:12.6.3-runtime-ubuntu24.04
 
 # Set env vars to be able to run apt-get commands without issues.
@@ -52,13 +52,14 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=/requirements.txt \
     PIP_ROOT_USER_ACTION=ignore pip install -r /requirements.txt
 
+# Set working directory and user
 WORKDIR /home/localuser
 USER localuser
 
-# Copy the needed local files (code and otherwise) into the container work directory.
-# Note: For directories, have a separate COPY command for each top-level directory.
+# Copy application files
 COPY --chown=$UID:$GID ./app ./app
 COPY --chown=$UID:$GID ./infer.py ./meta.json ./
 
-ENV PYTHONPATH="/home/localuser/app/custom"
+# Set environment vars
+ENV PYTHONPATH="/home/localuser/app"
 ENV PYTHONUNBUFFERED=1

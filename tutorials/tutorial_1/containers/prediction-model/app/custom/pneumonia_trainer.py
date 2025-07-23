@@ -15,32 +15,59 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from rhino_health.client import Client
-from pneumonia_trainer import PneumoniaTrainer
+from nvflare.client.api import init, is_running, receive, send, FLModel
+from nvflare.client.tracking import SummaryWriter
+from nvflare.apis.shareable import Shareable
+from nvflare.apis.fl_constant import ReturnCode
+from nvflare.apis.fl_context import FLContext
 
-# Step 1: Connect to Rhino FL client
-client = Client()
-client.set_run_context()
+from custom.pneumonia_trainer_class import PneumoniaTrainer
 
-# Step 2: Initialize the trainer and prepare data
-trainer = PneumoniaTrainer(lr=0.01, epochs=5, test_split=0.2)
-trainer.prepare_data()
 
-# Step 3: Get global weights from server and load into model
-global_weights = client.get_parameters()
-trainer.set_weights(global_weights)
+def execute(task_name: str, shareable: Shareable, fl_ctx: FLContext, abort_signal) -> Shareable:
+    # Initialize NVFlare client API context
+    ctx = init()
 
-# Step 4: Optional pre-training evaluation
-initial_loss = trainer.evaluate()
-client.log_metric("initial_validation_loss", initial_loss)
+    # Log metrics
+    writer = SummaryWriter()
 
-# Step 5: Local training
-trainer.train()
+    # Initialize trainer
+    trainer = PneumoniaTrainer(lr=0.01, epochs=5, test_set_percentage=20.0, writer=writer)
 
-# Step 6: Post-training evaluation
-final_loss = trainer.evaluate()
-client.log_metric("final_validation_loss", final_loss)
+    while is_running(ctx):
+        # 1. Receive global model
+        input_model = receive(ctx)
+        if input_model is None:
+            print("[Client] No input model received. Exiting training loop.")
+            break
 
-# Step 7: Submit updated weights to the server
-updated_weights = trainer.get_weights()
-client.submit_parameters(updated_weights)
+        current_round = input_model.current_round
+        print(f"[Client] Round {current_round}: received global model.")
+
+        trainer.set_weights(input_model.params)
+
+        # 2. Train locally
+        trainer.local_train(global_round=current_round)
+
+        # 3. Validate locally
+        val_loss = trainer.local_valid(global_round=current_round)
+        print(f"[Client] Round {current_round}: validation loss = {val_loss}")
+
+        # 4. Prepare output model
+        output_model = FLModel(
+            params=trainer.get_weights(),
+            metrics={"val_loss": val_loss},
+            meta={"format": "pytorch"},
+        )
+
+        # 5. Send model
+        send(output_model, ctx)
+
+    # Finalize logs
+    writer.flush()
+    writer.close()
+
+    # Return dummy Shareable
+    result = Shareable()
+    result.set_return_code(ReturnCode.OK)
+    return result
