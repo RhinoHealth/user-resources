@@ -9,12 +9,13 @@ sequence_number = "1"
 
 # Network Configuration
 subnet_ip_cidr_range = "10.0.0.0/20"
-vm_machine_type      = "n2d-standard-2"
-vm_image             = "ubuntu-os-cloud/ubuntu-2404-lts-amd64"
+
+# VM Configuration
+vm_machine_type = "n2d-standard-2"
+vm_image        = "ubuntu-os-cloud/ubuntu-2404-lts-amd64"
 
 # Rhino Specific Information
-rhino_orechestrator_ip_range = ["0.0.0.0/0"] # Rhino to provide list of IPs in the future
-rhino_agent_id               = ""
+rhino_orchestrator_ip_range = ["0.0.0.0/0"] # Rhino to provide list of IPs in the future
 
 # Disk size configuration (in GB)
 boot_disk_size_gb      = 250
