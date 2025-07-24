@@ -29,7 +29,7 @@ variable "sequence_number" {
 }
 
 # --- Network Variables ---
-variable "rhino_orchestrator_ip_rangee" {
+variable "rhino_orchestrator_ip_range" {
   description = "A list of IP ranges in CIDR notation allowed for egress traffic to the Rhino orchestrator."
   type        = list(string)
 }

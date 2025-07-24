@@ -68,7 +68,7 @@ resource "google_compute_firewall" "allow_egress_rhino" {
   name               = local.firewall_egress_name
   network            = google_compute_network.main.name
   description        = "Allows egress traffic to the Rhino orchestrator."
-  destination_ranges = var.rhino_orchestrator_ip_rangee
+  destination_ranges = var.rhino_orchestrator_ip_range
   direction          = "EGRESS"
 
   allow {
