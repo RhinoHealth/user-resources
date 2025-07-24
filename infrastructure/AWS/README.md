@@ -71,7 +71,6 @@ This directory contains Terraform configuration files for deploying infrastructu
    ```
 
 ## Notes
-- Make sure required AWS services are enabled: EC2, IAM, S3, VPC, etc.
 - Ensure you have sufficient service quotas for all resources.
 - If you encounter issues destroying S3 buckets (due to remaining objects or versions), you may need to manually empty the buckets before running `tofu destroy`.
 
