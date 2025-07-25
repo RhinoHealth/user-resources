@@ -1,9 +1,8 @@
 Variable Name,Pregnancies,Age,Height,Weight,Glucose,BloodPressure,SkinThickness,Insulin,DiabetesPedigreeFunction,Outcome
 Identifier,,,,,,,,,,
 Description,,,,,,,,,,
-Role,Input,Input,Input,Input,Input,Input,Input,Input,Input,Input
 Type,String,Integer,Float,Integer,Integer,Integer,Float,Integer,Float,String
 Type Parameters,,,,,,,,,,
 Units,,,,,,,,,,
-May Contain PHI?,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
+Contains Sensitive Data?,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE,FALSE
 Permissions,Default,Default,Default,Default,Default,Default,Default,Default,Default,Default
