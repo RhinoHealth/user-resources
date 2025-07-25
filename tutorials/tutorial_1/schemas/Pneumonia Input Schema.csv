@@ -1,9 +1,8 @@
-Variable Name,SeriesUID,Height,Weight,Gender,Pneumonia
+﻿Variable Name,SeriesUID,Height,Weight,Gender,Pneumonia
 Identifier,,,,,
 Description,DICOM Series UID of the CXR,Patient Height,Patient Weight,Patient Gender,Whether or not the patient had pneumonia
-Role,Input,Input,Input,Metadata,Output
 Type,DicomSeriesUID,ConstrainedFloat,PositiveFloat,Enum,Boolean
 Type Parameters,,"{""gt"": 0, ""le"": 2.3}",,"{""choices"": [""M"", ""F""]}",
 Units,,m,kg,,
-May Contain PHI?,FALSE,FALSE,FALSE,FALSE,FALSE
+Contains Sensitive Data?,False,False,False,False,False
 Permissions,Default,Default,Default,Default,Default
