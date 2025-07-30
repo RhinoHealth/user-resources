@@ -347,22 +347,73 @@ class PneumoniaTrainer(Executor):
         ml = make_model_learnable(self.model.state_dict(), {})
         self.persistence_manager.update(ml)
         torch.save(self.persistence_manager.to_persistence_dict(), model_path)
-
-    def load_local_model(self, fl_ctx: FLContext):
-        run_dir = (
-            fl_ctx.get_engine()
-            .get_workspace()
-            .get_run_dir(fl_ctx.get_prop(ReservedKey.RUN_NUM))
-        )
-        models_dir = os.path.join(run_dir, PTConstants.PTModelsDir)
-        if not os.path.exists(models_dir):
-            return None
-        model_path = os.path.join(models_dir, PTConstants.PTLocalModelName)
-
-        self.persistence_manager = PTModelPersistenceFormatManager(
-            data=torch.load(model_path), default_train_conf=self._default_train_conf
-        )
-        ml = self.persistence_manager.to_model_learnable(
-            exclude_vars=self._exclude_vars
-        )
-        return ml
+        
+        # ALSO save to /output/ for platform dataset registration
+        self._save_output_model(ml)
+    
+    def _save_output_model(self, ml):
+        """Save model to /output/ for platform dataset registration"""
+        try:
+            import datetime
+            from pathlib import Path
+            
+            # Create output directory structure
+            dest_dir = Path("/output")
+            file_data_dir = dest_dir / "file_data"
+            dest_dir.mkdir(parents=False, exist_ok=True)
+            file_data_dir.mkdir(parents=True, exist_ok=True)
+            
+            timestr = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d-%H%M%S")
+            
+            # Save model files in both locations for compatibility
+            model_filename = f"model_parameters_{timestr}.pt"
+            checkpoint_filename = f"checkpoint_{timestr}.pt"
+            
+            # Save in file_data subdirectory (for dataset registration)
+            torch.save(self.persistence_manager.to_persistence_dict(), f"{file_data_dir}/{model_filename}")
+            torch.save(self.persistence_manager.to_persistence_dict(), f"{file_data_dir}/{checkpoint_filename}")
+            
+            # ALSO save in root output directory (for inference compatibility)
+            torch.save(self.persistence_manager.to_persistence_dict(), f"{dest_dir}/{checkpoint_filename}")
+            torch.save(self.persistence_manager.to_persistence_dict(), f"{dest_dir}/model_parameters.pt")
+            
+            print(f"Saved model files to both {file_data_dir}/ and {dest_dir}/")
+            
+            # Create the required dataset.csv file (for output dataset registration)
+            self._create_output_dataset_csv(dest_dir, model_filename, checkpoint_filename, timestr)
+            
+        except Exception as e:
+            print(f"Warning: Failed to save output model: {e}")
+            # Don't fail training if output saving fails
+            
+    def _create_output_dataset_csv(self, output_dir, model_filename, checkpoint_filename, timestr):
+        """Create the required dataset.csv file that Rhino platform looks for"""
+        try:
+            # Create a simple CSV with model information
+            model_info = {
+                "Filename": [
+                    f"file_data/{model_filename}",
+                    f"file_data/{checkpoint_filename}",
+                    checkpoint_filename,
+                    "model_parameters.pt"
+                ],
+                "Type": ["model_parameters", "checkpoint", "checkpoint_root", "model_root"],
+                "Created": [timestr, timestr, timestr, timestr],
+                "Description": [
+                    "Trained pneumonia model parameters", 
+                    "Trained pneumonia model checkpoint",
+                    "Checkpoint file in root (for inference)",
+                    "Standard model file (for inference)"
+                ]
+            }
+            
+            # Create DataFrame and save as CSV in root output directory
+            df = pd.DataFrame(model_info)
+            csv_path = output_dir / "dataset.csv"
+            df.to_csv(csv_path, index=False)
+            
+            print(f"Created output dataset.csv at {csv_path}")
+            
+        except Exception as e:
+            print(f"Warning: Failed to create dataset.csv: {e}")
+            # Don't fail training if CSV creation fails

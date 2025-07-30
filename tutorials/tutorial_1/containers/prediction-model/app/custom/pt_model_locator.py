@@ -29,7 +29,7 @@ class PTModelLocator(ModelLocator):
                     external_file_path = "/external_files/mimic-cxr/" + PTConstants.PTFileModelName.split("/")[-1]
                     model_path = external_file_path
                 else:
-                    server_run_dir = fl_ctx.get_engine().get_workspace().get_app_dir(fl_ctx.get_run_number())
+                    server_run_dir = fl_ctx.get_engine().get_workspace().get_app_dir(fl_ctx.get_job_id())
                     model_path = os.path.join(server_run_dir, PTConstants.PTFileModelName)
                 if not os.path.exists(model_path):
                     return None
@@ -38,7 +38,7 @@ class PTModelLocator(ModelLocator):
                 device = "cuda" if torch.cuda.is_available() else "cpu"
                 data = torch.load(model_path, map_location=device)
 
-                # Setup the persistence manager.
+                # Set up the persistence manager.
                 if self.model:
                     default_train_conf = {"train": {"model": type(self.model).__name__}}
                 else:
@@ -50,8 +50,8 @@ class PTModelLocator(ModelLocator):
 
                 # Create dxo and return
                 return model_learnable_to_dxo(ml)
-            except:
-                self.log_error(fl_ctx, "Error in retrieving {model_name}.", fire_event=False)
+            except Exception as e:
+                self.log_error(fl_ctx, f"Error in retrieving {model_name}: {e}.", fire_event=False)
                 return None
         else:
             self.log_error(fl_ctx, f"PTModelLocator doesn't recognize name: {model_name}", fire_event=False)

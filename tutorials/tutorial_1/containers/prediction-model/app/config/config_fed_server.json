@@ -8,7 +8,7 @@
   "components": [
     {
       "id": "persistor",
-      "path": "rhino_pt_model_persistor.PTFileModelPersistorAllCheckpoints",
+      "path": "nvflare.app_opt.pt.file_model_persistor.PTFileModelPersistor",
       "args": {
         "model": {
           "path": "network.PneumoniaModel"
@@ -39,7 +39,7 @@
       "path": "nvflare.app_common.workflows.scatter_and_gather.ScatterAndGather",
       "args": {
         "min_clients": 1,
-        "num_rounds": 1,
+        "num_rounds": 5,
         "start_round": 0,
         "wait_time_after_min_received": 10,
         "aggregator_id": "aggregator",
