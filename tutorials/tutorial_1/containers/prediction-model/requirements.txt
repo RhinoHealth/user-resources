@@ -1,7 +1,8 @@
-nvflare == 2.6
-torch ~= 2.3.0
-torchvision ~= 0.18.0
-scikit-learn ~= 1.5.2
+nvflare == 2.6.1
 pandas ~= 2.2.3
 tensorboardX ~= 2.6.2
-numpy < 2.0
+torch ~= 2.2.1
+torchvision ~= 0.17.1
+numpy<2.0
+omegaconf ~= 2.3.0
+scikit-learn ~= 1.3.0

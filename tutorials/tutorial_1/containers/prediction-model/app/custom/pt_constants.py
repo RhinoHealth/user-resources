@@ -17,5 +17,4 @@ class PTConstants:
     PTServerName = "server"
     PTFileModelName = "model_parameters.pt"
     PTLocalModelName = "local_model.pt"
-
     PTModelsDir = "models"

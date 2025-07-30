@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import sys
+import glob
 
 import pandas as pd
 import torch
@@ -54,7 +55,16 @@ def infer(model_params_file_path):
 
 
 if __name__ == "__main__":
-    args = sys.argv[1:]
-    (model_params_file_path,) = args
-    infer(model_params_file_path)
+    if len(sys.argv) > 1:
+        model_path = sys.argv[1]
+    else:
+        # Simple auto-discovery
+        model_files = glob.glob("/input/model_parameters*.pt") + glob.glob("/input/checkpoint*.pt")
+        if model_files:
+            model_path = model_files[0]
+        else:
+            print("No model file found")
+            sys.exit(1)
+    
+    infer(model_path)
     sys.exit(0)
