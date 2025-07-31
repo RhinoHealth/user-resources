@@ -21,7 +21,7 @@ WORKDIR /home/localuser
 USER localuser
 
 COPY --chown=$UID:$GID ./app ./app/
-COPY --chown=$UID:$GID ./infer.py ./meta.conf ./
+COPY --chown=$UID:$GID ./infer.py ./meta.conf ./   
 
 ENV PYTHONPATH="/home/localuser/app/custom"
 ENV PYTHONUNBUFFERED=1

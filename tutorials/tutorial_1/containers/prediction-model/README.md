@@ -13,7 +13,7 @@ It shows how to:
 * Package the code in a Docker container that can be used with FCP
 * Maintain compatibility with existing JSON configuration patterns
 
-Please reference to the [[tutorial](https://docs.rhinohealth.com/hc/en-us/articles/8088478664349-Tutorial-1-Basic-Usage)] for in depth explanations on how to use NVFLARE on FCP.
+Please reference to the [tutorial](https://docs.rhinohealth.com/hc/en-us/articles/8088478664349-Tutorial-1-Basic-Usage) for in depth explanations on how to use NVFLARE on FCP.
 
 ### **Resources**
 - `app/config` - This is the standard NVFlare directory for config files
