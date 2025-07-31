@@ -44,7 +44,56 @@ from nvflare.app_opt.pt.model_persistence_format_manager import PTModelPersisten
 
 def load_data(test_set_percentage=20.0):
     """Load pneumonia data from input directory"""
-    transforms = Compose([
+    try:
+        # Try tutorial format first: /input/datasets/ with CSV files
+        dataset_dirs = [x for x in Path("/input/datasets/").iterdir() if x.resolve().is_dir()]
+        if dataset_dirs:
+            dataset_dfs = [pd.read_csv(dataset_dir / "dataset.csv") for dataset_dir in dataset_dirs]
+            for dataset_dir, df in zip(dataset_dirs, dataset_dfs):
+                df["JPG file_abspath"] = dataset_dir / "file_data" / df["JPG file"]
+
+            # Random train/test split
+            combined_df = pd.concat(dataset_dfs)
+            train_df, test_df = train_test_split(combined_df, test_size=test_set_percentage / 100)
+            train_image_file_paths = train_df["JPG file_abspath"]
+            test_image_file_paths = test_df["JPG file_abspath"]
+
+            # Create datasets by creating directories with symlinks
+            train_dataset_folder = Path("/tmp/train_images_symlinks")
+            test_dataset_folder = Path("/tmp/test_images_symlinks")
+            
+            for image_file_path in train_image_file_paths:
+                symlink_path = train_dataset_folder / image_file_path.relative_to(Path("/input/datasets/"))
+                symlink_path.parent.mkdir(parents=True, exist_ok=True)
+                if not symlink_path.exists():
+                    symlink_path.symlink_to(image_file_path)
+                    
+            for image_file_path in test_image_file_paths:
+                symlink_path = test_dataset_folder / image_file_path.relative_to(Path("/input/datasets/"))
+                symlink_path.parent.mkdir(parents=True, exist_ok=True)
+                if not symlink_path.exists():
+                    symlink_path.symlink_to(image_file_path)
+
+            transforms = Compose([
+                Resize(size=(256, 256)),
+                RandomRotation(degrees=(-20, +20)),
+                CenterCrop(size=224),
+                ToTensor(),
+                Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+            ])
+            
+            train_dataset = torchvision.datasets.ImageFolder(Path(train_dataset_folder/ "file_data"), transform=transforms)
+            test_dataset = torchvision.datasets.ImageFolder(Path(test_dataset_folder/"file"), transform=transforms)
+            
+            print(f"Loaded datasets with tutorial format: {len(train_dataset)} train, {len(test_dataset)} test")
+            return train_dataset, test_dataset
+            
+    except Exception as e:
+        print(f"Tutorial format failed: {e}, trying fallback methods...")
+        
+    # Fallback: try direct ImageFolder approach
+    try:
+        transforms = Compose([
             Resize(size=(256, 256)),
             RandomRotation(degrees=(-20, +20)),
             CenterCrop(size=224),
@@ -52,18 +101,26 @@ def load_data(test_set_percentage=20.0):
             Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
         
-    path =  "/input"
-    try:
-        if os.path.exists(path):
-            full_dataset = torchvision.datasets.ImageFolder(root=path, transform=transforms)
-            dataset_size = len(full_dataset)
-            test_size = int(test_set_percentage / 100 * dataset_size)
-            train_size = dataset_size - test_size        
-            train_dataset, test_dataset = torch.utils.data.random_split(full_dataset, [train_size, test_size])
-        print(f"Loaded dataset from {path}: {len(train_dataset)} train, {len(test_dataset)} test")
-        return train_dataset, test_dataset
-    except Exception as path_error:
-        print(f"Failed to load from {path}: {path_error}")               
+        possible_paths = ["/input/file_data", "/input", "/input/data"]
+        for path in possible_paths:
+            try:
+                if os.path.exists(path):
+                    full_dataset = torchvision.datasets.ImageFolder(root=path, transform=transforms)
+                    dataset_size = len(full_dataset)
+                    test_size = int(test_set_percentage / 100 * dataset_size)
+                    train_size = dataset_size - test_size
+                    
+                    train_dataset, test_dataset = torch.utils.data.random_split(
+                        full_dataset, [train_size, test_size]
+                    )
+                    print(f"Loaded dataset from {path}: {len(train_dataset)} train, {len(test_dataset)} test")
+                    return train_dataset, test_dataset
+            except Exception as path_error:
+                print(f"Failed to load from {path}: {path_error}")
+                continue
+                
+    except Exception as fallback_error:
+        print(f"All data loading methods failed: {fallback_error}")
 
 def save_model_to_output(model, round_num):
     """Save model to /output for platform dataset registration using proper NVFLARE format"""
@@ -71,7 +128,6 @@ def save_model_to_output(model, round_num):
         import datetime
         from pathlib import Path
         
-        # Create output directory structure (same as old executor)
         dest_dir = Path("/output")
         file_data_dir = dest_dir / "file_data"
         dest_dir.mkdir(parents=False, exist_ok=True)
