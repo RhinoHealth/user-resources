@@ -12,7 +12,8 @@
       "args": {
         "model": {
           "path": "network.PneumoniaModel"
-        }
+        },
+      "global_model_file_name": "/output/model_parameters.pt"
       }
     },
     {

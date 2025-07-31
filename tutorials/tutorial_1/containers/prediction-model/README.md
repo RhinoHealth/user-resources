@@ -13,17 +13,21 @@ It shows how to:
 * Package the code in a Docker container that can be used with FCP
 * Maintain compatibility with existing JSON configuration patterns
 
-Please reference the User Documentation and/or Tutorials for in depth explanations on how to use NVFLARE on FCP.
+Please reference to the [[tutorial](https://docs.rhinohealth.com/hc/en-us/articles/8088478664349-Tutorial-1-Basic-Usage)] for in depth explanations on how to use NVFLARE on FCP.
 
 ### **Resources**
 - `app/config` - This is the standard NVFlare directory for config files
   - `config_fed_client.json` - Updated federated client config using ClientAPILauncherExecutor for the new client API
   - `config_fed_server.json` - Standard federated server config with model persistence to `/output/model_parameters.pt`
 - `app/custom` - This is the standard NVFlare directory for custom model code
-  - `pneumonia_fl_client_api.py` - Main training script using the new Client API (`import nvflare.client as flare`)
+  - `__init__.py` - Python package initialization file
   - `network.py` - Pneumonia model definition
+  - `pneumonia_fl_client_api.py` - Main training script using the new Client API (`import nvflare.client as flare`)
+  - `pneumonia_trainer.py` - Alternative trainer implementation
+  - `pt_constants.py` - PyTorch constants and configuration
   - `pt_model_locator.py` - Model locator for server-side operations
 - `infer.py` - Inference script compatible with both old and new client API model formats
+- `meta.conf` - Metadata configuration file
 - `Dockerfile` - Dockerfile for building the container image
 - `requirements.txt` - Python dependencies for NVIDIA FLARE v2.6
 <br><br>
@@ -36,10 +40,6 @@ The new NVIDIA FLARE v2.6 Client API provides:
 - **Built-in model format handling** with automatic PyTorch state_dict management
 - **Easy metrics tracking** with the FLModel object
 - **Backward compatibility** with existing FCP infrastructure
-
-### **Migration from Executor API**
-
-This example demonstrates how to modernize NVIDIA FLARE code from the traditional executor approach to the new Client API while maintaining full compatibility with FCP.
 
 # Getting Help
 For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).

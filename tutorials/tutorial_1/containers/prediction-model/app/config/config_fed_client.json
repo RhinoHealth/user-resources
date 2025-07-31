@@ -8,7 +8,6 @@
         "args": {
           "launcher_id": "launcher",
           "pipe_id": "pipe",
-          "heartbeat_timeout": 60,
           "params_exchange_format": "pytorch",
           "params_transfer_type": "FULL",
           "train_with_evaluation": true

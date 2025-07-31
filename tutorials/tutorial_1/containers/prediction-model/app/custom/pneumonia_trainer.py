@@ -1,4 +1,19 @@
-#!/usr/bin/env python3
+# Copyright (c) 2025, Rhino HealthTech, Inc.
+# Original file modified by Rhino Health to adapt it to the Rhino Health Federated Computing Platform.
+
+# Copyright (c) 2021, NVIDIA CORPORATION.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import os
 import os.path
@@ -36,7 +51,6 @@ from torchvision.transforms import (
     Resize,
     ToTensor,
 )
-
 
 class PneumoniaTrainer(Executor):
     def __init__(
@@ -77,117 +91,64 @@ class PneumoniaTrainer(Executor):
         self.loss = nn.CrossEntropyLoss()
         self.optimizer = Adam(self.model.parameters(), lr=lr)
 
-        # Read datasets - try the tutorial format first, then fallback
-        try:
-            # Tutorial format: /input/datasets/ with CSV files
-            dataset_dirs = [
-                x for x in Path("/input/datasets/").iterdir() if x.resolve().is_dir()
+        # Read datasets.
+        dataset_dirs = [
+            x for x in Path("/input/datasets/").iterdir() if x.resolve().is_dir()
+        ]
+        dataset_dfs = [
+            pd.read_csv(dataset_dir / "dataset.csv") for dataset_dir in dataset_dirs
+        ]
+        for dataset_dir, df in zip(dataset_dirs, dataset_dfs):
+            df["JPG file_abspath"] = dataset_dir / "file_data" / df["JPG file"]
+
+        # Random train/test split.
+        combined_df = pd.concat(dataset_dfs)
+        train_df, test_df = train_test_split(
+            combined_df, test_size=self._test_set_percentage / 100
+        )
+        train_image_file_paths = train_df["JPG file_abspath"]
+        test_image_file_paths = test_df["JPG file_abspath"]
+
+        # Load datasets by creating directories with symlinks to actual images.
+        train_dataset_folder = Path("/tmp/train_images_symlinks")
+        for image_file_path in train_image_file_paths:
+            symlink_path = train_dataset_folder / image_file_path.relative_to(
+                Path("/input/datasets/")
+            )
+            symlink_path.parent.mkdir(parents=True, exist_ok=True)
+            symlink_path.symlink_to(image_file_path)
+        test_dataset_folder = Path("/tmp/test_images_symlinks")
+        for image_file_path in test_image_file_paths:
+            symlink_path = test_dataset_folder / image_file_path.relative_to(
+                Path("/input/datasets/")
+            )
+            symlink_path.parent.mkdir(parents=True, exist_ok=True)
+            symlink_path.symlink_to(image_file_path)
+
+        # Create data loaders for the training and testing sets.
+        transforms = Compose(
+            [
+                Resize(size=(256, 256)),
+                RandomRotation(degrees=(-20, +20)),
+                CenterCrop(size=224),
+                ToTensor(),
+                Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
             ]
-            if dataset_dirs:
-                dataset_dfs = [
-                    pd.read_csv(dataset_dir / "dataset.csv") for dataset_dir in dataset_dirs
-                ]
-                for dataset_dir, df in zip(dataset_dirs, dataset_dfs):
-                    df["JPG file_abspath"] = dataset_dir / "file_data" / df["JPG file"]
-
-                # Random train/test split.
-                combined_df = pd.concat(dataset_dfs)
-                train_df, test_df = train_test_split(
-                    combined_df, test_size=self._test_set_percentage / 100
-                )
-                train_image_file_paths = train_df["JPG file_abspath"]
-                test_image_file_paths = test_df["JPG file_abspath"]
-
-                # Load datasets by creating directories with symlinks to actual images.
-                train_dataset_folder = Path("/tmp/train_images_symlinks")
-                for image_file_path in train_image_file_paths:
-                    symlink_path = train_dataset_folder / image_file_path.relative_to(
-                        Path("/input/datasets/")
-                    )
-                    symlink_path.parent.mkdir(parents=True, exist_ok=True)
-                    symlink_path.symlink_to(image_file_path)
-                test_dataset_folder = Path("/tmp/test_images_symlinks")
-                for image_file_path in test_image_file_paths:
-                    symlink_path = test_dataset_folder / image_file_path.relative_to(
-                        Path("/input/datasets/")
-                    )
-                    symlink_path.parent.mkdir(parents=True, exist_ok=True)
-                    symlink_path.symlink_to(image_file_path)
-
-                # Create data loaders for the training and testing sets.
-                transforms = Compose(
-                    [
-                        Resize(size=(256, 256)),
-                        RandomRotation(degrees=(-20, +20)),
-                        CenterCrop(size=224),
-                        ToTensor(),
-                        Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-                    ]
-                )
-                self._train_dataset = torchvision.datasets.ImageFolder(
-                    train_dataset_folder, transform=transforms
-                )
-                self._test_dataset = torchvision.datasets.ImageFolder(
-                    test_dataset_folder, transform=transforms
-                )
-                print(f"Loaded datasets with tutorial format: {len(self._train_dataset)} train, {len(self._test_dataset)} test")
-            else:
-                raise FileNotFoundError("No dataset directories found")
-        except Exception as e:
-            print(f"Tutorial format failed: {e}, trying alternative formats...")
-            
-            # Fallback: try direct ImageFolder approach
-            try:
-                transforms = Compose([
-                    Resize(size=(256, 256)),
-                    RandomRotation(degrees=(-20, +20)),
-                    CenterCrop(size=224),
-                    ToTensor(),
-                    Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-                ])
-                
-                # Try different possible input locations
-                possible_paths = ["/input/file_data", "/input", "/input/data"]
-                dataset_loaded = False
-                
-                for path in possible_paths:
-                    try:
-                        if os.path.exists(path):
-                            full_dataset = torchvision.datasets.ImageFolder(root=path, transform=transforms)
-                            
-                            # Split into train/test
-                            dataset_size = len(full_dataset)
-                            test_size = int(self._test_set_percentage / 100 * dataset_size)
-                            train_size = dataset_size - test_size
-                            
-                            self._train_dataset, self._test_dataset = torch.utils.data.random_split(
-                                full_dataset, [train_size, test_size]
-                            )
-                            print(f"Loaded dataset from {path}: {len(self._train_dataset)} train, {len(self._test_dataset)} test")
-                            dataset_loaded = True
-                            break
-                    except Exception as path_error:
-                        print(f"Failed to load from {path}: {path_error}")
-                        continue
-                
-                if not dataset_loaded:
-                    raise Exception("No valid dataset found in any location")
-                    
-            except Exception as fallback_error:
-                print(f"All data loading methods failed: {fallback_error}")
-                # Create minimal dummy dataset for testing
-                print("Creating dummy dataset for testing...")
-                from torch.utils.data import TensorDataset
-                dummy_images = torch.randn(20, 3, 224, 224)
-                dummy_labels = torch.randint(0, 2, (20,))
-                full_dummy = TensorDataset(dummy_images, dummy_labels)
-                self._train_dataset, self._test_dataset = torch.utils.data.random_split(full_dummy, [16, 4])
-
+        )
+        self._train_dataset = torchvision.datasets.ImageFolder(
+            train_dataset_folder, transform=transforms
+        )
+        self._test_dataset = torchvision.datasets.ImageFolder(
+            test_dataset_folder, transform=transforms
+        )
         self._train_loader = DataLoader(self._train_dataset, batch_size=4, shuffle=True)
         self._test_loader = DataLoader(self._test_dataset, batch_size=4, shuffle=True)
+
         self._n_iterations = len(self._train_loader)
 
         # Setup the persistence manager to save PT model.
+        # The default training configuration is used by persistence manager
+        # in case no initial model is found.
         self._default_train_conf = {"train": {"model": type(self.model).__name__}}
         self.persistence_manager = PTModelPersistenceFormatManager(
             data=self.model.state_dict(), default_train_conf=self._default_train_conf
@@ -221,7 +182,7 @@ class PneumoniaTrainer(Executor):
                 running_loss += cost.cpu().detach().numpy()
                 images_count += batch_images.size()[0]
 
-                if (i + 1) % 10 == 0:
+                if (i + 1) % 3000 == 0:
                     self.log_info(
                         fl_ctx,
                         f"Epoch: {epoch}/{self._epochs}, Iteration: {i}, "
@@ -260,10 +221,14 @@ class PneumoniaTrainer(Executor):
                     self.loss(predictions, batch_labels).cpu().detach().numpy()
                 )
                 total_num_images += batch_images.size()[0]
-        average_loss = total_loss / total_num_images if total_num_images > 0 else 0.0
+        average_loss = total_loss / total_num_images
         current_round = fl_ctx.get_prop(AppConstants.CURRENT_ROUND)
         self.tb_writer.add_scalar(
             "global_model_test_loss_per_round", average_loss, current_round
+        )
+        self.log_info(
+            fl_ctx,
+            f"Round: {current_round}, Test loss: {average_loss}"
         )
         return average_loss
 
@@ -351,73 +316,20 @@ class PneumoniaTrainer(Executor):
         ml = make_model_learnable(self.model.state_dict(), {})
         self.persistence_manager.update(ml)
         torch.save(self.persistence_manager.to_persistence_dict(), model_path)
-        
-        # ALSO save to /output/ for platform dataset registration
-        self._save_output_model(ml)
-    
-    def _save_output_model(self, ml):
-        """Save model to /output/ for platform dataset registration"""
-        try:
-            import datetime
-            from pathlib import Path
-            
-            # Create output directory structure
-            dest_dir = Path("/output")
-            file_data_dir = dest_dir / "file_data"
-            dest_dir.mkdir(parents=False, exist_ok=True)
-            file_data_dir.mkdir(parents=True, exist_ok=True)
-            
-            timestr = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d-%H%M%S")
-            
-            # Save model files in both locations for compatibility
-            model_filename = f"model_parameters_{timestr}.pt"
-            checkpoint_filename = f"checkpoint_{timestr}.pt"
-            
-            # Save in file_data subdirectory (for dataset registration)
-            torch.save(self.persistence_manager.to_persistence_dict(), f"{file_data_dir}/{model_filename}")
-            torch.save(self.persistence_manager.to_persistence_dict(), f"{file_data_dir}/{checkpoint_filename}")
-            
-            # Save in simple format for inference compatibility (old format)
-            simple_model_dict = {"model": self.model.state_dict()}
-            torch.save(simple_model_dict, f"{dest_dir}/model_parameters.pt")
-            
-            print(f"Saved model files to both {file_data_dir}/ and {dest_dir}/")
-            
-            # Create the required dataset.csv file (for output dataset registration)
-            self._create_output_dataset_csv(dest_dir, model_filename, checkpoint_filename, timestr)
-            
-        except Exception as e:
-            print(f"Warning: Failed to save output model: {e}")
-            # Don't fail training if output saving fails
-            
-    def _create_output_dataset_csv(self, output_dir, model_filename, checkpoint_filename, timestr):
-        """Create the required dataset.csv file that Rhino platform looks for"""
-        try:
-            # Create a simple CSV with model information
-            model_info = {
-                "Filename": [
-                    f"file_data/{model_filename}",
-                    f"file_data/{checkpoint_filename}",
-                    checkpoint_filename,
-                    "model_parameters.pt"
-                ],
-                "Type": ["model_parameters", "checkpoint", "checkpoint_root", "model_root"],
-                "Created": [timestr, timestr, timestr, timestr],
-                "Description": [
-                    "Trained pneumonia model parameters", 
-                    "Trained pneumonia model checkpoint",
-                    "Checkpoint file in root (for inference)",
-                    "Standard model file (for inference)"
-                ]
-            }
-            
-            # Create DataFrame and save as CSV in root output directory
-            df = pd.DataFrame(model_info)
-            csv_path = output_dir / "dataset.csv"
-            df.to_csv(csv_path, index=False)
-            
-            print(f"Created output dataset.csv at {csv_path}")
-            
-        except Exception as e:
-            print(f"Warning: Failed to create dataset.csv: {e}")
-            # Don't fail training if CSV creation fails
+
+    def load_local_model(self, fl_ctx: FLContext):
+        run_dir = (
+            fl_ctx.get_engine()
+            .get_workspace()
+            .get_run_dir(fl_ctx.get_prop(ReservedKey.RUN_NUM))
+        )
+        models_dir = os.path.join(run_dir, PTConstants.PTModelsDir)
+        if not os.path.exists(models_dir):
+            return None
+        model_path = os.path.join(models_dir, PTConstants.PTLocalModelName)
+
+        self.persistence_manager = PTModelPersistenceFormatManager(
+            data=torch.load(model_path), default_train_conf=self._default_train_conf
+        )
+        ml = self.persistence_manager.to_model_learnable(exclude_vars=self._exclude_vars)
+        return ml
