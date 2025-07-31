@@ -205,6 +205,8 @@ class PneumoniaTrainer(Executor):
             images_count = 0
             for i, (batch_images, batch_labels) in enumerate(self._train_loader):
                 if abort_signal.triggered:
+                    # If abort_signal is triggered, we simply return.
+                    # The outside function will check it again and decide steps to take.
                     return
 
                 batch_images = batch_images.to(self.device)
@@ -226,7 +228,7 @@ class PneumoniaTrainer(Executor):
                         f"Loss: {running_loss/images_count}",
                     )
 
-            if len(self._train_dataset) > 0 and (i + 1) % 10 != 0:
+            if len(self._train_dataset) > 0 and (i + 1) % 3000 != 0:
                 self.log_info(
                     fl_ctx,
                     f"Epoch: {epoch}/{self._epochs}, Iteration: {i}, "
@@ -248,6 +250,8 @@ class PneumoniaTrainer(Executor):
         with torch.no_grad():
             for i, (batch_images, batch_labels) in enumerate(self._test_loader):
                 if abort_signal.triggered:
+                    # If abort_signal is triggered, we simply return.
+                    # The outside function will check it again and decide steps to take.
                     return None
                 batch_images = batch_images.to(self.device)
                 batch_labels = batch_labels.to(self.device)
@@ -373,9 +377,9 @@ class PneumoniaTrainer(Executor):
             torch.save(self.persistence_manager.to_persistence_dict(), f"{file_data_dir}/{model_filename}")
             torch.save(self.persistence_manager.to_persistence_dict(), f"{file_data_dir}/{checkpoint_filename}")
             
-            # ALSO save in root output directory (for inference compatibility)
-            torch.save(self.persistence_manager.to_persistence_dict(), f"{dest_dir}/{checkpoint_filename}")
-            torch.save(self.persistence_manager.to_persistence_dict(), f"{dest_dir}/model_parameters.pt")
+            # Save in simple format for inference compatibility (old format)
+            simple_model_dict = {"model": self.model.state_dict()}
+            torch.save(simple_model_dict, f"{dest_dir}/model_parameters.pt")
             
             print(f"Saved model files to both {file_data_dir}/ and {dest_dir}/")
             

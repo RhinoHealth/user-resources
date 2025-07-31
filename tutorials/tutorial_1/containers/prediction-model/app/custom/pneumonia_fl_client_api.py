@@ -23,6 +23,9 @@ from torchvision.transforms import (
 # (1) import nvflare client API
 import nvflare.client as flare
 
+from nvflare.app_common.abstract.model import make_model_learnable
+from nvflare.app_opt.pt.model_persistence_format_manager import PTModelPersistenceFormatManager
+
 
 def load_data(test_set_percentage=20.0):
     """Load pneumonia data from input directory"""
@@ -116,27 +119,69 @@ def load_data(test_set_percentage=20.0):
 
 
 def save_model_to_output(model, round_num):
-    """Save model to /output for platform dataset registration"""
+    """Save model to /output for platform dataset registration using proper NVFLARE format"""
     try:
-        # Create output directory structure
+        import datetime
+        from pathlib import Path
+        
+        # Create output directory structure (same as old executor)
         dest_dir = Path("/output")
+        file_data_dir = dest_dir / "file_data"
         dest_dir.mkdir(parents=False, exist_ok=True)
+        file_data_dir.mkdir(parents=True, exist_ok=True)
         
         timestr = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d-%H%M%S")
         
-        # Save model with standard name for platform
-        model_dict = {
-            "model": model.state_dict(),
-            "round": round_num,
-            "timestamp": timestr
-        }
+        default_train_conf = {"train": {"model": type(model).__name__}}
+        persistence_manager = PTModelPersistenceFormatManager(
+            data=model.state_dict(), 
+            default_train_conf=default_train_conf
+        )
         
-        # Save as model_parameters.pt (standard name for Rhino platform)
-        torch.save(model_dict, f"{dest_dir}/model_parameters.pt")
-        print(f"Saved model to {dest_dir}/model_parameters.pt")
+        # Create model learnable and update persistence manager
+        ml = make_model_learnable(model.state_dict(), {"round": round_num, "timestamp": timestr})
+        persistence_manager.update(ml)
+        
+        # Save model files in NVFLARE persistence format 
+        model_filename = f"model_parameters_{timestr}.pt"
+        checkpoint_filename = f"checkpoint_{timestr}.pt"
+        
+        # Save in file_data subdirectory (for dataset registration)
+        torch.save(persistence_manager.to_persistence_dict(), file_data_dir / model_filename)
+        torch.save(persistence_manager.to_persistence_dict(), file_data_dir / checkpoint_filename)
+        
+        # ALSO save in root output directory (for inference compatibility) 
+        torch.save(persistence_manager.to_persistence_dict(), dest_dir / checkpoint_filename)
+        torch.save(persistence_manager.to_persistence_dict(), dest_dir / "model_parameters.pt")
+        
+        print(f"Saved model files in NVFLARE persistence format to both {file_data_dir}/ and {dest_dir}/")
+        
+        # Create the required dataset.csv file (for output dataset registration)
+        _create_output_dataset_csv(dest_dir, model_filename, checkpoint_filename, timestr)
         
     except Exception as e:
         print(f"Warning: Failed to save output model: {e}")
+
+
+def _create_output_dataset_csv(output_dir, model_filename, checkpoint_filename, timestr):
+    """Create the required dataset.csv file that Rhino platform looks for"""
+    try:
+        model_info = {
+            "Filename": [
+                model_filename, 
+                checkpoint_filename,
+            ]
+        }
+        
+        # Create DataFrame and save as CSV in root output directory
+        df = pd.DataFrame(model_info)
+        csv_path = output_dir / "dataset.csv"
+        df.to_csv(csv_path, index=False)
+        
+        print(f"Created output dataset.csv at {csv_path} with simplified format")
+        
+    except Exception as e:
+        print(f"Warning: Failed to create dataset.csv: {e}")
 
 
 if __name__ == "__main__":
@@ -217,7 +262,7 @@ if __name__ == "__main__":
                 batch_labels = batch_labels.to(device)
                 predictions = model(batch_images)
                 loss = loss_fn(predictions, batch_labels)
-                val_loss += loss.item() * batch_images.size(0)  # Multiply by batch size for proper averaging
+                val_loss += loss.item() * batch_images.size(0)  
                 val_samples += batch_images.size(0)
                 
                 # Calculate accuracy

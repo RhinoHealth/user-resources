@@ -21,7 +21,6 @@ def infer(model_params_file_path):
     # Setup the model
     model = PneumoniaModel()
     
-    # Load model - handle both old and new client API formats
     try:
         model_data = torch.load(model_params_file_path)
         if isinstance(model_data, dict):
@@ -34,9 +33,9 @@ def infer(model_params_file_path):
         else:
             # Fallback: assume it's a direct state_dict
             model.load_state_dict(model_data)
-        print("✅ Model loaded successfully")
+        print("Model loaded successfully")
     except Exception as e:
-        print(f"❌ Error loading model: {e}")
+        print(f"Error loading model: {e}")
         raise
     
     model.eval()
@@ -57,18 +56,18 @@ def infer(model_params_file_path):
     # Load input data
     try:
         tabular_data = pd.read_csv("/input/dataset.csv")
-        print(f"✅ Loaded tabular data: {len(tabular_data)} rows")
+        print(f" Loaded tabular data: {len(tabular_data)} rows")
     except Exception as e:
-        print(f"❌ Error loading dataset.csv: {e}")
+        print(f" Error loading dataset.csv: {e}")
         raise
     
     try:
         dataset = torchvision.datasets.ImageFolder(
             root="/input/file_data", transform=transforms
         )
-        print(f"✅ Loaded image dataset: {len(dataset)} images")
+        print(f" Loaded image dataset: {len(dataset)} images")
     except Exception as e:
-        print(f"❌ Error loading image dataset: {e}")
+        print(f" Error loading image dataset: {e}")
         raise
     
     loader = DataLoader(dataset, batch_size=4, shuffle=False)
@@ -82,18 +81,18 @@ def infer(model_params_file_path):
             batch_scores = torch.select(predictions, 1, 1)
             scores.extend([score.item() for score in batch_scores])
     
-    print(f"✅ Generated {len(scores)} predictions")
+    print(f" Generated {len(scores)} predictions")
     
     # Add scores to tabular data
     if len(scores) == len(tabular_data):
         tabular_data["Model Score"] = scores
     else:
-        print(f"⚠️ Warning: Mismatch between scores ({len(scores)}) and tabular data ({len(tabular_data)})")
+        print(f" Warning: Mismatch between scores ({len(scores)}) and tabular data ({len(tabular_data)})")
         # Pad or truncate as needed
         tabular_data["Model Score"] = (scores + [0.0] * len(tabular_data))[:len(tabular_data)]
 
     tabular_data.to_csv("/output/dataset.csv", index=False)
-    print("✅ Results saved to /output/dataset.csv")
+    print(" Results saved to /output/dataset.csv")
 
 
 if __name__ == "__main__":
@@ -114,10 +113,10 @@ if __name__ == "__main__":
                 break
         
         if model_path is None:
-            print("❌ ERROR: No model file found in /input/")
+            print(" ERROR: No model file found in /input/")
             sys.exit(1)
     
-    print(f"🎯 Using model: {model_path}")
+    print(f" Using model: {model_path}")
     infer(model_path)
-    print("🎉 Inference completed successfully!")
+    print(" Inference completed successfully!")
     sys.exit(0)
