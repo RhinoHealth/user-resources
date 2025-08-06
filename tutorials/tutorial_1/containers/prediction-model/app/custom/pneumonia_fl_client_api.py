@@ -44,147 +44,47 @@ from nvflare.app_opt.pt.model_persistence_format_manager import PTModelPersisten
 
 def load_data(test_set_percentage=20.0):
     """Load pneumonia data from input directory"""
-    try:
-        # Try tutorial format first: /input/datasets/ with CSV files
-        dataset_dirs = [x for x in Path("/input/datasets/").iterdir() if x.resolve().is_dir()]
-        if dataset_dirs:
-            dataset_dfs = [pd.read_csv(dataset_dir / "dataset.csv") for dataset_dir in dataset_dirs]
-            for dataset_dir, df in zip(dataset_dirs, dataset_dfs):
-                df["JPG file_abspath"] = dataset_dir / "file_data" / df["JPG file"]
+    # Try tutorial format first: /input/datasets/ with CSV files
+    dataset_dirs = [x for x in Path("/input/datasets/").iterdir() if x.resolve().is_dir()]
+    for dataset_dir in dataset_dirs:
+        dataset_df = pd.read_csv(dataset_dir / "dataset.csv")
 
-            # Random train/test split
-            combined_df = pd.concat(dataset_dfs)
-            train_df, test_df = train_test_split(combined_df, test_size=test_set_percentage / 100)
-            train_image_file_paths = train_df["JPG file_abspath"]
-            test_image_file_paths = test_df["JPG file_abspath"]
+        dataset_df["JPG file_abspath"] = dataset_dir / "file_data" / dataset_df["JPG file"]
+        train_df, test_df = train_test_split(dataset_df, test_size=test_set_percentage / 100)
 
-            # Create datasets by creating directories with symlinks
-            train_dataset_folder = Path("/tmp/train_images_symlinks")
-            test_dataset_folder = Path("/tmp/test_images_symlinks")
-            
-            for image_file_path in train_image_file_paths:
-                symlink_path = train_dataset_folder / image_file_path.relative_to(Path("/input/datasets/"))
-                symlink_path.parent.mkdir(parents=True, exist_ok=True)
-                if not symlink_path.exists():
-                    symlink_path.symlink_to(image_file_path)
-                    
-            for image_file_path in test_image_file_paths:
-                symlink_path = test_dataset_folder / image_file_path.relative_to(Path("/input/datasets/"))
-                symlink_path.parent.mkdir(parents=True, exist_ok=True)
-                if not symlink_path.exists():
-                    symlink_path.symlink_to(image_file_path)
+        train_image_file_paths = train_df["JPG file_abspath"]
+        test_image_file_paths = test_df["JPG file_abspath"]
 
-            transforms = Compose([
-                Resize(size=(256, 256)),
-                RandomRotation(degrees=(-20, +20)),
-                CenterCrop(size=224),
-                ToTensor(),
-                Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
-            ])
-            
-            train_dataset = torchvision.datasets.ImageFolder(Path(train_dataset_folder/ "file_data"), transform=transforms)
-            test_dataset = torchvision.datasets.ImageFolder(Path(test_dataset_folder/"file"), transform=transforms)
-            
-            print(f"Loaded datasets with tutorial format: {len(train_dataset)} train, {len(test_dataset)} test")
-            return train_dataset, test_dataset
-            
-    except Exception as e:
-        print(f"Tutorial format failed: {e}, trying fallback methods...")
+        # Create datasets by creating directories with symlinks
+        train_dataset_folder = Path("/tmp/train_images_symlinks")
+        test_dataset_folder = Path("/tmp/test_images_symlinks")
         
-    # Fallback: try direct ImageFolder approach
-    try:
-        transforms = Compose([
-            Resize(size=(256, 256)),
-            RandomRotation(degrees=(-20, +20)),
-            CenterCrop(size=224),
-            ToTensor(),
-            Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
-        
-        possible_paths = ["/input/file_data", "/input", "/input/data"]
-        for path in possible_paths:
-            try:
-                if os.path.exists(path):
-                    full_dataset = torchvision.datasets.ImageFolder(root=path, transform=transforms)
-                    dataset_size = len(full_dataset)
-                    test_size = int(test_set_percentage / 100 * dataset_size)
-                    train_size = dataset_size - test_size
-                    
-                    train_dataset, test_dataset = torch.utils.data.random_split(
-                        full_dataset, [train_size, test_size]
-                    )
-                    print(f"Loaded dataset from {path}: {len(train_dataset)} train, {len(test_dataset)} test")
-                    return train_dataset, test_dataset
-            except Exception as path_error:
-                print(f"Failed to load from {path}: {path_error}")
-                continue
+        for image_file_path in train_image_file_paths:
+            symlink_path = train_dataset_folder / image_file_path.relative_to(Path(dataset_dir / "file_data"))
+            symlink_path.parent.mkdir(parents=True, exist_ok=True)
+            if not symlink_path.exists():
+                symlink_path.symlink_to(image_file_path)
                 
-    except Exception as fallback_error:
-        print(f"All data loading methods failed: {fallback_error}")
+        for image_file_path in test_image_file_paths:
+            symlink_path = test_dataset_folder / image_file_path.relative_to(Path(dataset_dir))
+            symlink_path.parent.mkdir(parents=True, exist_ok=True)
+            if not symlink_path.exists():
+                symlink_path.symlink_to(image_file_path)
 
-def save_model_to_output(model, round_num):
-    """Save model to /output for platform dataset registration using proper NVFLARE format"""
-    try:
-        import datetime
-        from pathlib import Path
-        
-        dest_dir = Path("/output")
-        file_data_dir = dest_dir / "file_data"
-        dest_dir.mkdir(parents=False, exist_ok=True)
-        file_data_dir.mkdir(parents=True, exist_ok=True)
-        
-        timestr = datetime.datetime.now(tz=datetime.timezone.utc).strftime("%Y%m%d-%H%M%S")
-        
-        default_train_conf = {"train": {"model": type(model).__name__}}
-        persistence_manager = PTModelPersistenceFormatManager(
-            data=model.state_dict(), 
-            default_train_conf=default_train_conf
-        )
-        
-        # Create model learnable and update persistence manager
-        ml = make_model_learnable(model.state_dict(), {"round": round_num, "timestamp": timestr})
-        persistence_manager.update(ml)
-        
-        # Save model files in NVFLARE persistence format 
-        model_filename = f"model_parameters_{timestr}.pt"
-        checkpoint_filename = f"checkpoint_{timestr}.pt"
-        
-        # Save in file_data subdirectory (for dataset registration)
-        torch.save(persistence_manager.to_persistence_dict(), file_data_dir / model_filename)
-        torch.save(persistence_manager.to_persistence_dict(), file_data_dir / checkpoint_filename)
-        
-        # ALSO save in root output directory (for inference compatibility) 
-        torch.save(persistence_manager.to_persistence_dict(), dest_dir / checkpoint_filename)
-        torch.save(persistence_manager.to_persistence_dict(), dest_dir / "model_parameters.pt")
-        
-        print(f"Saved model files in NVFLARE persistence format to both {file_data_dir}/ and {dest_dir}/")
-        
-        # Create the required dataset.csv file (for output dataset registration)
-        _create_output_dataset_csv(dest_dir, model_filename, checkpoint_filename, timestr)
-        
-    except Exception as e:
-        print(f"Warning: Failed to save output model: {e}")
+    transforms = Compose([
+        Resize(size=(256, 256)),
+        RandomRotation(degrees=(-20, +20)),
+        CenterCrop(size=224),
+        ToTensor(),
+        Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225]),
+    ])
+    
+    train_dataset = torchvision.datasets.ImageFolder(Path(train_dataset_folder), transform=transforms)
+    test_dataset = torchvision.datasets.ImageFolder(Path(test_dataset_folder), transform=transforms)
+    
+    print(f"Loaded datasets with tutorial format: {len(train_dataset)} train, {len(test_dataset)} test")
+    return train_dataset, test_dataset
 
-
-def _create_output_dataset_csv(output_dir, model_filename, checkpoint_filename, timestr):
-    """Create the required dataset.csv file that Rhino platform looks for"""
-    try:
-        model_info = {
-            "Filename": [
-                model_filename, 
-                checkpoint_filename,
-            ]
-        }
-        
-        # Create DataFrame and save as CSV in root output directory
-        df = pd.DataFrame(model_info)
-        csv_path = output_dir / "dataset.csv"
-        df.to_csv(csv_path, index=False)
-        
-        print(f"Created output dataset.csv at {csv_path} with simplified format")
-        
-    except Exception as e:
-        print(f"Warning: Failed to create dataset.csv: {e}")
 
 
 if __name__ == "__main__":
@@ -209,7 +109,7 @@ if __name__ == "__main__":
     
     # Add learning rate scheduler for better convergence
     from torch.optim.lr_scheduler import StepLR
-    scheduler = StepLR(optimizer, step_size=5, gamma=0.5)  # Reduce LR every 5 rounds
+    scheduler = StepLR(optimizer, step_size=1, gamma=0.9)  # Reduce LR every 5 rounds
     
     # (3) Federated learning loop
     while flare.is_running():
@@ -277,10 +177,8 @@ if __name__ == "__main__":
         
         print(f"Round {current_round} - Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}, Val Accuracy: {val_accuracy:.4f}")
         
-        # (8) Save model to output for platform
-        save_model_to_output(model, current_round)
         
-        # (9) Create output FLModel with trained weights and metrics
+        # (8) Create output FLModel with trained weights and metrics
         output_model = flare.FLModel(
             params=model.state_dict(),
             metrics={
@@ -292,7 +190,7 @@ if __name__ == "__main__":
             }
         )
         
-        # (10) Send model back to NVFlare
+        # (9) Send model back to NVFlare
         flare.send(output_model)
         
         # Update learning rate scheduler

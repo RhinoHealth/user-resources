@@ -1,4 +1,6 @@
-#!/usr/bin/env python
+# Copyright (c) 2025, Rhino HealthTech, Inc.
+# Original file modified by Rhino Health to adapt it to the Rhino Health Federated Computing Platform.
+
 import sys
 import glob
 import pandas as pd
@@ -59,7 +61,7 @@ def infer(model_params_file_path):
         for i, (images, labels) in enumerate(loader):
             images = images.to(device)
             predictions = model(images)
-            batch_scores = torch.select(predictions, 1, 1)
+            batch_scores = torch.select(torch.softmax(predictions, 1), 1, 1)
             scores.extend([score.item() for score in batch_scores])
     print(f" Generated {len(scores)} predictions")
     
