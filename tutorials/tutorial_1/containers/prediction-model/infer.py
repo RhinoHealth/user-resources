@@ -53,6 +53,7 @@ def infer(model_params_file_path):
         print(f" Error loading image dataset: {e}")
         raise
     
+    tabular_data = tabular_data.sort_values(by="JPG file")
     loader = DataLoader(dataset, batch_size=4, shuffle=False)
 
     # Inference: Apply model and add scores column.
