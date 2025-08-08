@@ -66,7 +66,7 @@ def load_data(test_set_percentage=20.0):
                 symlink_path.symlink_to(image_file_path)
                 
         for image_file_path in test_image_file_paths:
-            symlink_path = test_dataset_folder / image_file_path.relative_to(Path(dataset_dir))
+            symlink_path = test_dataset_folder / image_file_path.relative_to(Path(dataset_dir / "file_data"))
             symlink_path.parent.mkdir(parents=True, exist_ok=True)
             if not symlink_path.exists():
                 symlink_path.symlink_to(image_file_path)
@@ -109,8 +109,7 @@ if __name__ == "__main__":
     
     # Add learning rate scheduler for better convergence
     from torch.optim.lr_scheduler import StepLR
-    scheduler = StepLR(optimizer, step_size=1, gamma=0.9)  # Reduce LR every 5 rounds
-    
+    scheduler = StepLR(optimizer, step_size=5, gamma=0.5)  # Reduce LR every 5 rounds    
     # (3) Federated learning loop
     while flare.is_running():
         # (4) Receive FLModel from NVFlare
