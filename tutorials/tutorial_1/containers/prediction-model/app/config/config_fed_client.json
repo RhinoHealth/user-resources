@@ -2,37 +2,19 @@
   "format_version": 2,
   "executors": [
     {
-      "tasks": ["train"],
+      "tasks": [
+        "train"
+      ],
       "executor": {
-        "path": "nvflare.app_common.executors.client_api_launcher_executor.ClientAPILauncherExecutor",
+        "path": "nvflare.app_opt.pt.in_process_client_api_executor.PTInProcessClientAPIExecutor",
         "args": {
-          "launcher_id": "launcher",
-          "pipe_id": "pipe",
-          "params_exchange_format": "pytorch",
-          "params_transfer_type": "FULL",
-          "train_with_evaluation": true
+          "task_script_path": "/home/localuser/app/custom/pneumonia_fl_client_api.py",
+          "server_expected_format": "pytorch"
         }
       }
     }
   ],
+  "components": [],
   "task_data_filters": [],
-  "task_result_filters": [],
-  "components": [
-    {
-      "id": "launcher",
-      "path": "nvflare.app_common.launchers.subprocess_launcher.SubprocessLauncher",
-      "args": {
-        "script": "python3 custom/pneumonia_fl_client_api.py",
-        "launch_once": true
-      }
-    },
-    {
-      "id": "pipe",
-      "path": "nvflare.fuel.utils.pipe.file_pipe.FilePipe",
-      "args": {
-        "mode": "PASSIVE",
-        "root_path": "{WORKSPACE}/{JOB_ID}/{SITE_NAME}"
-      }
-    }
-  ]
+  "task_result_filters": []
 }
