@@ -33,10 +33,10 @@ This directory contains Terraform configuration files for deploying infrastructu
      environment     = "gcp-prod"
      sequence_number = "4"
      ```
-
-4. **Edit `terraform.tfvars` and create `secret.auto.tfvars`**
    - Set your `project_id`, `region`, and other variables as needed in `terraform.tfvars`.
    - Ensure `rhino_orchestrator_ip_range` includes all required IPs.
+
+4. **Create `secret.auto.tfvars`**
    - Create a file named `secret.auto.tfvars` (not committed to git) and set sensitive variables like:
      ```hcl
      rhino_agent_id                  = "<rhino-provided-agent-id>"

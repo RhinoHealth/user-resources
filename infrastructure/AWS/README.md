@@ -42,9 +42,9 @@ This directory contains Terraform configuration files for deploying infrastructu
      environment     = "aws-prod"
      sequence_number = "4"
      ```
+   - Also update your `aws_region`, `availability_zone`, and any other variables as needed
 
-4. **Edit `terraform.tfvars` and create `secret.auto.tfvars`**
-   - Set your `aws_region`, `availability_zone`, and other variables as needed in `terraform.tfvars`.
+4. **Create `secret.auto.tfvars`**
    - Create a file named `secret.auto.tfvars` (not committed to git) and set sensitive variables like:
      ```hcl
      rhino_agent_id                  = "<rhino-provided-agent-id>"
