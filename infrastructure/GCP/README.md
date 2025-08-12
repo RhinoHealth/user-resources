@@ -45,7 +45,7 @@ This directory contains Terraform configuration files for deploying infrastructu
      ```
    - Make sure `secret.auto.tfvars` is listed in `.gitignore` to avoid committing secrets.
 
-4. **(Optional) Configure remote state**
+5. **(Optional) Configure remote state**
    - Edit `versions.tf` to set your GCS bucket and prefix for state storage.
 
 ## Running Tofu
