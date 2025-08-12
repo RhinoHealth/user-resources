@@ -25,7 +25,16 @@ This directory contains Terraform configuration files for deploying infrastructu
    export GOOGLE_APPLICATION_CREDENTIALS=<path-to-service-account.json>
    ```
 
-3. **Edit `terraform.tfvars` and create `secret.auto.tfvars`**
+3. **Update client variables**
+   - Update the [terraform variables](./terraform.tfvars) to describe client you are installing. For example, if you are building the fourth client to connect to the GCP orchestrator, you would use the following:
+     ``` 
+     # Naming Convention Variables
+     workgroup_name  = "<my-workgroup>"
+     environment     = "gcp-prod"
+     sequence_number = "4"
+     ```
+
+4. **Edit `terraform.tfvars` and create `secret.auto.tfvars`**
    - Set your `project_id`, `region`, and other variables as needed in `terraform.tfvars`.
    - Ensure `rhino_orchestrator_ip_range` includes all required IPs.
    - Create a file named `secret.auto.tfvars` (not committed to git) and set sensitive variables like:
