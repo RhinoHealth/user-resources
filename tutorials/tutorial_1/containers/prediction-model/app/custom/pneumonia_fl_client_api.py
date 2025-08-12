@@ -119,11 +119,8 @@ if __name__ == "__main__":
         print(f"Round {current_round} started")
         
         # (5) Load global model weights
-        global_weights = input_model.params
-        if global_weights:
-            # Convert numpy arrays back to torch tensors before loading
-            torch_weights = {k: torch.as_tensor(v) for k, v in global_weights.items()}
-            model.load_state_dict(torch_weights)
+        if input_model.params:
+            model.load_state_dict(input_model.params)
             print("Loaded global model weights")
         
         # (6) Local training
