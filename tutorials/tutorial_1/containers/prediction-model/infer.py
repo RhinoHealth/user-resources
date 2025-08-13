@@ -39,11 +39,11 @@ def infer(model_params_file_path):
     # Load input data
     try:
         tabular_data = pd.read_csv("/input/dataset.csv")
-        print(f" Loaded tabular data: {len(tabular_data)} rows")
     except Exception as e:
         print(f" Error loading dataset.csv: {e}")
         raise
-    
+    print(f" Loaded tabular data: {len(tabular_data)} rows")
+
     try:
         dataset = torchvision.datasets.ImageFolder(
             root="/input/file_data", transform=transforms
@@ -74,4 +74,3 @@ if __name__ == "__main__":
     args = sys.argv[1:]
     (model_params_file_path,) = args
     infer(model_params_file_path)
-    sys.exit(0)

@@ -6,14 +6,14 @@
       "path": "nvflare.app_common.workflows.fedavg.FedAvg",
       "args": {
         "num_clients": 1,
-        "num_rounds": 5
+        "num_rounds": 20
       }
     }
   ],
   "components": [
     {
       "id": "persistor",
-      "path": "nvflare.app_opt.pt.file_model_persistor.PTFileModelPersistor",
+      "path": "rhino_pt_model_persistor.PTFileModelPersistorAllCheckpoints",
       "args": {
         "model": {
           "path": "network.PneumoniaModel",

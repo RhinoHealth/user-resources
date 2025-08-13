@@ -20,12 +20,9 @@ Please reference to the [tutorial](https://docs.rhinohealth.com/hc/en-us/article
   - `config_fed_client.json` - Updated federated client config using ClientAPILauncherExecutor for the new client API
   - `config_fed_server.json` - Standard federated server config with model persistence to `/output/model_parameters.pt`
 - `app/custom` - This is the standard NVFlare directory for custom model code
-  - `__init__.py` - Python package initialization file
   - `network.py` - Pneumonia model definition
   - `pneumonia_fl_client_api.py` - Main training script using the new Client API (`import nvflare.client as flare`)
-  - `pneumonia_trainer.py` - Alternative trainer implementation
-  - `pt_constants.py` - PyTorch constants and configuration
-  - `pt_model_locator.py` - Model locator for server-side operations
+  - `rhino_pt_model_persistor.py` - Custom model persistor that extends that save timestamped checkpoint files after each training round
 - `infer.py` - Inference script compatible with both old and new client API model formats
 - `meta.conf` - Metadata configuration file
 - `Dockerfile` - Dockerfile for building the container image

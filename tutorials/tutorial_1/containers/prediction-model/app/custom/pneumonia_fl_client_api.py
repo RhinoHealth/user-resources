@@ -41,19 +41,19 @@ import nvflare.client as flare
 from nvflare.app_common.abstract.model import make_model_learnable
 from nvflare.app_opt.pt.model_persistence_format_manager import PTModelPersistenceFormatManager
 
-
+# Perform a train/test split (80% train, 20% test) and create symlinked directory
+# structures so torchvision can load images efficiently without copying large data files.
 def load_data(test_set_percentage=20.0):
     """Load pneumonia data from input directory"""
-    # Try tutorial format first: /input/datasets/ with CSV files
     dataset_dirs = [x for x in Path("/input/datasets/").iterdir() if x.resolve().is_dir()]
     for dataset_dir in dataset_dirs:
         dataset_df = pd.read_csv(dataset_dir / "dataset.csv")
 
-        dataset_df["JPG file_abspath"] = dataset_dir / "file_data" / dataset_df["JPG file"]
+        dataset_df["JPG_file_abspath"] = dataset_dir / "file_data" / dataset_df["JPG file"]
         train_df, test_df = train_test_split(dataset_df, test_size=test_set_percentage / 100)
 
-        train_image_file_paths = train_df["JPG file_abspath"]
-        test_image_file_paths = test_df["JPG file_abspath"]
+        train_image_file_paths = train_df["JPG_file_abspath"]
+        test_image_file_paths = test_df["JPG_file_abspath"]
 
         # Create datasets by creating directories with symlinks
         train_dataset_folder = Path("/tmp/train_images_symlinks")
