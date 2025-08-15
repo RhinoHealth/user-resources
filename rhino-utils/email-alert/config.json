@@ -1,0 +1,16 @@
+{
+  "email": {
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "username": "email@gmail.com",
+    "password": "",
+    "from_email": "email@gmail.com",
+    "to_emails": [
+      "admin@caiasite.com"
+    ]
+  },
+  "rhino_auth": {
+    "username": "<rhino_username>",
+    "password": "<rhino_password>"
+  }
+}
