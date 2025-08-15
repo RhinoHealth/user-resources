@@ -21,7 +21,7 @@ def dataset_dcm_to_jpg(dataset_df):
 	output_dir = '/output/file_data/'
 	dcm_list = glob.glob(input_dir + '/*/*.dcm')
 
-	dataset_df['JPG_file'] = 'Nan'
+	dataset_df['JPG file'] = 'Nan'
 	for dcm_file in dcm_list:
 		image = convert_dcm_image_to_jpg(dcm_file)
 		jpg_file_name = dcm_file.split('/')[-1].split('.dcm')[0] + '.jpg'
@@ -32,7 +32,7 @@ def dataset_dcm_to_jpg(dataset_df):
 		if not os.path.exists(class_folder):
 			os.makedirs(class_folder)
 		image.save('/'.join([class_folder, jpg_file_name]))
-		dataset_df.loc[idx, 'JPG_file'] = '/'.join([ground_truth, jpg_file_name])
+		dataset_df.loc[idx, 'JPG file'] = '/'.join([ground_truth, jpg_file_name])
 
 	return dataset_df
 
