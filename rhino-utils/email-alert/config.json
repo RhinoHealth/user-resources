@@ -6,7 +6,7 @@
     "password": "",
     "from_email": "email@gmail.com",
     "to_emails": [
-      "admin@caiasite.com"
+      "admin@domain.com"
     ]
   },
   "rhino_auth": {
