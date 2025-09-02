@@ -22,7 +22,7 @@ Please reference to the [tutorial](https://docs.rhinohealth.com/hc/en-us/article
 - `app/custom` - This is the standard NVFlare directory for custom model code
   - `network.py` - Pneumonia model definition
   - `pneumonia_fl_client_api.py` - Main training script using the new Client API (`import nvflare.client as flare`)
-  - `rhino_pt_model_persistor.py` - Custom model persistor that extends that save timestamped checkpoint files after each training round
+  - `rhino_pt_model_persistor.py` - Custom model persistor that saves timestamped checkpoint files after each training round
 - `infer.py` - Inference script compatible with both old and new client API model formats
 - `meta.conf` - Metadata configuration file
 - `Dockerfile` - Dockerfile for building the container image
