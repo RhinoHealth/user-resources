@@ -43,6 +43,7 @@ This directory contains Terraform configuration files for deploying infrastructu
    - Create a file named `secret.auto.tfvars` (not committed to git) and set sensitive variables like:
      ```hcl
      rhino_agent_id                  = "<rhino-provided-agent-id>"
+     rhino_enroll_secret             = "<rhino-provided-enroll-secret>"
      rhino_package_registry_user     = "<rhino-provided-username>"
      rhino_package_registry_password = "<rhino-provided-password>"
      ```
