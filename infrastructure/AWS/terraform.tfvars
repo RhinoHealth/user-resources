@@ -2,8 +2,8 @@ aws_region        = "us-east-1"
 availability_zone = "us-east-1a"
 
 # Naming Convention Variables
-workgroup_name  = "workgroup"
-environment     = "prod"
+workgroup_name  = "fred-hutch-caia"
+environment     = "aws-prod"
 sequence_number = "1"
 
 # Network Configuration

@@ -38,13 +38,68 @@ resource "aws_instance" "main" {
     encrypted   = true
   }
 
-  user_data = format(
-    "#! /bin/bash\ncurl -fsS --proto '=https' https://activate.rhinohealth.com | sudo RHINO_AGENT_ID='%s' FLEET_ENROLL_SECRET='%s' PACKAGE_REGISTRY_USER='%s' PACKAGE_REGISTRY_PASSWORD='%s' SKIP_HW_CHECK=True bash -",
-    var.rhino_agent_id,
-    var.rhino_enroll_secret,
-    var.rhino_package_registry_user,
-    var.rhino_package_registry_password
-  )
+  user_data = <<-EOT
+    #!/bin/bash
+    set -e
+
+    # Mount secondary EBS volume to /rhino
+    MOUNT_POINT="/rhino"
+
+    # Wait for the device to be attached (check for /dev/sdf or NVMe equivalent)
+    echo "Waiting for secondary disk to be attached..."
+    for i in {1..30}; do
+      if [ -e /dev/sdf ]; then
+        DISK_PATH="/dev/sdf"
+        break
+      elif [ -e /dev/nvme1n1 ]; then
+        DISK_PATH="/dev/nvme1n1"
+        break
+      fi
+      sleep 2
+    done
+
+    if [ -z "$DISK_PATH" ]; then
+      echo "Error: Secondary disk not found after 60 seconds"
+      exit 1
+    fi
+
+    echo "Found secondary disk at $DISK_PATH"
+
+    # Check if the disk is already formatted, if not, format it
+    if ! sudo blkid "$DISK_PATH"; then
+      echo "Formatting $DISK_PATH..."
+      sudo mkfs.ext4 -F "$DISK_PATH"
+    else
+      echo "$DISK_PATH is already formatted."
+    fi
+
+    # Create mount point if it doesn't exist
+    sudo mkdir -p "$MOUNT_POINT"
+
+    # Get the UUID of the disk
+    UUID=$(sudo blkid -s UUID -o value "$DISK_PATH")
+
+    # Add entry to /etc/fstab if not already present
+    if ! grep -q "UUID=$UUID $MOUNT_POINT" /etc/fstab; then
+      echo "Adding entry to /etc/fstab for $DISK_PATH..."
+      echo "UUID=$UUID $MOUNT_POINT ext4 defaults,nofail 0 2" | sudo tee -a /etc/fstab
+    else
+      echo "Entry for $DISK_PATH already exists in /etc/fstab."
+    fi
+
+    # Mount the disk if not already mounted
+    if ! mountpoint -q "$MOUNT_POINT"; then
+      echo "Mounting $DISK_PATH to $MOUNT_POINT..."
+      sudo mount "$MOUNT_POINT"
+    else
+      echo "$MOUNT_POINT is already mounted."
+    fi
+
+    echo "Secondary disk successfully mounted to $MOUNT_POINT"
+
+    # Install Rhino agent
+    curl -fsS --proto '=https' https://activate.rhinohealth.com | sudo RHINO_AGENT_ID='${var.rhino_agent_id}' FLEET_ENROLL_SECRET='${var.rhino_enroll_secret}' PACKAGE_REGISTRY_USER='${var.rhino_package_registry_user}' PACKAGE_REGISTRY_PASSWORD='${var.rhino_package_registry_password}' SKIP_HW_CHECK=True bash -
+  EOT
 
   metadata_options {
     http_tokens   = "required"
@@ -253,7 +308,7 @@ resource "aws_ebs_volume" "secondary" {
   encrypted         = true
 
   tags = merge(local.common_tags, {
-    Name = "fred-hutch-caia-rhino-aws-prod-1-secondary"
+    Name = "${local.vm_instance_name}-secondary"
   })
 }
 
@@ -266,10 +321,10 @@ resource "aws_volume_attachment" "secondary" {
 
 # Creates S3 bucket for VM Clinical
 resource "aws_s3_bucket" "clinical-wg" {
-  bucket = "clinical-wg"
+  bucket = local.bucket_clinical_wg_name
 
   tags = merge(local.common_tags, {
-    Name = "clinical-wg"
+    Name = local.bucket_clinical_wg_name
   })
 }
 
@@ -313,10 +368,10 @@ resource "aws_s3_bucket_ownership_controls" "clinical-wg" {
 
 # Creates S3 bucket for VM AI
 resource "aws_s3_bucket" "ai-wg" {
-  bucket = "ai-wg"
+  bucket = local.bucket_ai_wg_name
 
   tags = merge(local.common_tags, {
-    Name = "ai-wg"
+    Name = local.bucket_ai_wg_name
   })
 }
 

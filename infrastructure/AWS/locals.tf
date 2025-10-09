@@ -16,6 +16,8 @@ locals {
   bucket_output_logs_name = "${var.workgroup_name}-rhino-output-data-${var.sequence_number}"
   bucket_source_data_name = "${var.workgroup_name}-rhino-input-data-${var.sequence_number}"
   bucket_logs_name        = "${var.workgroup_name}-rhino-log-${var.sequence_number}"
+  bucket_clinical_wg_name = "${var.workgroup_name}-rhino-clinical-wg-${var.sequence_number}"
+  bucket_ai_wg_name       = "${var.workgroup_name}-rhino-ai-wg-${var.sequence_number}"
 
   # Standard tags for cost aggregation
   common_tags = {
