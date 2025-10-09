@@ -1,3 +1,53 @@
+# Code Review Expectations
+
+## Overview and Definitions
+
+- **Branching Strategy:** Creating a consistent branching strategy with **`dev,`** **`test`**, and **`main`** branches helps to streamline clean code integration, minimize errors, and clarify promotion paths through code review processes.  In some scenarios only **`dev,`** and **`main`** may be utilized.
+- **Code Reviews:** All proposed changes require peer code review for quality, knowledge sharing, and traceability. Reviews are conducted and documented in GitHub pull requests (PRs).
+- **Pull Requests (PRs):** All code changes must be submitted as PRs. PRs record review comments, approvals, and test results before changes can merge into protected branches.
+
+## Branch Structure and Roles
+
+- **dev:** Central branch for all ongoing development. Feature branches must be created from here.
+- **test:** Branch for code that has passed peer review and is ready for integration and further testing. Promotion to **`test`** requires additional reviews and tests prior to merging.
+- **main:** The production branch. Only deployable, fully reviewed, and approved code is merged here, under strict controls.
+
+## Code Review Etiquette
+
+- Provide constructive, actionable, and respectful feedback.
+- Document all decisions and discussions within PRs for audit and improvement.
+- Annotate any complex code blocks to aid reviewers.
+- Use small, focused PRs (ideally <400 lines of code) for better quality and faster turnaround.
+
+## Branching Workflow
+
+## Feature Work
+
+- Developers create feature or bugfix branches from **`dev`**.
+    - Branch names should reference relevant Jira tickets (e.g., **`feature/CDR1900`**, **`bugfix/CDR1750`**).
+- When complete, open a PR from the feature branch to the **`dev`** branch.
+    - Peer review is required: another engineer (not the author) must review and approve the PR before the code editor merges the PR.
+    - All review comments must be documented in GitHub before merging.
+
+## Promotion to Test
+
+- Only the Data Engineering Manager or Cloud Engineer can approve and merge PRs from **`dev`** into **`test`**.
+    - Merges to **`test`** must be via PRs, with at least one peer review by someone other than the author.
+    - Regular engineers may not push or merge directly to **`test`**.
+
+## Promotion to Main
+
+- Only changes that have passed review/QA in **`test`** may be considered for **`main`**.
+- All PRs to **`main`**:
+    - Must originate from **`test`**
+    - Require at least two approvals: one from another engineer, and a final approval from the CODEOWNER group.
+    - Only Data Engineering Manager, Cloud Engineer or System Owner may finalize/merge PRs into **`main`**.
+- After deployment, merge changes from **`main`** back into **`dev`** (or the next cycle branch) to keep all lines up to date.
+
+## Hotfixes
+
+- Hotfix branches are created from **`main`** for urgent production issues.
+- After verification, merge fixes back into **`main`**, **`dev`**, and **`test`**, ensuring all environments are updated.
 
 # AWS Terraform Infrastructure with Tofu
 
@@ -34,17 +84,8 @@ This directory contains Terraform configuration files for deploying infrastructu
      export AWS_DEFAULT_REGION="<your-region>"  # optional but recommended
      ```
 
-3. **Update client variables**
-   - Update the [terraform variables](./terraform.tfvars) to describe client you are installing. For example, if you are building the fourth client to connect to the AWS orchestrator, you would use the following:
-     ``` 
-     # Naming Convention Variables
-     workgroup_name  = "<my-workgroup>"
-     environment     = "aws-prod"
-     sequence_number = "4"
-     ```
-   - Also update your `aws_region`, `availability_zone`, and any other variables as needed
-
-4. **Create `secret.auto.tfvars`**
+3. **Edit `terraform.tfvars` and create `secret.auto.tfvars`**
+   - Set your `aws_region`, `availability_zone`, and other variables as needed in `terraform.tfvars`.
    - Create a file named `secret.auto.tfvars` (not committed to git) and set sensitive variables like:
      ```hcl
      rhino_agent_id                  = "<rhino-provided-agent-id>"
@@ -53,7 +94,7 @@ This directory contains Terraform configuration files for deploying infrastructu
      ```
    - Make sure `secret.auto.tfvars` is listed in `.gitignore` to avoid committing secrets.
 
-5. **(Optional) Configure remote state**
+4. **(Optional) Configure remote state**
    - Edit `versions.tf` to set your S3 bucket and prefix for state storage if desired.
 
 ## Running Tofu
