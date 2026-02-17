@@ -1,0 +1,10 @@
+{
+    "name": "chemprop_fl_regression",
+    "resource_spec": {},
+    "deploy_map": {
+      "app": [
+        "@ALL"
+      ]
+    },
+    "min_clients": 1
+  }
