@@ -1,30 +1,42 @@
-# NVIDIA FLARE Example - MIMIC CXR with NVIDIA FLARE v2.5
+# NVIDIA FLARE Example - MIMIC CXR with NVIDIA FLARE v2.6 Client API
 <br/>
 
 ### **Description**
 
-This example contains files to train a pneumonia detection model from Chest XRays using Rhino Health's Federated
-Computing Platform (FCP) and NVIDIA FLARE v2.5.
+This example contains files to train a pneumonia detection model from Chest X-rays using Rhino Health's Federated Computing Platform (FCP) and NVIDIA FLARE v2.6 with the modern Client API.
 
 It shows how to:
-* Use PyTorch model code adapted to NVIDIA FLARE (NVFLARE) v2.4, with the necessary settings for it to run on FCP.
-* Add an `infer.py` script enable automatic inference after training on a separate validation dataset.
-* Log metrics using TensorBoard, both per-client and aggregated.  These may be viewed via FCP's integrated TensorBoard.
-* Store model checkpoints throughout the training process.  These are all persisted on the FCP for your later use.
-* Package the code in a Docker container that can be used with FCP.
-* Use either pip or miniconda to install dependencies.
+* Use the new NVIDIA FLARE v2.6 Client API (`import nvflare.client as flare`) for cleaner, more intuitive federated learning code
+* Convert PyTorch model code to federated learning with minimal changes using the modern API
+* Add an `infer.py` script to enable automatic inference after training on a separate validation dataset
+* Store model parameters in the standard format compatible with FCP inference
+* Package the code in a Docker container that can be used with FCP
+* Maintain compatibility with existing JSON configuration patterns
 
-Please reference the User Documentation and/or Tutorials for in depth explanations on how to use NVFLARE on FCP.
+Please reference to the [tutorial](https://docs.rhinohealth.com/hc/en-us/articles/8088478664349-Tutorial-1-Basic-Usage) for in depth explanations on how to use NVFLARE on FCP.
 
 ### **Resources**
 - `app/config` - This is the standard NVFlare directory for config files
-  - `config_fed_client.json` - The standard NVFlare federated client config, setting to 1 epoch for the example 
-  - `config_fed_server.json` - The standard NVFlare federated server config, setting the output model weights file to be stored in `/output/model_parameters.pt`
-- `app/custom` - This is the standard NVFlare directory for custom model code, containing the code for the pneumonia model (reading the input data from the `/input` folder in order to work with FCP)
-- `infer.py` - A script for running inference on the trained model
-- `Dockerfile` - Default Dockerfile for building the container image
-- `requirements.txt` - The python dependencies for this project
+  - `config_fed_client.json` - Updated federated client config using ClientAPILauncherExecutor for the new client API
+  - `config_fed_server.json` - Standard federated server config with model persistence to `/output/model_parameters.pt`
+- `app/custom` - This is the standard NVFlare directory for custom model code
+  - `network.py` - Pneumonia model definition
+  - `pneumonia_fl_client_api.py` - Main training script using the new Client API (`import nvflare.client as flare`)
+  - `rhino_pt_model_persistor.py` - Custom model persistor that saves timestamped checkpoint files after each training round
+- `infer.py` - Inference script compatible with both old and new client API model formats
+- `meta.conf` - Metadata configuration file
+- `Dockerfile` - Dockerfile for building the container image
+- `requirements.txt` - Python dependencies for NVIDIA FLARE v2.6
 <br><br>
+
+### **Key Features of New Client API**
+
+The new NVIDIA FLARE v2.6 Client API provides:
+- **Simplified federated learning loop** with `flare.receive()` and `flare.send()`
+- **Cleaner code structure** compared to traditional executor approach
+- **Built-in model format handling** with automatic PyTorch state_dict management
+- **Easy metrics tracking** with the FLModel object
+- **Backward compatibility** with existing FCP infrastructure
 
 # Getting Help
 For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).

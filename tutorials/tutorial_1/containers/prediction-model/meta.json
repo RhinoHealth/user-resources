@@ -1,10 +1,10 @@
 {
-  "name": "job",
-  "resource_spec": {},
-  "min_clients" : 1,
-  "deploy_map": {
-    "app": [
-      "@ALL"
-    ]
-  }
+    "name": "pneumonia_fl_client_api",
+    "resource_spec": {},
+    "min_clients": 1,
+    "deploy_map": {
+        "app": [
+            "@ALL"
+        ]
+    }
 }

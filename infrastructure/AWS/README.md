@@ -34,8 +34,17 @@ This directory contains Terraform configuration files for deploying infrastructu
      export AWS_DEFAULT_REGION="<your-region>"  # optional but recommended
      ```
 
-3. **Edit `terraform.tfvars` and create `secret.auto.tfvars`**
-   - Set your `aws_region`, `availability_zone`, and other variables as needed in `terraform.tfvars`.
+3. **Update client variables**
+   - Update the [terraform variables](./terraform.tfvars) to describe client you are installing. For example, if you are building the fourth client to connect to the AWS orchestrator, you would use the following:
+     ``` 
+     # Naming Convention Variables
+     workgroup_name  = "<my-workgroup>"
+     environment     = "aws-prod"
+     sequence_number = "4"
+     ```
+   - Also update your `aws_region`, `availability_zone`, and any other variables as needed
+
+4. **Create `secret.auto.tfvars`**
    - Create a file named `secret.auto.tfvars` (not committed to git) and set sensitive variables like:
      ```hcl
      rhino_agent_id                  = "<rhino-provided-agent-id>"
@@ -44,7 +53,7 @@ This directory contains Terraform configuration files for deploying infrastructu
      ```
    - Make sure `secret.auto.tfvars` is listed in `.gitignore` to avoid committing secrets.
 
-4. **(Optional) Configure remote state**
+5. **(Optional) Configure remote state**
    - Edit `versions.tf` to set your S3 bucket and prefix for state storage if desired.
 
 ## Running Tofu

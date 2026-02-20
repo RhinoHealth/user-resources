@@ -25,9 +25,18 @@ This directory contains Terraform configuration files for deploying infrastructu
    export GOOGLE_APPLICATION_CREDENTIALS=<path-to-service-account.json>
    ```
 
-3. **Edit `terraform.tfvars` and create `secret.auto.tfvars`**
+3. **Update client variables**
+   - Update the [terraform variables](./terraform.tfvars) to describe client you are installing. For example, if you are building the fourth client to connect to the GCP orchestrator, you would use the following:
+     ``` 
+     # Naming Convention Variables
+     workgroup_name  = "<my-workgroup>"
+     environment     = "gcp-prod"
+     sequence_number = "4"
+     ```
    - Set your `project_id`, `region`, and other variables as needed in `terraform.tfvars`.
    - Ensure `rhino_orchestrator_ip_range` includes all required IPs.
+
+4. **Create `secret.auto.tfvars`**
    - Create a file named `secret.auto.tfvars` (not committed to git) and set sensitive variables like:
      ```hcl
      rhino_agent_id                  = "<rhino-provided-agent-id>"
@@ -36,7 +45,7 @@ This directory contains Terraform configuration files for deploying infrastructu
      ```
    - Make sure `secret.auto.tfvars` is listed in `.gitignore` to avoid committing secrets.
 
-4. **(Optional) Configure remote state**
+5. **(Optional) Configure remote state**
    - Edit `versions.tf` to set your GCS bucket and prefix for state storage.
 
 ## Running Tofu
