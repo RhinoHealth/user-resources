@@ -89,6 +89,12 @@ variable "rhino_agent_id" {
   sensitive   = true
 }
 
+variable "rhino_enroll_secret" {
+  description = "The Fleet Enrollment Secret"
+  type        = string
+  sensitive   = true
+}
+
 variable "rhino_package_registry_user" {
   description = "The user for the Rhino Health package registry."
   type        = string
