@@ -1,19 +1,28 @@
-# Rhino Health User Resources
-Rhino Health User Resources is a collection of resources designed to help developers quickly get started with using the Rhino Health Web Interface and the Python SDK. This repository contains a range of tutorials, code examples, and documentation to make it easier to build applications that interact with Rhino Health's Federated Computing Platform (FCP) services.
+# Rhino FCP User Resources
+Rhino FCP User Resources is a collection of resources designed to help developers quickly get 
+started with the Rhino Federated Computing Platform (FCP). This repository contains tutorials, 
+runnable code examples, and documentation to make it easier to build, test, and deploy 
+federated learning applications using the Rhino FCP Web Interface and Python SDK.
 
-In addition to the tutorials and documentation, this repository also includes Docker container tooling that simplifies the development process of building your own containers for deployment on the Rhino Health FCP. With these tools, developers can easily set up a local development environment, test their applications, and deploy them to production with ease.
+In addition to the tutorials and documentation, this repository includes a progressive set of 
+examples — from data ingestion and preprocessing, through federated learning and model 
+fine-tuning, to SDK analytics and advanced platform features. Docker container tooling is also 
+included to help developers build, run, and push containers locally before deploying to Rhino FCP.
 
-Get started today and see how Rhino Health's client resources can help you build better, more efficient healthcare applications.
+Get started today and see how Rhino FCP's resources can help you build better, more efficient 
+federated healthcare applications.
 
 ## Table of Contents
-- **Tutorials**
-  - [Tutorial #1 - Rhino Health Federated Computing Platform “Hello World” - Basic Usage](./tutorials/tutorial_1/README.md)
-  - [Tutorial #2 - Rhino Health Federated Computing Platform Data Harmonization on the FCP SDK](./tutorials/tutorial_2/README.md)
-- **Sandbox**
-  - [Pneumonia Predicition](./sandbox/pneumonia-prediction/README,md)
-- [Rhino Utils](./rhino-utils/README.md) - Utilities for locally running and pushing containers to your workgroup's ECR for both FCP Generalized Compute and NVFlare models
-- [Examples](./examples/README.md) - User examples for generalized compute and NVFlare containers and the Rhino Health Python SDK
-- [Infrastructure](./infrastructure/GCP/README.md) - Infrastrucutre terraform scripts for Rhino clients
+```
+user-resources/
+│
+├── 01_getting-started/          # Step-by-step tutorials for new users
+├── 02_examples/                 # Runnable examples from data ingestion to fine-tuning
+├── 03_site_validation_script/   # Validate a fresh Rhino FCP site installation
+├── 04_tools/                    # Container helpers and utilities for local development
+├── 05_infrastructure/           # Terraform scripts for AWS, Azure, and GCP
+└── 99_deprecated/               # Archived content pending removal
+```
 
 
 ## Getting Help
