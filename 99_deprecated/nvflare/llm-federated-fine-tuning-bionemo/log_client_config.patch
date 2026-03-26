@@ -1,0 +1,22 @@
+Subject: [PATCH] Log client config
+Index: nvflare/private/fed/client/client_app_runner.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/nvflare/private/fed/client/client_app_runner.py b/nvflare/private/fed/client/client_app_runner.py
+--- a/nvflare/private/fed/client/client_app_runner.py   (revision 5498c7da6ee9808f99c5a54e5e12bee3ea06f931)
++++ b/nvflare/private/fed/client/client_app_runner.py   (date 1720541868597)
+@@ -84,6 +84,12 @@
+         fl_ctx = FLContext()
+         self._set_fl_context(fl_ctx, app_root, args, workspace, secure_train)
+         client_config_file_name = os.path.join(app_root, args.client_config)
++        self.logger.info(f"config_fed_client file path: {client_config_file_name}")
++        without_ext = os.path.splitext(client_config_file_name)[0]
++        for ext in ["json", "yaml", "yml", "conf"]:
++            if os.path.exists(without_ext + "." + ext):
++                contents = open(without_ext + "." + ext, encoding='utf-8').read()
++                self.logger.info(f"config_fed_client contents:\n" + contents)
+         args.set.append(f"secure_train={secure_train}")
+         conf = ClientJsonConfigurator(
+             config_file_name=client_config_file_name, app_root=app_root, args=args, kv_list=args.set

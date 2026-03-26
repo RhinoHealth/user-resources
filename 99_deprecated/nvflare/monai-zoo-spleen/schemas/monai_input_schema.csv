@@ -1,0 +1,9 @@
+Variable Name,image,label,__Notes__
+Identifier,,,
+Description,,,System generated column for user notes
+Role,Input,Input,Input
+Type,Filename,Filename,String
+Type Parameters,,,
+Units,,,
+May Contain PHI?,False,False,False
+Permissions,Default,Default,Default

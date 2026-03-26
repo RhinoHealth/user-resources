@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=Libre Office
+Exec=sh -c '/usr/bin/libreoffice >"$HOME/libreoffice.log" 2>&1'
+StartupNotify=false
+Terminal=false
+Hidden=false
+Icon=libreoffice-logo

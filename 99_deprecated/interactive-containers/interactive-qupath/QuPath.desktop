@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=QuPath
+Exec=/opt/QuPath/bin/QuPath
+StartupNotify=false
+Terminal=false
+Hidden=false
+Icon=qupath_128

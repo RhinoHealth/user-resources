@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=3D Slicer
+Exec=/usr/bin/Slicer
+StartupNotify=false
+Terminal=false
+Hidden=false
+Icon=3D-Slicer-Mark
