@@ -490,6 +490,7 @@ resource "aws_instance" "main" {
   metadata_options {
     http_tokens   = "required"
     http_endpoint = "enabled"
+    http_put_response_hop_limit = 2
   }
 
   tags = merge(local.common_tags, {
