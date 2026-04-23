@@ -1,5 +1,6 @@
 # Ignore secret variable files
 secret.auto.tfvars
+local.auto.tfvars
 
 # Ignore Terraform state files
 .terraform

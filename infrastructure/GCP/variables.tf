@@ -3,14 +3,29 @@
 variable "project_id" {
   description = "The unique identifier for your Google Cloud project."
   type        = string
+
+  validation {
+    condition     = trimspace(var.project_id) != ""
+    error_message = "project_id must be set to a non-empty GCP project ID."
+  }
 }
 variable "region" {
   description = "The Google Cloud region where resources will be deployed (e.g., 'us-central1')."
   type        = string
+
+  validation {
+    condition     = trimspace(var.region) != ""
+    error_message = "region must be set to a non-empty GCP region."
+  }
 }
 variable "zone" {
   description = "The specific zone within the Google Cloud region to deploy zonal resources like the VM (e.g., 'us-central1-c')."
   type        = string
+
+  validation {
+    condition     = trimspace(var.zone) != ""
+    error_message = "zone must be set to a non-empty GCP zone."
+  }
 }
 
 # --- Naming Convention Variables ---
@@ -53,18 +68,55 @@ variable "rhino_agent_id" {
   description = "The agent ID for the Rhino Health installation."
   type        = string
   sensitive   = true
+
+  validation {
+    condition     = trimspace(var.rhino_agent_id) != ""
+    error_message = "rhino_agent_id must be set to a non-empty Rhino Health agent ID."
+  }
+}
+
+variable "rhino_role_id" {
+  description = "The role ID for the Rhino Health installation."
+  type        = string
+  sensitive   = true
+
+  validation {
+    condition     = trimspace(var.rhino_role_id) != ""
+    error_message = "rhino_role_id must be set to a non-empty Rhino Health role ID."
+  }
+}
+
+variable "rhino_secret_id" {
+  description = "The secret ID for the Rhino Health installation."
+  type        = string
+  sensitive   = true
+
+  validation {
+    condition     = trimspace(var.rhino_secret_id) != ""
+    error_message = "rhino_secret_id must be set to a non-empty Rhino Health secret ID."
+  }
 }
 
 variable "rhino_package_registry_user" {
   description = "The user for the Rhino Health package registry."
   type        = string
   sensitive   = true
+
+  validation {
+    condition     = trimspace(var.rhino_package_registry_user) != ""
+    error_message = "rhino_package_registry_user must be set to a non-empty package registry username."
+  }
 }
 
 variable "rhino_package_registry_password" {
   description = "The password for the Rhino Health package registry."
   type        = string
   sensitive   = true
+
+  validation {
+    condition     = trimspace(var.rhino_package_registry_password) != ""
+    error_message = "rhino_package_registry_password must be set to a non-empty package registry password."
+  }
 }
 
 # --- Disk Size Variables ---

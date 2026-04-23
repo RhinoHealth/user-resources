@@ -1,17 +1,18 @@
-project_id = ""
+# Set this to the target GCP project before running `tofu plan` or `tofu apply`.
+# project_id = "my-gcp-project-id"
 region     = "us-central1"
-zone       = "us-central1-c"
+zone       = "us-central1-a"
 
 # Naming Convention Variables
-workgroup_name  = "workgroup"
-environment     = "prod"
+workgroup_name  = "bpontz-gcp-test"
+environment     = "dev"
 sequence_number = "1"
 
 # Network Configuration
 subnet_ip_cidr_range = "10.0.0.0/20"
 
 # VM Configuration
-vm_machine_type = "n2d-standard-2"
+vm_machine_type = "n2d-standard-4"
 vm_image        = "ubuntu-os-cloud/ubuntu-2404-lts-amd64"
 
 # Rhino Specific Information
