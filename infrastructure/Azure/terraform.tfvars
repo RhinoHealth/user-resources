@@ -1,10 +1,10 @@
 location        = "East US"
-tenant_id       = "your-tenant-id"       # Replace with your actual tenant ID
-subscription_id = "your-subscription-id" # Replace with your actual subscription ID
+tenant_id       = "02e2a2b7-0604-47c6-b2b2-0866ae5b7aac"       # Replace with your actual tenant ID
+subscription_id = "44604625-113d-4bfc-94dc-608200f1dff0" # Replace with your actual subscription ID
 
 # Naming Convention Variables
-workgroup_name  = "workgroup"
-environment     = "prod"
+workgroup_name  = "bpontz-azure-test"
+environment     = "dev"
 sequence_number = "1"
 
 # Network Configuration

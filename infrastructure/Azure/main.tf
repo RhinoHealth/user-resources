@@ -273,7 +273,7 @@ resource "tls_private_key" "rhino" {
 
 # Create Key Vault
 resource "azurerm_key_vault" "main" {
-  name                = "${var.workgroup_name}-rhino-${var.environment}-kv"
+  name                = local.key_vault_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   tenant_id           = var.tenant_id
