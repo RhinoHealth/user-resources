@@ -273,7 +273,7 @@ resource "tls_private_key" "rhino" {
 
 # Create Key Vault
 resource "azurerm_key_vault" "main" {
-  name                = "${var.workgroup_name}-rhino-${var.environment}-kv"
+  name                = local.key_vault_name
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   tenant_id           = var.tenant_id
@@ -384,8 +384,10 @@ resource "azurerm_linux_virtual_machine" "main" {
   }
 
   custom_data = base64encode(format(
-    "#!/bin/bash\ncurl -fsS --proto '=https' https://activate.rhinohealth.com | sudo RHINO_AGENT_ID='%s' PACKAGE_REGISTRY_USER='%s' PACKAGE_REGISTRY_PASSWORD='%s' SKIP_HW_CHECK=True bash -",
+    "#!/bin/bash\ncurl -fsS --proto '=https' https://activate.rhinohealth.com | sudo RHINO_AGENT_ID='%s' ROLE_ID='%s' SECRET_ID='%s' PACKAGE_REGISTRY_USER='%s' PACKAGE_REGISTRY_PASSWORD='%s' SKIP_HW_CHECK=True bash -",
     var.rhino_agent_id,
+    var.rhino_role_id,     
+    var.rhino_secret_id,
     var.rhino_package_registry_user,
     var.rhino_package_registry_password
   ))
