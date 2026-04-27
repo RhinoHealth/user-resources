@@ -1,4 +1,4 @@
-location        = "East US"
+location        = "North Central US"
 tenant_id       = "02e2a2b7-0604-47c6-b2b2-0866ae5b7aac"       # Replace with your actual tenant ID
 subscription_id = "44604625-113d-4bfc-94dc-608200f1dff0" # Replace with your actual subscription ID
 
@@ -14,7 +14,7 @@ ssh_source_ip_range   = ["0.0.0.0/0"] # Allow from anywhere by default; restrict
 vm_ip_type            = "public"      # Options: "public", "nat"
 
 # VM Configuration
-vm_size  = "Standard_D4alds_v6"
+vm_size  = "Standard_D4s_v3"
 vm_image = "ubuntu-24_04-lts"
 
 # Rhino Specific Information

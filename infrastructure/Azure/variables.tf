@@ -89,6 +89,18 @@ variable "rhino_agent_id" {
   sensitive   = true
 }
 
+variable "rhino_role_id" {
+  description = "The role ID for the Rhino Health installation."
+  type        = string
+  sensitive   = true
+}
+
+variable "rhino_secret_id" {
+  description = "The secret ID for the Rhino Health installation."
+  type        = string
+  sensitive   = true
+}
+
 variable "rhino_package_registry_user" {
   description = "The user for the Rhino Health package registry."
   type        = string
