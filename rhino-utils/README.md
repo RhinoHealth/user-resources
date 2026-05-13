@@ -27,7 +27,7 @@ Run each tool with `-h` or `--help` for usage details.
 1. `docker-push.sh`: Build a docker container image and push it to a container image repository. For more usage detail, see [Using the Docker Push Script](#using-the-docker-push-script).
 2. `drive_admin_api.py`: A utility Python script used to help facilitate the NVFlare FL network when using the `nvflare-docker-run.sh` script
 3. `gc-docker-run.sh`: Build a docker container image and run it locally. For more usage detail, see [Using the Generalized Compute Run Script](#using-the-generalized-compute-docker-run-script).
-4. `nvflare-docker-run.sh`: Run FL training with your code using, locally, using Docker.  Recommended: `--auto`. For more usage detail, see [Using the NVFlare Docker Run Script](#using-the-nvflare-docker-run-script).
+4. `nvflare-docker-run.sh`: Run FL training with your code using, locally, using Docker. For more usage detail, see [Using the NVFlare Docker Run Script](#using-the-nvflare-docker-run-script).
 5. `nvflare-docker-run-inference.sh`: Run inference with your code on a single dataset. For more usage detail, see [Using the Docker Push Script](#using-the-docker-push-script).
 6. `run_inference.sh`: A utility Shell script used to help facilitate the `nvflare-docker-run-inference.sh` script
 
@@ -73,14 +73,8 @@ cd path/to/your/code
 1. Adapt your FL client code to read all inputs from `/input`. See [Input Data Directory Structure](#input-data-directory-structure) for more details.
 2. Adapt your FL server code to write output model parameters (weight, biases etc.) to a file named `model_parameters.*` under `/output`.  (e.g. `/output/model_parameters.pt`)
 3. List the Python dependencies of your code in a `requirements.txt` file. (**Recommended**: Use "pinned dependencies" where possible.)
-4. Copy `client-resources/tutorials/tutorial_1/containers/prediction-model/Dockerfile` and make changes as needed where there are comments beginning with: "`# !! EDIT THIS:`"
-5. Test by building and running the container locally: (**Note:** The first two lines below only need to be run once) 
-```shell
-cd path/to/client-resources/rhino-utils
-chmod +x *.sh 
-cd path/to/your/code
-./path/to/client-resources/rhino-utils/nvflare-docker-run.sh --auto path/to/input path/to/output
-```
+4. Copy `user-resources/tutorials/tutorial_1/containers/prediction-model/Dockerfile` and make changes as needed where there are comments beginning with: "`# !! EDIT THIS:`"
+5. Test by building and running the container locally using the NVFlare Docker Run utility. See [nvflare-docker-run.md](./nvflare-docker-run.md) for installation and usage instructions.
 6. Debug and repeat until it works...
 
 <br><hr><br>

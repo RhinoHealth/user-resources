@@ -11,10 +11,6 @@ from collections import namedtuple
 from typing import List, Optional, Tuple, Union
 
 import nvflare
-from nvflare.fuel.hci.client.api_status import APIStatus
-from nvflare.fuel.hci.client.fl_admin_api import FLAdminAPI
-from nvflare.fuel.hci.client.fl_admin_api_constants import FLDetailKey
-from nvflare.fuel.hci.client.fl_admin_api_spec import FLAdminAPIResponse, TargetType
 
 
 def _get_nvflare_version_tuple() -> Union[Tuple[int, int, int], Tuple[int, int]]:
@@ -35,10 +31,58 @@ def _get_nvflare_version_tuple() -> Union[Tuple[int, int, int], Tuple[int, int]]
 
 NVFLARE_VERSION_TUPLE = _get_nvflare_version_tuple()
 
+
+###############################################################################
+# NVFlare 2.7+ — uses the new Flare API (nvflare.fuel.flare_api)
+###############################################################################
+
+def run_with_flare_api(host: str, port: int, num_clients: int, timeout: int, app_name: str):
+    """Drive the NVFlare training job using the new Flare API (2.7+)."""
+    from nvflare.fuel.flare_api.flare_api import new_insecure_session, MonitorReturnCode
+
+    print("Connecting to NVFLARE admin API...")
+    session = new_insecure_session(startup_kit_location=".", timeout=60.0)
+    
+    # Wait for all clients to connect.
+    print("Waiting for clients to connect to the server...")
+    start = time.monotonic()
+    while True:
+        clients = session.get_connected_client_list()
+        if len(clients) >= num_clients:
+            break
+        if time.monotonic() - start >= timeout:
+            raise Exception(f"Clients didn't connect in {timeout} seconds")
+        time.sleep(0.5)
+
+    # Submit the job.
+    print(f"Starting NVFlare app named {app_name}...")
+    job_id = session.submit_job("job")
+
+    # Wait for completion.
+    print("Training started. Waiting for server and clients to stop...")
+    rc = session.monitor_job(job_id, timeout=timeout)
+    if rc == MonitorReturnCode.TIMEOUT:
+        raise RuntimeError(f"App run timed out after {timeout:.0f} seconds.")
+
+    print("All done. Goodbye!")
+
+
+
+###############################################################################
+# NVFlare 2.0 - 2.6 — uses the legacy FLAdminAPI
+###############################################################################
+
+from nvflare.fuel.hci.client.api_status import APIStatus
+from nvflare.fuel.hci.client.fl_admin_api import FLAdminAPI
+from nvflare.fuel.hci.client.fl_admin_api_constants import FLDetailKey
+from nvflare.fuel.hci.client.fl_admin_api_spec import FLAdminAPIResponse, TargetType
+
 if (2, 0) <= NVFLARE_VERSION_TUPLE < (2, 1):
     WAITING_CLIENT_STATUS = "not started"
-elif (2, 2) <= NVFLARE_VERSION_TUPLE < (2, 6):
+elif (2, 2) <= NVFLARE_VERSION_TUPLE < (2, 7):
     WAITING_CLIENT_STATUS = "No Jobs"
+elif NVFLARE_VERSION_TUPLE >= (2, 7):
+    WAITING_CLIENT_STATUS = None  # not used for 2.7+
 else:
     raise Exception(f"Unsupported version of NVFLARE: {nvflare.__version__}")
 
@@ -65,8 +109,6 @@ def get_client_status_namedtuples(clients_status_response: FLAdminAPIResponse) -
     # ]
 
     clients_statuses: list[list[str]] = clients_status_response["details"].get("client_statuses")
-    if not clients_statuses:
-        return []
     ClientStatus = namedtuple("ClientStatus", clients_statuses.pop(0))
     assert {"CLIENT", "STATUS"} <= set(ClientStatus._fields), repr(ClientStatus._fields)
     status_objects = [ClientStatus(*client_status_row) for client_status_row in clients_statuses]
@@ -104,19 +146,19 @@ def _create_fl_admin_api(host: str, port: int) -> FLAdminAPI:
                 poc=True,
                 debug=False,
             )
-    elif (2, 4) <= NVFLARE_VERSION_TUPLE < (2, 6):
+    elif (2, 4) <= NVFLARE_VERSION_TUPLE < (2, 7):
         from nvflare.ha.dummy_overseer_agent import DummyOverseerAgent
-
-        admin_api = FLAdminAPI(
-            overseer_agent=DummyOverseerAgent(sp_end_point=f"{host}:8002:{port}"),
-            user_name="admin@nvidia.com",
-            ca_cert="startup/rootCA.pem",
-            client_cert="startup/client.crt",
-            client_key="startup/client.key",
-            upload_dir="transfer",
-            download_dir="transfer",
-            debug=False,
-        )
+        with contextlib.redirect_stdout(io.StringIO()):
+            admin_api = FLAdminAPI(
+                overseer_agent=DummyOverseerAgent(sp_end_point=f"{host}:8002:{port}"),
+                user_name="admin@nvidia.com",
+                ca_cert="startup/rootCA.pem",
+                client_cert="startup/client.crt",
+                client_key="startup/client.key",
+                upload_dir="transfer",
+                download_dir="transfer",
+                debug=False,
+            )
     else:
         raise Exception(f"Unsupported version of NVFLARE: {nvflare.__version__}")
     return admin_api
@@ -166,7 +208,7 @@ def try_login(admin_api) -> Tuple[bool, Optional[str]]:
         response: FLAdminAPIResponse = admin_api.login_with_password(username="admin", password="admin")
     elif (2, 2) <= NVFLARE_VERSION_TUPLE < (2, 4):
         response: FLAdminAPIResponse = admin_api.login_with_poc(username="admin", poc_key="admin")
-    elif (2, 4) <= NVFLARE_VERSION_TUPLE < (2, 6):
+    elif (2, 4) <= NVFLARE_VERSION_TUPLE < (2, 7):
         response: FLAdminAPIResponse = admin_api.login(username="admin@nvidia.com")
     else:
         raise Exception(f"Unsupported version of NVFLARE: {nvflare.__version__}")
@@ -181,19 +223,18 @@ def try_login(admin_api) -> Tuple[bool, Optional[str]]:
 def wait_for_clients_to_connect(admin_api, num_clients, timeout_seconds):
     start_time = time.monotonic()
     while True:
-        # Check if all FL clients are connected and waiting for instructions.
         response = admin_api.check_status(target_type=TargetType.CLIENT)
         if response["status"] == APIStatus.SUCCESS and "details" in response:
-            statuses = get_client_status_namedtuples(response)
-            n_clients_up = sum(1 for status in statuses if status.STATUS == WAITING_CLIENT_STATUS)
-            if n_clients_up >= num_clients:
-                return
+            client_statuses = response["details"].get("client_statuses")
+            if client_statuses is not None:
+                statuses = get_client_status_namedtuples(response)
+                n_clients_up = sum(1 for status in statuses if status.STATUS == WAITING_CLIENT_STATUS)
+                if n_clients_up >= num_clients:
+                    return
 
-        # Exit loop if timed out.
         if time.monotonic() - start_time >= timeout_seconds:
             break
 
-        # Wait a bit before trying again.
         time.sleep(0.5)
     details = response.get("details") if response else "(No details)"
     raise Exception(f"Clients didn't connect in {timeout_seconds} seconds: {details}")
@@ -213,7 +254,7 @@ def start_app(admin_api, app_name):
     elif (2, 2) <= NVFLARE_VERSION_TUPLE < (2, 4):
         response = admin_api.submit_job(job_folder=app_name)
         raise_on_response_error(response, errmsg_prefix="submit_job failed")
-    elif (2, 4) <= NVFLARE_VERSION_TUPLE < (2, 6):
+    elif (2, 4) <= NVFLARE_VERSION_TUPLE < (2, 7):
         response = admin_api.submit_job(job_folder="job")
         raise_on_response_error(response, errmsg_prefix="submit_job failed")
     else:
@@ -273,19 +314,29 @@ def main():
 
     args = parser.parse_args()
 
-    print("Connecting to NVFLARE admin API...")
-    admin_api = create_admin_api_and_login(host=args.host, port=args.port, connection_timeout=60.0)
-    print(f"Waiting for clients to connect to the server...")
-    wait_for_clients_to_connect(admin_api=admin_api, num_clients=args.num_clients, timeout_seconds=args.timeout)
-    print(f"Starting NVFlare app named {args.app_name}...")
-    start_app(admin_api=admin_api, app_name=args.app_name)
-    print("App running. Waiting for training to start...")
-    wait_for_start(admin_api=admin_api, timeout_seconds=min(30, args.timeout))
-    print("Training started. Waiting for server and clients to stop...")
-    wait_for_completion(admin_api=admin_api, timeout_seconds=args.timeout)
-    print("Training stopped. Shutting down...")
-    shutdown(admin_api=admin_api)
-    print("All done. Goodbye!")
+    if NVFLARE_VERSION_TUPLE >= (2, 7):
+        run_with_flare_api(
+            host=args.host,
+            port=args.port,
+            num_clients=args.num_clients,
+            timeout=args.timeout,
+            app_name=args.app_name,
+        )
+    else:
+        print("Connecting to NVFLARE admin API...")
+        admin_api = create_admin_api_and_login(host=args.host, port=args.port, connection_timeout=60.0)
+        print(f"Waiting for clients to connect to the server...")
+        wait_for_clients_to_connect(admin_api=admin_api, num_clients=args.num_clients, timeout_seconds=args.timeout)
+        print(f"Starting NVFlare app named {args.app_name}...")
+        start_app(admin_api=admin_api, app_name=args.app_name)
+        print("App running. Waiting for training to start...")
+        wait_for_start(admin_api=admin_api, timeout_seconds=min(30, args.timeout))
+        print("Training started. Waiting for server and clients to stop...")
+        wait_for_completion(admin_api=admin_api, timeout_seconds=args.timeout)
+        print("Training stopped. Shutting down...")
+        shutdown(admin_api=admin_api)
+        print("All done. Goodbye!")
+
     return 0
 
 
