@@ -11,4 +11,4 @@ This folder contains examples for using Rhino Health's Interactive Containers ca
 - [libre-office](./libre-office/README.md) - Use Office (e.g. spreadsheets) to interact with remote data on a Rhino Client.
 
 ## Getting Help
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
+For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
