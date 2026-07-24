@@ -1,8 +1,6 @@
-# Rhino Health Utilities
+# Rhino FCP Utilities
 
 ***Tools to assist in the local development, testing, and deployment to the FCP for both Generalized Compute and NVFLARE-based containers.***
-
-<br><br>
 
 # Why Use This?
 
@@ -11,14 +9,13 @@
 * These tools take care of many small details for you.  Some are crucial, such as building container images for the correct architecture (amd64, not ARM).  Some make local development faster and nicer, such as re-using local caches for `pip install` and `apt-get install`, and not running containers as a root user.
 * `docker-run.sh --auto` completely automates setting up a local NVFLARE server and local client(s) and running FL training with them, saving you the time and effort of doing so repeatedly (and of learning how!).
 
-<br><br>
 
 # Requirements
 
 1. Bash shell available at `/bin/bash` (the common default location)
 2. [Docker](https://docs.docker.com/get-docker/)
 
-<br><br>
+
 
 # Included Tools
 
@@ -31,7 +28,7 @@ Run each tool with `-h` or `--help` for usage details.
 5. `nvflare-docker-run-inference.sh`: Run inference with your code on a single dataset. For more usage detail, see [Using the Docker Push Script](#using-the-docker-push-script).
 6. `run_inference.sh`: A utility Shell script used to help facilitate the `nvflare-docker-run-inference.sh` script
 
-<br><hr><br>
+
 
 ## Input Data Directory Structure
 
@@ -49,7 +46,7 @@ Run each tool with `-h` or `--help` for usage details.
 ```
 **Note**: The same structure applies for the `/output` folder. If you are interested in saving data you must format the data in this structure.
 
-<br><hr><br>
+
 
 ## Using the Generalized Compute Docker Run Script
 
@@ -66,7 +63,7 @@ cd path/to/your/code
 ```
 5. Debug and repeat until it works...
 
-<br><hr><br>
+
 
 ## Using the NVFlare Docker Run Script
 
@@ -83,7 +80,7 @@ cd path/to/your/code
 ```
 6. Debug and repeat until it works...
 
-<br><hr><br>
+
 ## Using the NVFlare Docker Run Inference Script
 
 1. Complete all steps in [Using the NVFlare Docker Run Script](#using-the-nvflare-docker-run-script) above.
@@ -95,7 +92,6 @@ cd path/to/your/code
 ./path/to/client-resources/rhino-utils/nvflare-docker-run-inference.sh path/to/input path/to/output path/to/weights
 ```
 
-<br><hr><br>
 
 ## Using the Docker Push Script
 
@@ -110,7 +106,7 @@ chmod +x *.sh
 cd path/to/your/code
 ./path/to/client-resources/rhino-utils/docker-push.sh rhino-gc-workgroup-my-workgroup tutorial-1-data-prep-v1
 ```
-<br><br>
+
 
 # Getting Help
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
+For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

@@ -14,4 +14,4 @@ This folder contains examples for using Rhino Health's Generalized Compute capab
 
 
 ## Getting Help
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
+For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

@@ -1,15 +1,15 @@
-# Tutorial 1 -  Rhino Health Platform (RHP) “Hello World” - Basic Usage
-<br/>
+# Tutorial 1 -  Rhino Federated Computing Platform (FCP) “Hello World” - Basic Usage
+
 
 ### **Description**
 
-By following the [step-by-step instructions](https://rhinohealth.zendesk.com/hc/en-us/articles/8088478664349) in this tutorial, you will learn how to:
+In this tutorial, you will learn how to:
 
 1. Set up a new project
 2. Prepare data, import it as a Dataset, and explore data metrics.
 3. Containerize your code and run it using our distributed computing platform.
 4. Produce visualizations of the results and create a report in the project.
-<br/><br/>
+
 
 ### **Resources**
 - `containers/` - This directory contains folders for each of the containers you will use in this tutorial
@@ -25,7 +25,5 @@ By following the [step-by-step instructions](https://rhinohealth.zendesk.com/hc/
   - `Pneumonia Input Schema.csv` - This is the schema for your input dataset. It is how you can tell the RHP what structure it should expect your data to be in
   - `Pneumonia Results Schema.csv` - The pre-defined output schema for the federated training example
 
-<br><br>
-
 # Getting Help
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
+For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
