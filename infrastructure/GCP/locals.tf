@@ -10,6 +10,7 @@ locals {
   vm_instance_name = "${var.workgroup_name}-rhino-${var.environment}-${var.sequence_number}"
 
   # Firewall: {workgroup name}-rhino-client-{protocol}-{port}-{action}
+  firewall_ingress_iap_ssh_name = "${var.workgroup_name}-rhino-tcp-22-allow-iap"
   firewall_egress_name = "${var.workgroup_name}-rhino-tcp-443-allow"
 
   # Buckets: {workgroup name}-rhino-client-{type}-{seq#}
