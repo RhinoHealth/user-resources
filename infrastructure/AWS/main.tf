@@ -481,8 +481,9 @@ resource "aws_instance" "main" {
   }
 
   user_data = format(
-    "#!/bin/bash\ncurl -fsS --proto '=https' https://activate.rhinohealth.com | sudo RHINO_AGENT_ID='%s' PACKAGE_REGISTRY_USER='%s' PACKAGE_REGISTRY_PASSWORD='%s' SKIP_HW_CHECK=True bash -",
+    "#!/bin/bash\ncurl -fsS --proto '=https' https://activate.rhinohealth.com | sudo RHINO_AGENT_ID='%s' FLEET_ENROLL_SECRET='%s' PACKAGE_REGISTRY_USER='%s' PACKAGE_REGISTRY_PASSWORD='%s' SKIP_HW_CHECK=True bash -",
     var.rhino_agent_id,
+    var.rhino_enroll_secret,
     var.rhino_package_registry_user,
     var.rhino_package_registry_password
   )
