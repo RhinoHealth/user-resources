@@ -11,7 +11,6 @@ NVIDIA FLARE — all without any site's raw data ever leaving its source.
 federated_imaging_demo/
 ├── sdk.ipynb                          ← the demo notebook (start here)
 ├── requirements.txt
-├── model_parameters.pt                ← sample output from a prior training run
 ├── images/
 │   └── Rhino logomark.png             ← used in the notebook's banner cells
 └── containers/
@@ -46,8 +45,9 @@ federated_imaging_demo/
 - Python 3.9+
 - A Rhino Health account with access to the target environment 
 - Access to the client-mounted data path referenced in the Dataset Creation step
-- The `containers/ImagePixelExtraction/` and `containers/NVFlare/` folders present
-  alongside the notebook, unmodified
+- The `containers/ImagePixelExtraction/` and `containers/NVFlare/` folders, kept at
+  their current relative paths — the notebook reads these files directly to build
+  the code objects, so renaming or moving them will break the corresponding cell
 
 ## Setup
 
