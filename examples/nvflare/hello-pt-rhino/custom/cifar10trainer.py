@@ -1,5 +1,5 @@
-# Copyright (c) 2023, Rhino HealthTech, Inc.
-# Original file modified by Rhino Health to adapt it to the Rhino Health Federated Computing Platform.
+# Copyright (c) 2023, Rhino FCP, Inc.
+# Original file modified by Rhino FCP to adapt it to the Rhino Federated Computing Platform.
 
 # Copyright (c) 2021, NVIDIA CORPORATION.
 #
@@ -33,7 +33,7 @@ from nvflare.apis.shareable import Shareable, make_reply
 from nvflare.apis.signal import Signal
 from nvflare.app_common.abstract.model import make_model_learnable, model_learnable_to_dxo
 from nvflare.app_common.app_constant import AppConstants
-from nvflare.app_common.pt.pt_fed_utils import PTModelPersistenceFormatManager
+from nvflare.app_opt.pt.model_persistence_format_manager import PTModelPersistenceFormatManager
 from pt_constants import PTConstants
 from simple_network import SimpleNetwork
 
@@ -73,9 +73,7 @@ class Cifar10Trainer(Executor):
             ToTensor(),
             Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ])
-        dataset_uid = next(os.walk('/input/datasets'))[1][0]
-
-        self._train_dataset = torchvision.datasets.ImageFolder(root='/input/datasets/'+dataset_uid+'/file_data/train',
+        self._train_dataset = torchvision.datasets.ImageFolder(root='/input/file_data/train',
                                                                transform=transforms)
 
         # self._train_dataset = CIFAR10(root='~/rhino_data/input/', transform=transforms,
