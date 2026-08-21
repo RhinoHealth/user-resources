@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-import shutil
+import os
 import sys
-from pathlib import Path
 
 import pandas as pd
 import torch
@@ -10,6 +9,14 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import Compose, ToTensor, Normalize
 
 from simple_network import SimpleNetwork
+
+
+def _rel_key(path):
+    """Return the '<class>/<filename>' tail of a path, used to match scores
+    back to dataset.csv rows regardless of any leading split prefix
+    (e.g. 'test/3/image0.png' in the CSV vs '3/image0.png' on disk)."""
+    parts = path.replace("\\", "/").split("/")
+    return "/".join(parts[-2:])
 
 
 def infer(model_parameters_file_path):
@@ -29,15 +36,25 @@ def infer(model_parameters_file_path):
     dataset = torchvision.datasets.ImageFolder(root="/input/file_data", transform=transforms)
     loader = DataLoader(dataset, batch_size=4, shuffle=False)
 
-    # Inference: Apply model and add scores column.
-    scores = []
+    # ImageFolder enumerates images grouped by class, which does NOT match
+    # dataset.csv's row order. Score every image and key each score by its
+    # '<class>/<filename>' path so it can be matched back to the correct row,
+    # rather than assuming loader order == dataset.csv row order.
+    sample_paths = [_rel_key(path) for path, _ in dataset.samples]
+    scores_by_path = {}
+    idx = 0
     with torch.no_grad():
-        for i, (images, labels) in enumerate(loader):
+        for images, _ in loader:
             images = images.to(device)
             output = model(images)
             batch_scores = torch.select(output, 1, 1)
-            scores.extend([score.item() for score in batch_scores])
-    tabular_data['Model_Score'] = scores
+            for score in batch_scores:
+                scores_by_path[sample_paths[idx]] = score.item()
+                idx += 1
+
+    tabular_data["Model_Score"] = tabular_data["image_name"].apply(
+        lambda name: scores_by_path.get(_rel_key(name))
+    )
 
     tabular_data.to_csv("/output/dataset.csv", index=False)
 
