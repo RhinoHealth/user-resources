@@ -106,8 +106,9 @@ FCP mounts the platform's `/input` and `/output` directories into the running co
 
 ### **Using a different Python or NVFlare version**
 
-If your environment needs to stay on **Python 3.8**, NVFlare's own version constraints (documented in the `hello-numpy-sag-rhino` example in this repo) mean **NVFlare 2.4.2** is the highest compatible version - later releases either require Python ≥3.9 or have a known issue on Python 3.8. This has not yet been validated specifically for this example's PyTorch dependencies; if you go this route, you will also need to pin compatible `torch`/`torchvision` versions for Python 3.8 and re-run the steps above to confirm training and inference both complete successfully.
+- If your environment needs to stay on **Python 3.8**, use **NVFlare 2.4.2** instead of 2.8.1, and keep `python:3.8-slim-bullseye` as the `Dockerfile` base image.
+- For any other Python/NVFlare pairing, update the `nvflare==` line in `requirements.txt` and the base image in the `Dockerfile` accordingly, then re-run the steps above to confirm training and inference both complete successfully.
 <br><br>
 
 # Getting Help
-For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinohealth.com).
+For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
