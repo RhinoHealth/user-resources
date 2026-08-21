@@ -1,4 +1,4 @@
-FROM python:3.8-slim-bullseye
+FROM python:3.12-slim-bookworm
 
 # Set up non-root user and group.
 ARG UID=5642
