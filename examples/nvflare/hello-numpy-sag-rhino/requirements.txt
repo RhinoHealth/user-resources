@@ -1,5 +1,4 @@
-numpy>=1.22,<1.23
-nvflare==2.0.5
-# Limit the version of protobuf, since nvflare doesn't do this but versions 3.21+ have breaking changes.
-# See: https://github.com/NVIDIA/NVFlare/issues/608
-protobuf<3.21
+nvflare==2.8.1
+# numpy and protobuf are pulled in automatically as compatible nvflare dependencies.
+# (Older pins of numpy<1.23 and protobuf<3.21 were required for nvflare==2.0.5 and
+# are no longer needed / no longer installable on current Python versions.)
