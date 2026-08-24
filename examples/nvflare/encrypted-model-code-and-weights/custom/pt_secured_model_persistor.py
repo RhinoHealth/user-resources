@@ -1,5 +1,5 @@
-# Copyright (c) 2023, Rhino HealthTech, Inc.
-# Original file modified by Rhino Health to adapt it to the Rhino Health Federated Computing Platform.
+# Copyright (c) 2023, Rhino FCP, Inc.
+# Original file modified by Rhino FCP to adapt it to the Rhino Health Federated Computing Platform.
 
 # Copyright (c) 2021, NVIDIA CORPORATION.
 #
@@ -32,7 +32,7 @@ from nvflare.app_common.abstract.model_persistor import ModelPersistor
 from nvflare.app_common.app_constant import AppConstants, DefaultCheckpointFileName, EnvironmentKey
 from nvflare.app_common.app_event_type import AppEventType
 from nvflare.app_common.model_desc import ModelDescriptor
-from nvflare.app_common.pt.pt_fed_utils import PTModelPersistenceFormatManager
+from nvflare.app_opt.pt.model_persistence_format_manager import PTModelPersistenceFormatManager
 
 
 class PTSecuredModelPersistor(ModelPersistor):
