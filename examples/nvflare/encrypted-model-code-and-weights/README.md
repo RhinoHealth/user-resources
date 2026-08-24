@@ -156,4 +156,4 @@ If your environment needs to stay on **Python 3.8**, NVFlare's own version const
 <br><br>
 
 # Getting Help
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
+For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
