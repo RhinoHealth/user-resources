@@ -1,10 +1,10 @@
 # NVIDIA FLARE Example - Encrypted Model Code and Weights
-> Last validated: 2026-08-21
-<br/>
 
-### **Description**
+*Last Updated: 2026-09-01*
 
-This example shows how to securely train a model using Rhino Federated Computing Platform (FCP), encrypting both the model code and the model weights using a key known only to the person running the code.
+### **Overview**
+
+This example shows how to securely train a model using Rhino's Federated Computing Platform (FCP), encrypting both the model code and the model weights using a key known only to the person running the code.
 
 It shows how to:
 * Locally encrypt your model code (in this example the model network architecture)
@@ -12,36 +12,34 @@ It shows how to:
 * Encrypt the model parameters so that they are stored in an encrypted manner on FCP
 * Add an `infer.py` script to perform inference on the trained model, decrypting the model parameters during inference using a key provided during run time
 
-Please reference the User Documentation and/or Tutorials for in-depth explanations on how to use NVFlare on FCP:
+Please reference the User Documentation and/or Tutorials for more info on how to use NVFlare on FCP:
 - [Creating and Running NVFlare Code and Running Inference](https://docs.rhinofcp.com/creating-and-running-code-objects/creating-and-running-nvflare-code-and-running-inference) (FCP UI)
 - [Creating a New NVFlare Code Object Using the Rhino SDK](https://docs.rhinofcp.com/rhino-sdk/creating-a-new-nvflare-code-object-using-the-rhino-sdk)
 - [Running NVFlare Code Using the Rhino SDK](https://docs.rhinofcp.com/rhino-sdk/running-nvflare-code-using-the-rhino-sdk)
-<br/><br/>
 
 ### **Requirements**
 
-This example is validated with **NVFlare 2.8.1**, **torch 2.4.0**, and **torchvision 0.19.0** on Python 3.12.
-<br/><br/>
+As noted in `requirements.txt`, this example uses **NVFlare 2.8.1**, **torch 2.4.0**, and **torchvision 0.19.0** on Python 3.12.
 
-### **Resources**
+### **Repo Structure**
 - `config` - This is the standard NVFlare directory for config files
   - `config_fed_client.json` - The standard NVFlare federated client config, setting 1 epoch in this example
   - `config_fed_server.json` - The standard NVFlare federated server config, setting the output model parameters file to be stored in `/output/model_parameters.pt.enc`
 - `custom` - This is the standard NVFlare directory for custom model code
   - `decrypt_code.py` - A script for decrypting the code using a run time secret provided when triggering model training
+  - `network.py.enc` - An example of an encrypted `network.py` file (replace this with an encrypted file that you have the key for)
   - `pneumonia_trainer.py` - The regular model code, in this case a PyTorch model for detecting pneumonia from CXR data, reading the input data from the `/input` folder in order to work with FCP
   - `pt_constants.py` - The regular constants for PyTorch training
   - `pt_secured_model_persistor.py` - A Persistor that encrypts the model weights before storing them using the `cryptography.fernet` python library
-  - `network.py.enc` - An example of an encrypted `network.py` file (replace this with an encrypted file that you have the key for)
-- `network.py` - The standard PyTorch network architecture file usually located within the `custom` directory, but included here because in this example it will be encrypted and will not be included in the container image in its raw format
 - `encrypt_code` - Utilities for encrypting code using the `cryptography.fernet` python library
-  - `generate_key.py` - A script for generating a new encryption key using the python cryptography.fernet library
   - `encrypt_code.py` - A script for encrypting input code with an input encryption key using the python cryptography.fernet library
+   - `generate_key.py` - A script for generating a new encryption key using the python cryptography.fernet library
+- `Dockerfile` - This is the Dockerfile to be used for building the container image
 - `entrypoint.sh` - A shell script to be used as the entrypoint for the containers, decrypting the encrypted code using a decryption key provided during run time
 - `infer.py` - A script for running inference on the trained model, adapted to decrypt the model weights using a decryption key provided during run time
-- `Dockerfile` - This is the Dockerfile to be used for building the container image
+- `network.py` - The standard PyTorch network architecture file usually located within the `custom` directory, but included here because in this example it will be encrypted and will not be included in the container image in its raw format
+- `README.md` - This file
 - `requirements.txt` - The python requirements for this project
-<br><br>
 
 ### **Running this example locally**
 
@@ -137,7 +135,6 @@ run_params = ModelTrainInput(
 )
 ```
 7. After training has completed, you can download the encrypted weights in the Rhino Health UI or via the SDK
-<br><br>
 
 #### **Under the Hood**
 * The container image only includes the encrypted version of `network.py.enc` and not the original decrypted version
@@ -148,12 +145,10 @@ run_params = ModelTrainInput(
 Notes:
 * `secrets_fed_client` contains the key sent to the federated client and is available to the containerized code at `/input/secret_run_params.json`
 * `secrets_fed_server` contains the key sent to the federated server and is available to the containerized code at `/server-credentials/secret_run_params.json`
-<br><br>
 
 ### **Using a different Python or NVFlare version**
 
 If your environment needs to stay on **Python 3.8**, NVFlare's own version constraints (documented in the `hello-numpy-sag-rhino` example in this repo) mean **NVFlare 2.4.2** is the highest compatible version - later releases either require Python ≥3.9 or have a known issue on Python 3.8. This has not been validated specifically for this example's PyTorch and cryptography dependencies; if you go this route, you will also need to pin compatible `torch`/`torchvision`/`cryptography` versions for Python 3.8 and re-run the steps above to confirm training and inference both complete successfully.
-<br><br>
 
 # Getting Help
 For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

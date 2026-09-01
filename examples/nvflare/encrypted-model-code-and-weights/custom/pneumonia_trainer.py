@@ -1,5 +1,5 @@
-# Copyright (c) 2023, Rhino FCP, Inc.
-# Original file modified by Rhino FCP to adapt it to the Rhino Health Federated Computing Platform.
+# Copyright (c) 2026, Rhino FCP, Inc.
+# Original file modified by Rhino FCP to adapt it to the Rhino Federated Computing Platform.
 
 # Copyright (c) 2021, NVIDIA CORPORATION.
 #
