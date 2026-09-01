@@ -1,10 +1,10 @@
-# Federated EAP Analytics — Rhino Health Metric Reference
+# Federated EAP Analytics — Rhino FCP Metric Reference
 
 This document describes every federated metric used across the three analysis modules.
 Each metric is computed locally at each participating site and aggregated centrally by
 Rhino — no raw employee records are transferred at any point.
 
-More general documentation on the Rhino federated metrics suite can be found within our [Calculating Federated Analytics](https://docs.rhinohealth.com/hc/en-us/articles/12385294342173-Calculating-Federated-Analytics-Part-1) documentation and our [Metrics API](https://rhinohealth.github.io/rhino_sdk_docs/html/autoapi/rhino_health/lib/metrics/index.html) documentation.
+More general documentation on the Rhino federated metrics suite can be found within our [Calculating Federated Analytics](https://docs.rhinofcp.com/rhino-sdk/calculating-federated-analytics-part-1#retrieving-a-metric) documentation and our [Metrics API](https://rhinohealth.github.io/rhino_sdk_docs/html/autoapi/rhino_health/lib/metrics/index.html) documentation.
 
 ---
 
