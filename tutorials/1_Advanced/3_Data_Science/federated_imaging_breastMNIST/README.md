@@ -17,7 +17,7 @@ federated_imaging_breastMNIST/
 ├── METRICS.MD                            ← reference doc describing every federated metric
 │                                            used in Phase 3 analytics
 ├── README.md                             ← this file
-├── MedMNIST/
+├── MedMNIST/                             ← folder containing raw data from MedMNIST
     └── BreastMNIST/                      ← Breast ultrasound images (128x128, grayscale) for binary classification
         ├── train/                        ← 546 images — training split
         ├── val/                          ← 78 images — validation split
