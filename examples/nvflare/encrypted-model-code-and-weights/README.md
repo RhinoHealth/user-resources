@@ -1,6 +1,6 @@
 # NVIDIA FLARE Example - Encrypted Model Code and Weights
 
-*Last Updated: 2026-09-01*
+*Last Updated: 2026-09-02*
 
 ### **Overview**
 
@@ -19,7 +19,7 @@ Please reference the User Documentation and/or Tutorials for more info on how to
 
 ### **Requirements**
 
-As noted in `requirements.txt`, this example uses **NVFlare 2.8.1**, **torch 2.4.0**, and **torchvision 0.19.0** on Python 3.12.
+As noted in `requirements.txt`, this example uses **NVFlare 2.8.1**, **torch 2.4.0**, and **torchvision 0.19.0** on **Python 3.12**.
 
 ### **Repo Structure**
 - `config` - This is the standard NVFlare directory for config files
@@ -45,7 +45,7 @@ As noted in `requirements.txt`, this example uses **NVFlare 2.8.1**, **torch 2.4
 
 Unlike a standard NVFlare example, this one needs your own encryption key before anything else will run, since the shipped `network.py.enc` was encrypted with a key you don't have.
 
-1. **Generate your own encryption key** and encrypt `network.py` with it:
+1. **Generate your own encryption key** and encrypt `network.py` with it (make sure you're running from the encrypted-model-code-and-weights directory):
    ```bash
    python -m venv venv
    source venv/bin/activate
