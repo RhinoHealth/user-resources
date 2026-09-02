@@ -38,6 +38,7 @@ As noted in `requirements.txt`, this example uses **NVFlare 2.8.1**, **torch 2.4
 - `entrypoint.sh` - A shell script to be used as the entrypoint for the containers, decrypting the encrypted code using a decryption key provided during run time
 - `infer.py` - A script for running inference on the trained model, adapted to decrypt the model weights using a decryption key provided during run time
 - `network.py` - The standard PyTorch network architecture file usually located within the `custom` directory, but included here because in this example it will be encrypted and will not be included in the container image in its raw format
+- `data` - Small placeholder images (solid-color, synthetic) and a matching `dataset.csv`, for local pipeline testing without needing real pneumonia CXR data
 - `README.md` - This file
 - `requirements.txt` - The python requirements for this project
 
@@ -62,8 +63,8 @@ Unlike a standard NVFlare example, this one needs your own encryption key before
 
 3. **Set up training data and the secret key files.** The container looks for the key at `/input/secret_run_params.json` (client side) and `/server-credentials/secret_run_params.json` (server side) - FCP provides these automatically at runtime, but for a local test you create them yourself:
    ```bash
-   mkdir -p ~/pneumonia-test/train_mount/file_data/NORMAL
-   mkdir -p ~/pneumonia-test/train_mount/file_data/PNEUMONIA
+   mkdir -p ~/pneumonia-test/train_mount/file_data
+   cp -r data/train/NORMAL data/train/PNEUMONIA ~/pneumonia-test/train_mount/file_data/
    mkdir -p ~/pneumonia-test/output
    mkdir -p ~/pneumonia-test/server-credentials
 
@@ -71,7 +72,7 @@ Unlike a standard NVFlare example, this one needs your own encryption key before
    echo "{\"key\": \"$KEY\"}" > ~/pneumonia-test/train_mount/secret_run_params.json
    echo "{\"key\": \"$KEY\"}" > ~/pneumonia-test/server-credentials/secret_run_params.json
    ```
-   Add some images to the `NORMAL` and `PNEUMONIA` folders (any real `.jpg`/`.png` images work for testing the pipeline mechanically - the model doesn't need to have real predictive value).
+   This copies in the small placeholder images from `data/` (solid-color test images - fine for validating the pipeline mechanically). To use real pneumonia CXR data instead, swap in your own images in place of the placeholders.
 
 4. **Run training:**
    ```bash
@@ -91,12 +92,14 @@ Unlike a standard NVFlare example, this one needs your own encryption key before
    ```
    `exit` the container when done.
 
-5. **Set up inference data**, including a `dataset.csv` with an `image_name,category` header, and the same secret key file on the input side:
+5. **Set up inference data**, including the same secret key file on the input side:
    ```bash
-   mkdir -p ~/pneumonia-test/infer_mount/file_data/NORMAL ~/pneumonia-test/infer_mount/file_data/PNEUMONIA
+   mkdir -p ~/pneumonia-test/infer_mount/file_data
+   cp -r data/test/NORMAL data/test/PNEUMONIA ~/pneumonia-test/infer_mount/file_data/
+   cp data/dataset_test.csv ~/pneumonia-test/infer_mount/dataset.csv
    echo "{\"key\": \"$KEY\"}" > ~/pneumonia-test/infer_mount/secret_run_params.json
    ```
-   Add test images to each class folder and reference them in `dataset.csv`.
+   This uses the placeholder test images and matching `dataset.csv` from `data/`. To use your own data, replace the images and update `dataset.csv` to reference them (`<class>/<filename>`).
 
 6. **Run inference:**
    ```bash
@@ -113,12 +116,11 @@ Unlike a standard NVFlare example, this one needs your own encryption key before
 
 ### **Running this example on FCP**
 
-1. Generate a new encryption key to be used for this code - it is stored locally so only you have access to this key: `python ./encrypt_code/generate_key.py ~/myprecious`
-2. Encrypt the model code (in our example `network.py`, but you can also do this for multiple files) using the encryption key: `python ./encrypt_code/encrypt_code.py ./network.py ~/myprecious ./custom/network.py.enc`
-3. (Optional) You can now delete the `network.py` file (or move it to a different directory) - it will not be used when building the container image, but if you want to validate this you can delete/move this file
-4. Build and push the container image to your workgroup's container registry
-5. Create a Code Object in FCP using this container image, via the FCP UI ([Creating and Running NVFlare Code and Running Inference](https://docs.rhinofcp.com/creating-and-running-code-objects/creating-and-running-nvflare-code-and-running-inference)) or the SDK ([Creating a New NVFlare Code Object Using the Rhino SDK](https://docs.rhinofcp.com/rhino-sdk/creating-a-new-nvflare-code-object-using-the-rhino-sdk))
-6. Use the following SDK code to execute training ([Running NVFlare Code Using the Rhino SDK](https://docs.rhinofcp.com/rhino-sdk/running-nvflare-code-using-the-rhino-sdk)):
+Once you've generated your key and encrypted `network.py` (steps 1-2 above):
+
+1. Build and push the container image to your workgroup's container registry ([Pushing Containers to the ECR](https://docs.rhinofcp.com/getting-started/quick-start-guide/pushing-containers-to-the-ecr))
+2. Create a Code Object in FCP using this container image, via the FCP UI ([Creating and Running NVFlare Code and Running Inference](https://docs.rhinofcp.com/creating-and-running-code-objects/creating-and-running-nvflare-code-and-running-inference)) or the SDK ([Creating a New NVFlare Code Object Using the Rhino SDK](https://docs.rhinofcp.com/rhino-sdk/creating-a-new-nvflare-code-object-using-the-rhino-sdk))
+3. Use the following SDK code to execute training ([Running NVFlare Code Using the Rhino SDK](https://docs.rhinofcp.com/rhino-sdk/running-nvflare-code-using-the-rhino-sdk)):
 ```python
 import json
 run_params = ModelTrainInput(
@@ -134,7 +136,8 @@ run_params = ModelTrainInput(
     secrets_fed_server=json.dumps({"key":""}), # Add the value from ~/myprecious
 )
 ```
-7. After training has completed, you can download the encrypted weights in the Rhino Health UI or via the SDK
+4. After training has completed, you can download the encrypted weights in the Rhino Health UI or via the SDK
+<br><br>
 
 #### **Under the Hood**
 * The container image only includes the encrypted version of `network.py.enc` and not the original decrypted version
