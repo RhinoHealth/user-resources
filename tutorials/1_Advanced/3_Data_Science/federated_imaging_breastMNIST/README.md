@@ -1,56 +1,56 @@
 # Federated Imaging Demo (using BreastMNIST)
 
-*Last Updated: 2026-09-01*
+*Last Updated: 2026-09-03*
 
-This is a guided walkthrough of the Rhino Federated Computing Platform (Rhino FCP) using the BreastMNIST dataset. 
+This is a guided walkthrough of federated imaging on the Rhino Federated Computing Platform (FCP) using the publically accessible [BreastMNIST dataset](https://medmnist.com/). 
 
-The provided `notebook.ipynb` goes over how to register data, run federated analytics, demonstrate built-in privacy
-protection (k-anonymization), and train a shared model across simulated sites using
-NVIDIA FLARE — all without any site's raw data ever leaving its source.
+The provided `notebook.ipynb` goes over how to register data, run federated analytics, demonstrate built-in privacy protection (k-anonymization), and train a shared model across simulated sites using NVIDIA FLARE — all without any site's raw data ever leaving its source.
 
 ## Repo contents
 
 ```
 federated_imaging_breastMNIST/
-├── notebook.ipynb                        ← the demo notebook (start here)
-├── requirements.txt                      ← Python dependencies for the notebook environment
-├── METRICS.MD                            ← reference doc describing every federated metric
-│                                            used in Phase 3 analytics
-├── README.md                             ← this file
-├── MedMNIST/                             ← folder containing raw data from MedMNIST
-    └── BreastMNIST/                      ← Breast ultrasound images (128x128, grayscale) for binary classification
-        ├── train/                        ← 546 images — training split
-        ├── val/                          ← 78 images — validation split
-        └── test/                         ← 156 images — test split
+├── containers/
+│   ├── ImagePixelExtraction/          ← preprocessing container: extracts pixel arrays
+│   │   │                                 from raw images so they can be used for training
+│   │   ├── image_pixel_extraction.py  ← reads each image file, flattens it to a pixel
+│   │   │                                 array, and writes the result as a CSV
+│   │   └── requirements.txt           ← Python packages for the preprocessing script
+│   │                                     (Pillow, numpy, etc.)
+│   ├── LocalTraining/                 ← single-site baseline for comparison (not federated)
+│   │   └── train.py                   ← trains a CNN on one site's data locally; used to
+│   │                                     benchmark against the federated model
+│   └── NVFlare/                       ← federated training container using NVIDIA FLARE;
+│       │                                 each site trains on its own images, only model
+│       │                                 updates (not images) are shared
+│       ├── app/config/
+│       │   ├── config_fed_client.json ← tells each site's container how to connect and
+│       │   │                             participate in training rounds
+│       │   └── config_fed_server.json ← tells the coordinator how many rounds to run
+│       │                                 and how to combine updates from each site
+│       ├── app/custom/
+│       │   └── train.py               ← federated training loop: loads site images,
+│       │                                 trains locally, sends model updates back
+│       ├── meta.json                  ← NVFlare job metadata — names the app and sets
+│       │                                 the minimum number of participating sites
+│       └── requirements.txt           ← Python packages for federated training
+│                                          (torch, nvflare, etc.)
 ├── images/
-│   ├── Rhino logomark.png                ← used in the notebook's banner cells
-│   ├── data_sci_lifecycle.png            ← data science lifecycle diagram (notebook intro)
-│   └── hcls_scenario.png                 ← HCLS use-case diagram (notebook intro)
-└── containers/
-    ├── ImagePixelExtraction/             ← preprocessing container: extracts pixel arrays
-    │   │                                    from raw images so they can be used for training
-    │   ├── image_pixel_extraction.py     ← reads each image file, flattens it to a pixel
-    │   │                                    array, and writes the result as a CSV
-    │   └── requirements.txt              ← Python packages for the preprocessing script
-    │                                        (Pillow, numpy, etc.)
-    ├── LocalTraining/                    ← single-site baseline for comparison (not federated)
-    │   └── train.py                      ← trains a CNN on one site's data locally; used to
-    │                                        benchmark against the federated model
-    └── NVFlare/                          ← federated training container using NVIDIA FLARE;
-        │                                    each site trains on its own images, only model
-        │                                    updates (not images) are shared
-        ├── app/config/
-        │   ├── config_fed_client.json    ← tells each site's container how to connect and
-        │   │                                participate in training rounds
-        │   └── config_fed_server.json    ← tells the coordinator how many rounds to run
-        │                                    and how to combine updates from each site
-        ├── app/custom/
-        │   └── train.py                  ← federated training loop: loads site images,
-        │                                    trains locally, sends model updates back
-        ├── meta.json                     ← NVFlare job metadata — names the app and sets
-        │                                    the minimum number of participating sites
-        └── requirements.txt              ← Python packages for federated training
-                                             (torch, nvflare, etc.)
+│   ├── data_sci_lifecycle.png         ← data science lifecycle diagram (notebook intro)
+│   ├── hcls_scenario.png              ← HCLS use-case diagram (notebook intro)
+│   └── Rhino logomark.png             ← used in the notebook's banner cells
+├── MedMNIST/                          ← folder containing raw data from MedMNIST
+    └── BreastMNIST/                   ← Breast ultrasound images (128x128, grayscale) for binary classification - 780 images total
+        ├── test/                      ← 156 images — test split
+        ├── train/                     ← 546 images — training split
+        └── val/                       ← 78 images — validation split
+├── METRICS.MD                         ← reference doc describing every federated metric
+│                                          used in Phase 3 analytics
+├── model_parameters.pt                ← exported global model weights from Phase 5
+│                                          (Export the Model)
+├── notebook.ipynb                     ← the demo notebook (start here)
+├── README.md                          ← this file
+└── requirements.txt                   ← Python dependencies for the notebook environment
 ```
 
 ---
@@ -73,6 +73,7 @@ The demo notebook, `notebook.ipynb`, follows a 5 phase structure:
 
 - Python 3.9+
 - A Rhino FCP account with access to the target environment 
+  - (this notebook is setup to be run in [Prod](dashboard.rhinohealth.com))
 - Access to the client-mounted data path referenced in the Dataset Creation step
 - The `containers/ImagePixelExtraction/` and `containers/NVFlare/` folders, kept at
   their current relative paths — the notebook reads these files directly to build
