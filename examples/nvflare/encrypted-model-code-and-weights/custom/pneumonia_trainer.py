@@ -1,5 +1,5 @@
-# Copyright (c) 2023, Rhino HealthTech, Inc.
-# Original file modified by Rhino Health to adapt it to the Rhino Health Federated Computing Platform.
+# Copyright (c) 2026, Rhino FCP, Inc.
+# Original file modified by Rhino FCP to adapt it to the Rhino Federated Computing Platform.
 
 # Copyright (c) 2021, NVIDIA CORPORATION.
 #
@@ -33,7 +33,7 @@ from nvflare.apis.shareable import Shareable, make_reply
 from nvflare.apis.signal import Signal
 from nvflare.app_common.abstract.model import make_model_learnable, model_learnable_to_dxo
 from nvflare.app_common.app_constant import AppConstants
-from nvflare.app_common.pt.pt_fed_utils import PTModelPersistenceFormatManager
+from nvflare.app_opt.pt.model_persistence_format_manager import PTModelPersistenceFormatManager
 from pt_constants import PTConstants
 from network import PneumoniaModel
 
@@ -75,8 +75,7 @@ class PneumoniaTrainer(Executor):
             Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
 
-        dataset_uid = next(os.walk('/input/datasets'))[1][0]
-        self._train_dataset = torchvision.datasets.ImageFolder(root='/input/datasets/'+dataset_uid+'/file_data',
+        self._train_dataset = torchvision.datasets.ImageFolder(root='/input/file_data',
                                                                transform=transforms)
 
         self._train_loader = DataLoader(self._train_dataset, batch_size=4, shuffle=True)
@@ -187,3 +186,6 @@ class PneumoniaTrainer(Executor):
                                                                    default_train_conf=self._default_train_conf)
         ml = self.persistence_manager.to_model_learnable(exclude_vars=self._exclude_vars)
         return ml
+
+
+        

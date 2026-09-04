@@ -7,9 +7,16 @@ import pandas as pd
 import torch
 import torchvision
 from torch.utils.data.dataloader import DataLoader
-from torchvision.transforms import ToTensor, Normalize, Compose,  Resize, RandomRotation, CenterCrop
+from torchvision.transforms import ToTensor, Normalize, Compose, Resize, CenterCrop
 
 from network import PneumoniaModel
+
+
+def _rel_key(path):
+    """Return the '<class>/<filename>' tail of a path, used to match scores
+    back to dataset.csv rows regardless of any leading split prefix."""
+    parts = path.replace("\\", "/").split("/")
+    return "/".join(parts[-2:])
 
 
 def decrypt_weights(model_parameters_path):
@@ -35,9 +42,12 @@ def infer(model_params_file_path):
     model.to(device)
 
     # Preparing the dataset for testing.
+    # Note: RandomRotation is a training-time augmentation and has been
+    # removed here - applying it at inference time would make scores
+    # non-deterministic (a different random rotation, and therefore a
+    # different score, every time the same image is scored).
     transforms = Compose([
         Resize(size=(256, 256)),
-        RandomRotation(degrees=(-20, +20)),
         CenterCrop(size=224),
         ToTensor(),
         Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
@@ -46,18 +56,27 @@ def infer(model_params_file_path):
     dataset = torchvision.datasets.ImageFolder(root="/input/file_data", transform=transforms)
     loader = DataLoader(dataset, batch_size=4, shuffle=False)
 
-    # Inference: Apply model and add scores column.
-    scores = []
+    # ImageFolder enumerates images grouped by class, which does NOT match
+    # dataset.csv's row order. Score every image and key each score by its
+    # '<class>/<filename>' path so it can be matched back to the correct row,
+    # rather than assuming loader order == dataset.csv row order.
+    sample_paths = [_rel_key(path) for path, _ in dataset.samples]
+    scores_by_path = {}
+    idx = 0
     with torch.no_grad():
-        for i, (images, labels) in enumerate(loader):
+        for images, _ in loader:
             images = images.to(device)
             output = model(images)
             batch_scores = torch.select(output, 1, 1)
-            scores.extend([score.item() for score in batch_scores])
-    tabular_data['Model_Score'] = scores
+            for score in batch_scores:
+                scores_by_path[sample_paths[idx]] = score.item()
+                idx += 1
+
+    tabular_data["Model_Score"] = tabular_data["image_name"].apply(
+        lambda name: scores_by_path.get(_rel_key(name))
+    )
 
     tabular_data.to_csv("/output/dataset.csv", index=False)
-
 
 
 if __name__ == "__main__":
