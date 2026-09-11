@@ -75,7 +75,11 @@ class PneumoniaTrainer(Executor):
             Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ])
 
-        self._train_dataset = torchvision.datasets.ImageFolder(root='/input/file_data',
+        # Real FCP training data lands at /input/datasets/<dataset_uid>/file_data (one
+        # subfolder per input dataset uid) - not a bare /input/file_data, which is only
+        # a Generalized-Compute-style convention used elsewhere (e.g. infer.py).
+        dataset_uid = next(os.walk('/input/datasets'))[1][0]
+        self._train_dataset = torchvision.datasets.ImageFolder(root=f'/input/datasets/{dataset_uid}/file_data',
                                                                transform=transforms)
 
         self._train_loader = DataLoader(self._train_dataset, batch_size=4, shuffle=True)
