@@ -1,0 +1,10 @@
+{
+    "name": "Hello_Numpy_Scatter_and_Gather",
+    "resource_spec": {},
+    "min_clients": 1,
+    "deploy_map": {
+        "app": [
+            "@ALL"
+        ]
+    }
+}

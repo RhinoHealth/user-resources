@@ -1,0 +1,16 @@
+{
+  "format_version": 2,
+  "executors": [
+    {
+      "tasks": ["train"],
+      "executor": {
+        "path": "nvflare.app_opt.pt.in_process_client_api_executor.PTInProcessClientAPIExecutor",
+        "args": {
+          "task_script_path": "/home/localuser/app/custom/train.py",
+          "task_script_args": "",
+          "server_expected_format": "pytorch"
+        }
+      }
+    }
+  ]
+}
