@@ -1,4 +1,5 @@
 # NVIDIA FLARE Example - Hello Numpy Scatter and Gather
+> Last validated: 2026-08-18
 <br/>
 
 ### **Description**

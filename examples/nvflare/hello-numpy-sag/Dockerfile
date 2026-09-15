@@ -25,12 +25,12 @@ WORKDIR /home/localuser
 USER localuser
 
 # Copy code.
-COPY --chown=$UID:$GID ./config ./config
-COPY --chown=$UID:$GID ./custom ./custom
+COPY --chown=$UID:$GID ./app ./app/
+COPY --chown=$UID:$GID ./meta.json ./meta.json
 COPY --chown=$UID:$GID ./infer.py ./infer.py
 
 # Ensure files are executable.
 RUN chmod +x ./infer.py
 
-ENV PYTHONPATH="/home/localuser/custom"
+ENV PYTHONPATH="/home/localuser/app/custom"
 ENV PYTHONUNBUFFERED=1
