@@ -1,0 +1,5 @@
+torch==2.0.1
+torchvision==0.15.2
+nvflare==2.6.3
+pillow==10.4.0
+numpy==1.26.4

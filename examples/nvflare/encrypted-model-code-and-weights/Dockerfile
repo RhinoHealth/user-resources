@@ -1,4 +1,4 @@
-FROM python:3.8-slim-bullseye
+FROM python:3.12-slim-bookworm
 
 # Set up non-root user and group.
 ARG UID=5642
@@ -25,12 +25,12 @@ WORKDIR /home/localuser
 USER localuser
 
 # Copy code.
-COPY --chown=$UID:$GID ./config ./config
-COPY --chown=$UID:$GID ./custom ./custom
+COPY --chown=$UID:$GID ./app ./app/
+COPY --chown=$UID:$GID ./meta.json ./meta.json
 COPY --chown=$UID:$GID ./entrypoint.sh ./entrypoint.sh
 COPY --chown=$UID:$GID ./infer.py ./infer.py
 
-ENV PYTHONPATH="/home/localuser/custom"
+ENV PYTHONPATH="/home/localuser/app/custom"
 ENV PYTHONUNBUFFERED=1
 
 # Use a custom entrypoint to decrypt code before executing commands.

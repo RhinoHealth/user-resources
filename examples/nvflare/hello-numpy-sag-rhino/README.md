@@ -88,4 +88,4 @@ FCP mounts the platform's `/input` and `/output` directories into the running co
 <br><br>
 
 # Getting Help
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
+For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
