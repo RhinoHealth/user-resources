@@ -3,7 +3,7 @@ This folder contains examples for using Rhino's Federated Computing Platform (FC
 
 # Table of Contents
 - [encrypted-model-code-and-weights](./encrypted-model-code-and-weights/README.md) - Locally encrypt your model code and build a container image using just the encrypted code (and not the source code). Set up the model to encrypt the model parameters so that they are stored in an encrypted manner on FCP. Add an `infer.py` script to perform inference on the trained model, decrypting the model parameters during inference using a key provided during run time
-- [gwas_vfl](./gwas_vfl/README.md) - Vertical federated learning (VFL) demo: identify genetic variants associated with schizophrenia via a federated Newton-Raphson logistic regression, across a clinical-data party and a genomics-data party, using NVFlare
+- [gwas-vfl](./gwas-vfl/README.md) - Vertical federated learning (VFL) demo: identify genetic variants associated with schizophrenia via a federated Newton-Raphson logistic regression, across a clinical-data party and a genomics-data party, using NVFlare
 - [hello-flower](./hello-flower/README.md) - Use Flower with NVFlare v2.5 on FCP
 - [hello-numpy-sag](./hello-numpy-sag/README.md) - Use the NVFlare `Hello Numpy Scatter and Gather` example and apply the necessary changes for it to run on FCP. Add an `infer.py` script to perform inference on the trained model 
 - [hello-pt](./hello-pt/README.md) - Use the NVFlare `Hello PyTorch` example and apply the necessary changes for it to run on FCP. Add an `infer.py` script to perform inference on the trained model
