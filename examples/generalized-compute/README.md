@@ -1,7 +1,8 @@
-# Rhino Health Examples - Generalized Compute
-This folder contains examples for using Rhino Health's Generalized Compute capability
+# Rhino FCP Examples - Generalized Compute
+This folder contains examples for using Rhino FCP's Generalized Compute capability
 
 ## Table of Contents
+
 - [dcm2png](./dcm2png/README.md) - Process input CSV and DICOM files and transform the DICOM to png format, storing CSV, DICOM, and other files as outputs. This is runs multi-step code (executing multiple python files sequentially) 
 - [extract-dicom-tags](./extract-dicom-tags/README.md) - Process input CSV and DICOM files and extract DICOM tags from the input, storing these in the output CSV file. Read the list of tags from a dynamic run-time parameter
 - [gpu-with-conda](./gpu-with-conda/README.md) - Perform operations with cudf using GPUs in remotely executed code, building the container image using conda
@@ -14,4 +15,6 @@ This folder contains examples for using Rhino Health's Generalized Compute capab
 
 
 ## Getting Help
-For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
+
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
+
