@@ -1,23 +1,16 @@
 # NVIDIA FLARE Example - Federated GLM with AIC-Based Feature Selection
-<br/>
 
-### **Description**
-
- 
+## Description
 This example demonstrates how to fit a federated Generalized Linear Model (GLM) and perform Akaike Information Criterion (AIC)-based feature selection using Rhino's Federated Computing Platform (FCP) with NVIDIA FLARE (NVFLARE).
 
-
-It shows how to:
+**It shows how to:**
 * Fit a federated GLM to estimate coefficients and standard errors using NVFlare, supporting different GLM families (e.g. Binomial, Gaussian, Poisson, etc.)
 * Apply AIC-based backward feature elimination to iteratively remove non-informative predictors and identify a more parsimonious model
 * Use an optimization method for aggregating each of the client's model parameters using NVFlare (with the examples of Newton-Raphson and Iteratively Reweighted Least Squares (IRLS) optimizers)
 * Read different configurations for the federated server and client from a config file, including the GLM family type, the optimization method, and the formula for the regression
 * Package the code in a Docker container that can be used with FCP
 
-Please reference the User Documentation and/or Tutorials for in depth explanations on how to use NVFlare on FCP
-<br/><br/>
-
-### **Resources**
+## Resources
 - `config` - This is the standard NVFlare directory for config files
   - `config_fed_client.json` - The standard NVFlare federated client config
     - `glm_type`: The GLM family type (e.g. Binomial, Gaussian, Poisson, etc.). The default is "Binomial".
@@ -32,19 +25,9 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
     - `target_accuracy`: The level of accuracy after which the server will stop the federated learning process. The default is 1e-5 (0.00001)
 - `custom` - This is the standard NVFlare directory for custom model code, containing the code for the regression model (reading the input data from the `/input` folder in order to work with FCP)
   - `coeff_optimizer.py` - The custom code used for optimizing and aggregate each client's results for the GLM coefficient estimation model. This code is used by the server to aggregate the results from each client by a known optimizing, and examples are provided for Newton-Raphson (labeled as "NR") and IRLS 
+- `aic_user_example_notebook.ipynb` - A Jupyter notebook with an example of how to use the Rhino SDK to run an initial full GLM model, iteratively eliminate features based on AIC, track and store AIC scores across iterations, and identify the optimal feature subset in a federated environment.
 - `Dockerfile` - This is the Dockerfile to be used for building the container image
 - `requirements.txt` - The python requirements for this project when building with pip
-- `aic_user_example_notebook.ipynb` - A Jupyter notebook with an example of how to use the Rhino SDK to run an initial full GLM model, iteratively eliminate features based on AIC, track and store AIC scores across iterations, and identify the optimal feature subset in a federated environment.
 
-
-
-
-
-
-
-
-
-<br><br>
-
-# Getting Help
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
+## Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

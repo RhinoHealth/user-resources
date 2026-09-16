@@ -1,19 +1,13 @@
 # NVIDIA FLARE Example - Quantile Regression
-<br/>
 
-### **Description**
+## Description
+This example uses NVIDIA FLARE v2.3 to fit a quantile regression model using Rhino's Federated Computing Platform (FCP).
 
-This example uses NVIDIA FLARE v2.3 to fit a quantile regression model using Rhino Health's Federated Computing Platform (FCP)
-
-It shows how to:
+**It shows how to:**
 * Use sklearn with NVIDIA FLARE (NVFlare) v2.3 to fit a quantile regression model on FCP
 * Package the code in a Docker container that can be used with FCP
 
-Please reference the User Documentation and/or Tutorials for in depth explanations on how to use NVFlare on FCP
-<br/><br/>
-
-
-### **Resources**
+## Resources
 - `config` - This is the standard NVFlare directory for config files.
   - `config_fed_client.json` - The standard NVFlare federated client config.
     - `feature_columns`: The list of columns to use as features for the quantile regression.
@@ -24,10 +18,9 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
     - `alpha`: The alpha value to use for the quantile regression.
     - `solver`: The solver to use for the quantile regression. The default is "highs".
     - `fit_intercept`: Whether to fit an intercept for the quantile regression. The default is True.
+- `custom` - This is the standard NVFlare directory for custom model code, containing the sklearn code for the model.
 - `Dockerfile` - This is the Dockerfile to be used for building the container image.
 - `requirements.txt` - The python requirements for this project when building with pip.
-- `custom` - This is the standard NVFlare directory for custom model code, containing the sklearn code for the model.
-<br><br>
 
-# Getting Help
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
+## Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

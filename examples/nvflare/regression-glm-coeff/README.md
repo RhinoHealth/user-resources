@@ -1,20 +1,16 @@
 # NVIDIA FLARE Example - GLM Coefficient Estimation
-<br/>
 
-### **Description**
+## Description
 
-This example contains files to fit a federated Generalized Linear Model (GLM) to estimate coefficients using Rhino Health's Federated Computing Platform (FCP) and NVIDIA FLARE (NVFLARE).
+This example contains files to fit a federated Generalized Linear Model (GLM) to estimate coefficients using Rhino's Federated Computing Platform (FCP) and NVIDIA FLARE (NVFLARE).
  
-It shows how to:
+**It shows how to:**
 * Fit a federated GLM to estimate coefficients and standard errors using NVFlare, supporting different GLM families (e.g. Binomial, Gaussian, Poisson, etc.) 
 * Use an optimization method for aggregating each of the client's model parameters using NVFlare (with the examples of Newton-Raphson and Iteratively Reweighted Least Squares (IRLS) optimizers)
 * Read different configurations for the federated server and client from a config file, including the GLM family type, the optimization method, and the formula for the regression
 * Package the code in a Docker container that can be used with FCP
 
-Please reference the User Documentation and/or Tutorials for in depth explanations on how to use NVFlare on FCP
-<br/><br/>
-
-### **Resources**
+## Resources
 - `config` - This is the standard NVFlare directory for config files
   - `config_fed_client.json` - The standard NVFlare federated client config
     - `glm_type`: The GLM family type (e.g. Binomial, Gaussian, Poisson, etc.). The default is "Binomial".
@@ -30,9 +26,8 @@ Please reference the User Documentation and/or Tutorials for in depth explanatio
 - `custom` - This is the standard NVFlare directory for custom model code, containing the code for the regression model (reading the input data from the `/input` folder in order to work with FCP)
   - `coeff_optimizer.py` - The custom code used for optimizing and aggregate each client's results for the GLM coefficient estimation model. This code is used by the server to aggregate the results from each client by a known optimizing, and examples are provided for Newton-Raphson (labeled as "NR") and IRLS 
 - `Dockerfile` - This is the Dockerfile to be used for building the container image
-- `requirements.txt` - The python requirements for this project when building with pip
 - `glm_user_example_notebook.ipynb` - A Jupyter notebook with an example of how to use the GLM coefficient estimation model with FCP and read the resulting coefficients and standard errors
-<br><br>
+- `requirements.txt` - The python requirements for this project when building with pip
 
-# Getting Help
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
+## Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

@@ -1,4 +1,4 @@
-# Vertical Federated GWAS Demo
+# NVIDIA FLARE Example - Vertical Federated Learning GWAS Demo
 
 Vertical federated learning is a form of federated learning where multiple sites hold data on the same sample space but possess different information of these samples. For example, one site holds target labels while another holds the feature space, or both parties hold different portions of the feature space.
 
@@ -11,7 +11,7 @@ can be found in [`nvflare/IMPLEMENTATION.MD`](nvflare/IMPLEMENTATION.MD).
 
 The pipeline identifies genetic variants associated with schizophrenia across two parties — a clinical site holding phenotype and covariate data, and a genomics site holding variant dosages — without either party sharing raw data.
 
----
+
 ## Background
 
 ### Vertical Federated Learning
@@ -44,7 +44,6 @@ features and labels.  In the VFL setting this is not possible — the genotype p
 no access to labels.  The gradient and Hessian sharing approach used here computes the
 true joint optimum.
 
----
 
 ## Model Specification
 
@@ -60,7 +59,6 @@ P(schizophrenia = 1) = logistic(β₀ + β₁·age + β₂·sex + β₃·bmi + �
 - **Design:** variant beta is always the last coefficient (β₄); clinical betas are
   initialised from a pre-trained null model and refined jointly per variant
 
----
 
 ## Architecture
 
@@ -84,8 +82,30 @@ The server coordinates round-trip communication between the two parties.  It nev
 holds raw features or labels — only the parameter vectors (betas) and intermediate
 statistics that both parties have agreed to share.
 
+## Protocol Summary
 
-## Overview
+Each run proceeds through the following phases:
+
+The analysis runs in several coordinated steps between the server and the two data parties. First, the server identifies which party holds clinical data and which holds genetic data. Next, the two parties verify that they are working with the same set of patients by exchanging anonymised, scrambled patient identifiers — no raw IDs are ever shared. Once aligned, the clinical party builds a baseline statistical model using only its own data (age, sex, BMI), which is used as a starting point for the full analysis. The server then runs the main association analysis by passing small statistical summaries back and forth between the two parties in repeated rounds, gradually refining the model for every genetic variant being tested — raw data never leaves either site. Once the results have stabilised, a final round collects the information needed to compute confidence intervals. The genomics party then calculates allele frequency statistics, and the server assembles the complete results and returns them to both parties.
+
+For full protocol details, data volumes, and privacy limitations see [`nvflare/IMPLEMENTATION.MD`](nvflare/IMPLEMENTATION.MD).
+
+
+### visualization/
+
+A code object that produces a Manhattan plot, QQ plot, and summary statistics from the GWAS results.
+
+**Inputs:**
+- Input 0: VFL GWAS Results (<Party> Party) (output of `nvflare` code object)
+- Input 1: variant metadata
+
+**Outputs:**
+- `manhattan_plot.png` — genome-wide Manhattan plot coloured by gene annotation
+- `qq_plot.png` — QQ plot with genomic inflation factor (λ_GC)
+- Results csv — top 10 variants by p-value with chart file references
+
+
+## Structure
 
 ```
 gwas_vfl/
@@ -94,9 +114,6 @@ gwas_vfl/
 │   ├── site1_clinical_aggregated_data.csv   # Clinical party: age, sex, BMI, phenotype
 │   ├── site2_genomics_data.csv              # Genotype party: rs* variant dosages
 │   └── site2_variant_metadata.csv           # Variant annotations (gene, position)
-├── results/
-│   ├── manhattan_plot.png                   # Gene-coloured Manhattan plot
-│   └── qq_plot.png                          # QQ plot with genomic inflation factor
 ├── nvflare/                                 # NVFlare federated learning container
 │   ├── Dockerfile
 │   ├── requirements.txt
@@ -109,17 +126,16 @@ gwas_vfl/
 │       └── custom/
 │           ├── server.py                    # VFL GWAS server (orchestration + statistics)
 │           └── client.py                    # Unified client (auto-detects party type)
+├── results/
+│   ├── manhattan_plot.png                   # Gene-coloured Manhattan plot
+│   └── qq_plot.png                          # QQ plot with genomic inflation factor
 └── visualization/                           # Visualization code object
     ├── Dockerfile
     ├── gwas_visualization.py
     └── requirements.txt
 ```
 
-## Prerequisites
 
-An active Rhino Health account with access to the platform.
-
-## Contents
 
 ### data/
 
@@ -140,40 +156,17 @@ A single `client.py` is deployed to both party sites. On startup it inspects the
 
 No separate configuration is required per party.
 
-#### Federated Learning Setup
+
+## Prerequisites
+
+An active Rhino FCP account with access to the platform.
+
+### Federated Learning Setup
 
 - **Framework**: NVFlare 2.6.0
 - **Algorithm**: Block-diagonal Newton-Raphson (custom, via `BaseFedAvg`)
 - **Max rounds**: 100 (early exit on convergence)
 - **Clients**: 2 (clinical party + genotype party)
-
-#### Protocol Summary
-
-Each run proceeds through the following phases:
-
-The analysis runs in several coordinated steps between the server and the two data parties. First, the server identifies which party holds clinical data and which holds genetic data. Next, the two parties verify that they are working with the same set of patients by exchanging anonymised, scrambled patient identifiers — no raw IDs are ever shared. Once aligned, the clinical party builds a baseline statistical model using only its own data (age, sex, BMI), which is used as a starting point for the full analysis. The server then runs the main association analysis by passing small statistical summaries back and forth between the two parties in repeated rounds, gradually refining the model for every genetic variant being tested — raw data never leaves either site. Once the results have stabilised, a final round collects the information needed to compute confidence intervals. The genomics party then calculates allele frequency statistics, and the server assembles the complete results and returns them to both parties.
-
-For full protocol details, data volumes, and privacy limitations see [`nvflare/IMPLEMENTATION.MD`](nvflare/IMPLEMENTATION.MD).
-
-#### Data Output
-
-Results are saved to the following dataset:
-```
-VFL GWAS Results (<Party> Party)
-```
-
-### visualization/
-
-A code object that produces a Manhattan plot, QQ plot, and summary statistics from the GWAS results.
-
-**Inputs:**
-- Input 0: VFL GWAS Results (<Party> Party) (output of `nvflare` code object)
-- Input 1: variant metadata
-
-**Outputs:**
-- `manhattan_plot.png` — genome-wide Manhattan plot coloured by gene annotation
-- `qq_plot.png` — QQ plot with genomic inflation factor (λ_GC)
-- Results csv — top 10 variants by p-value with chart file references
 
 ## High Level Instructions
 1. Create a project within the Rhino FCP dashboard
@@ -186,7 +179,12 @@ A code object that produces a Manhattan plot, QQ plot, and summary statistics fr
 6. Run the visualization code object
 7. Export your results for review
 
-## Additional Documentation
-[Tutorial 1](https://docs.rhinohealth.com/hc/en-us/articles/8088478664349-Tutorial-1-Basic-Usage) can provide general guidance on importing data within a project and creating the code objects found in this example.
+### Data Output
 
-For additional support, please reach out to [support@rhinohealth.com](support@rhinohealth.com)
+Results are saved to the following dataset:
+```
+VFL GWAS Results (<Party> Party)
+```
+
+## Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
