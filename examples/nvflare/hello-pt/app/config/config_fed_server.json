@@ -28,19 +28,6 @@
       "args": {
         "expected_data_kind": "WEIGHTS"
       }
-    },
-    {
-      "id": "model_locator",
-      "path": "pt_model_locator.PTModelLocator",
-      "args": {
-
-      }
-    },
-    {
-      "id": "json_generator",
-      "path": "validation_json_generator.ValidationJsonGenerator",
-      "args": {
-      }
     }
   ],
   "workflows": [
