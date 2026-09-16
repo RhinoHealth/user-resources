@@ -268,7 +268,9 @@ python infer.py
 Finally, open `plots.ipynb` and run all cells to see the result. Please note that this assumes that you have run the local training code on `A.csv`, `B.csv`, and `centralized.csv` and that you have not modified the filepaths. 
 
 ### In the Rhino FCP
-
 You can also perform inference directly in the Rhino FCP. To do so, include the `infer.py` file in the Docker container. The only differences between this file and the file used for local inference are:
 - The constants are read from `fl_config.py` rather than `config.py`
 - There is no MODEL_PATH constant, rather it is passed as a command line arg to the script call: `model_path = sys.argv[1]`
+
+## Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
