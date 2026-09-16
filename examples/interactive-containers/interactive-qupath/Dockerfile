@@ -41,4 +41,4 @@ RUN sed -i 's#cp -r /root/{.config,#cp -r /root/{.config,Desktop,#' /startup.sh
 COPY ./create_dataset_csv.py /
 COPY ./Create-Output-Dataset.desktop /usr/share/applications/
 COPY ./Create-Output-Dataset-link.desktop /root/Desktop/
-COPY ./Rhino-Health-Logo.svg /usr/share/pixmaps/
+COPY ./Rhino-Logo.svg /usr/share/pixmaps/
