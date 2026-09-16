@@ -1,6 +1,0 @@
-nvflare==2.8.1
-pandas==2.2.2
-torch==2.4.0
-torchvision==0.19.0
-# protobuf is pulled in automatically as a compatible nvflare dependency.
-

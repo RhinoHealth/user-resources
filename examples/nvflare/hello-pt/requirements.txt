@@ -1,0 +1,13 @@
+nvflare==2.6.0
+# Pinned to 2.6.0, not a newer release: FCP's server-side NVFlare provisioning only has
+# templates up to and including 2.6 (there is no CodeTypes value newer than
+# NVIDIA_FLARE_V2_6 on the platform). A container running a newer NVFlare fails on FCP
+# with confusing, indirect errors (e.g. missing 'target' in server config, or
+# "No module named 'nvflare.app_common.logging.log_receiver'") since FCP generates a
+# v2.6-era startup kit that no longer matches a newer NVFlare's expectations. This is
+# a platform-wide constraint, not specific to this example.
+pandas==2.2.2
+torch==2.4.0
+torchvision==0.19.0
+# protobuf is pulled in automatically as a compatible nvflare dependency.
+

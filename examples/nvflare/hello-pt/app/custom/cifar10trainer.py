@@ -73,7 +73,12 @@ class Cifar10Trainer(Executor):
             ToTensor(),
             Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
         ])
-        self._train_dataset = torchvision.datasets.ImageFolder(root='/input/file_data/train',
+        # Real FCP training data lands at /input/datasets/<dataset_uid>/file_data (one
+        # subfolder per input dataset uid) - not a bare /input/file_data, which is only
+        # a Generalized-Compute-style convention used elsewhere (e.g. infer.py). This
+        # example only ever has one input dataset, so just take the first (only) one.
+        dataset_uid = next(os.walk('/input/datasets'))[1][0]
+        self._train_dataset = torchvision.datasets.ImageFolder(root=f'/input/datasets/{dataset_uid}/file_data/train',
                                                                transform=transforms)
 
         # self._train_dataset = CIFAR10(root='~/rhino_data/input/', transform=transforms,
