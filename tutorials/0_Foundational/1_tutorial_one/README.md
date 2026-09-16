@@ -1,7 +1,6 @@
-# Tutorial 1 -  Rhino Federated Computing Platform (FCP) “Hello World” - Basic Usage
+# Tutorial 1 -  “Hello World” - Basic Usage of Rhino Federated Computing Platform (FCP) 
 
-
-### **Description**
+## Description
 
 In this tutorial, you will learn how to:
 
@@ -10,8 +9,7 @@ In this tutorial, you will learn how to:
 3. Containerize your code and run it using our distributed computing platform.
 4. Produce visualizations of the results and create a report in the project.
 
-
-### **Resources**
+## Resources
 - `containers/` - This directory contains folders for each of the containers you will use in this tutorial
   - `data-prep/` - This folder contains a python script (dataprep_gc.py), and several additional files required to create the docker container that will run the script on the RHP
   - `prediction-model/` - this folder contains code for a federated learning (FL) model. The model utilizes PyTorch and has been wrapped for NVFlare (Nvidia’s FL framework). Additionally, the folder contains the files required to create the docker container that will run the model training on the RHP
@@ -25,5 +23,5 @@ In this tutorial, you will learn how to:
   - `Pneumonia Input Schema.csv` - This is the schema for your input dataset. It is how you can tell the RHP what structure it should expect your data to be in
   - `Pneumonia Results Schema.csv` - The pre-defined output schema for the federated training example
 
-# Getting Help
-For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
+## Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

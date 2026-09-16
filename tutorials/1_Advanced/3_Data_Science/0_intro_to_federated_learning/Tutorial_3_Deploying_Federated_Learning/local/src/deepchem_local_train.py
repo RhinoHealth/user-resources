@@ -1,0 +1,92 @@
+
+from config import *
+import torch
+import deepchem as dc
+import pandas as pd
+import numpy as np
+from sklearn.metrics import roc_auc_score
+
+# Set a random seed for reproducibility
+torch.manual_seed(42)
+
+class ClassificationModel(torch.nn.Module):
+    def __init__(self, input_features=INPUT_FEATURE_SIZE):
+        super(ClassificationModel, self).__init__()
+        self.dense1 = torch.nn.Linear(input_features, 1000)
+        self.dense2 = torch.nn.Linear(1000, 1)
+
+    def forward(self, inputs):
+        y = torch.nn.functional.relu(self.dense1(inputs))
+        y = torch.nn.functional.dropout(y, p=0.5, training=self.training)
+        logits = self.dense2(y)
+        output = torch.sigmoid(logits)
+        return output, logits
+
+def load_data(df):
+    X = df.loc[:, FEATURE_COLUMNS].values.astype(np.float32)
+    y = df.loc[:, TARGET_COLUMN].values.astype(np.float32).reshape(-1, 1)
+    ids = df.loc[:, SMILES_ID_COLUMN].values
+    dataset = dc.data.NumpyDataset(X=X, y=y, ids=ids)
+
+    print(f"Dataset(s) loaded: {len(dataset)} examples, {dataset.X.shape[1]} features.")
+    return dataset
+
+def split_data(full_dataset, frac_train=0.8, frac_valid=0.2, seed=42):
+    splitter = dc.splits.RandomSplitter()
+    train_dataset, valid_dataset, _ = splitter.train_valid_test_split(
+        full_dataset,
+        frac_train=frac_train,
+        frac_valid=frac_valid,
+        frac_test=0.0,
+        seed=seed
+    )
+
+    if len(train_dataset) == 0 or len(valid_dataset) == 0:
+        raise ValueError("Dataset splitting resulted in empty training or validation set.")
+
+    return train_dataset, valid_dataset
+
+
+def main():
+    # Load datasets
+    data_dirs = [x for x in TRAIN_DATA_DIR.iterdir() if x.resolve().is_dir()]
+    dataset = pd.concat([pd.read_csv(_dataset / "dataset.csv") for _dataset in data_dirs])
+    
+    print("\nLoaded the following dataset(s):")
+    for data_dir in data_dirs:
+        print(data_dir)
+    full_dataset = load_data(dataset)
+    train_dataset, valid_dataset = split_data(full_dataset)
+
+    MODEL_PARAMS_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    # Define PyTorch Model and DeepChem TorchModel wrapper
+    torch_model = ClassificationModel()
+    output_types = ['prediction', 'loss']
+    model = dc.models.TorchModel(
+        torch_model,
+        dc.models.losses.SigmoidCrossEntropy(),
+        output_types=output_types
+    )
+    metric = dc.metrics.Metric(roc_auc_score)
+
+    # Train the model
+    print("\n--- Starting Training ---")
+    print("...")
+    model.fit(train_dataset, nb_epoch=100)
+    print("--- Training Complete ---\n")
+
+    # Save Model Params
+    torch.save(torch_model.state_dict(), MODEL_PARAMS_PATH)
+    print(f"Model parameters saved to {MODEL_PARAMS_PATH}")
+
+    # Evaluate the model
+    train_score = model.evaluate(train_dataset, [metric])
+    valid_score = model.evaluate(valid_dataset, [metric])
+
+    print('\nTraining set score (ROC-AUC):', train_score)
+    print('Validation set score (ROC-AUC):', valid_score)
+
+
+if __name__ == '__main__':
+    main()

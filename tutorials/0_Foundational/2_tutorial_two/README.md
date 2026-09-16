@@ -1,14 +1,14 @@
-# Tutorial 2 -  Multi-Dataset Data Harmonization with the Rhino Health Python SDK
+# Tutorial 2 -  Multi-Dataset Data Harmonization with the Rhino Python SDK
 
-### **Description**
+## Description
 
 In this tutorial, you will learn how to:
 
-1. Install and configure the Rhino Health Python SDK
+1. Install and configure the Rhino Python SDK
 2. Import datasets with local CSV files
 3. Easily harmonize data on multiple datasets with multiple datasets from similar sites
 
-### **Resources**
+## Resources
 - `data/` - This directory contains the data that is need for the tutorial
   - `input/`
     - `site1_part1_dataset.csv`, `site2_part1_dataset.csv`, `site3_part1_dataset.csv` - The files that define the datasets at the three different sites you will import during the tutorial.
@@ -18,5 +18,5 @@ In this tutorial, you will learn how to:
 - `schemas/` - This folder contains the data schema you will need to complete this tutorial
   - `Harmonization schema.csv` - This schema is used when importing your datasets to inform the platform what structure the data should be in.
 
-# Getting Help
-For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
+## Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

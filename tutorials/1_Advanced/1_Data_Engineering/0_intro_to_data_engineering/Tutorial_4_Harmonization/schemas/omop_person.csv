@@ -1,0 +1,8 @@
+Variable Name,person_id,gender_concept_id,year_of_birth,race_concept_id,ethnicity_concept_id,person_source_value
+Identifier,person_id,,,,,
+Description,Surrogate primary key,OMOP gender concept ID (8507=Male 8532=Female 8521=Other),Year of birth (YYYY),OMOP race concept ID (8515=Asian 8516=Black 8527=White 8522=Other),OMOP ethnicity concept ID (38003563=Hispanic 38003564=Non-Hispanic),Source patient identifier
+Type,Integer,Integer,Integer,Integer,Integer,String
+Type Parameters,,,,,,
+Units,,,,,,
+Contains Sensitive Data?,False,False,False,False,False,False
+Permissions,default,default,default,default,default,default

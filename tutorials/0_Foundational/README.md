@@ -1,10 +1,8 @@
-# Foundational Tutorials
+# Foundational Tutorials for Rhino FCP
 
-These tutorials cover core FCP workflows end-to-end. Start here if you are new to Rhino FCP.
+These tutorials cover core workflows end-to-end. Start here if you are new to Rhino FCP.
 
-## Tutorials
-
-### [Tutorial 1 — Hello World: Basic Usage](./tutorial_1/)
+## [Tutorial 1 — Hello World: Basic Usage](./1_tutorial_one/)
 
 An end-to-end introduction to the Rhino FCP. You will:
 - Create a project and configure permissions
@@ -17,7 +15,7 @@ An end-to-end introduction to the Rhino FCP. You will:
 **Prerequisites:** A Rhino FCP account and access to at least one site.
 
 
-### [Tutorial 2 — Data Harmonization via SDK](./tutorial_2/)
+## [Tutorial 2 — Data Harmonization via SDK](./2_tutorial_two/)
 
 A guided walkthrough of data harmonization using the Rhino Python SDK. You will:
 - Install and configure the Rhino SDK
@@ -27,10 +25,8 @@ A guided walkthrough of data harmonization using the Rhino Python SDK. You will:
 
 **Prerequisites:** Tutorial 1 completed, or equivalent familiarity with FCP projects and datasets.
 
+## Next steps
+Once you have completed both foundational tutorials, move on to [Advanced Tutorials](../1_Advanced/) for a deeper dive into Rhino FCP capabilities.
 
-# Next steps
-
-Once you have completed both foundational tutorials, move to [Advanced Tutorials](../1_Advanced/) for a deeper dive into Rhino FCP capabilities.
-
-# Getting Help
-For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
+## Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
