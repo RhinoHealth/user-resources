@@ -1,5 +1,5 @@
-# Rhino Health Examples - Generalized Compute
-This folder contains examples for using Rhino Health's Generalized Compute capability
+# Rhino FCP Examples - Generalized Compute
+This folder contains examples for using Rhino FCP's Generalized Compute capability
 
 ## Table of Contents
 - [dcm2png](./dcm2png/README.md) - Process input CSV and DICOM files and transform the DICOM to png format, storing CSV, DICOM, and other files as outputs. This is runs multi-step code (executing multiple python files sequentially) 
@@ -12,6 +12,6 @@ This folder contains examples for using Rhino Health's Generalized Compute capab
 - [split-to-multiple-parts](./split-to-multiple-parts/README.md) - Process an input CSV and split it into an arbitrary number of output CSVs, based on a run-time parameter
 - [train-test-split](./train-test-split/README.md) - Process an input CSV and split it into two output CSVs
 
-
 ## Getting Help
-For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
+

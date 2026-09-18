@@ -1,0 +1,26 @@
+# ── Rhino Health SDK ─────────────────────────────────────────────────────────
+# The main SDK for interacting with the Rhino FCP. Install with:
+#   pip install rhino-health
+rhino-health
+
+# ── Jupyter environment ───────────────────────────────────────────────────────
+# Jupyter Notebook (classic interface)
+notebook>=7.0
+
+# JupyterLab (modern interface) — optional, comment out if using Notebook only
+jupyterlab>=4.0
+
+# Required to register this venv as a Jupyter kernel (used in setup instructions)
+ipykernel>=6.0
+
+# ── Data manipulation (orchestration notebooks) ───────────────────────────────
+# Used in notebooks for local data inspection, result formatting, and display.
+# NOTE: Do NOT add these to Code Object scripts via requirements= — the Rhino
+# agent manages package installation inside containers separately.
+pandas>=1.5
+numpy>=1.23
+
+# ── Standard library — no install needed ─────────────────────────────────────
+# The following are used in notebooks but are part of Python's standard library
+# and do not need to be listed here:
+#   getpass, os, time, json

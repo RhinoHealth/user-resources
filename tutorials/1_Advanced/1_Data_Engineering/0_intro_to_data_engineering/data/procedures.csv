@@ -1,0 +1,101 @@
+patientID,visitID,ProcedureDate,ProcedureDescription,ProcedureCode,ProcedureCategory
+1001,20001,2019-03-12,Routine office visit for an established patient.,99213,Patient Education
+1002,20002,2021-07-05,New patient office visit for a comprehensive examination.,99203,Patient Education
+1003,20003,2018-11-22,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1004,20004,2020-04-15,Established patient follow-up visit.,99212,Patient Education
+1005,20005,2022-09-30,Colonoscopy for inspection of the large intestine.,45378,Surgical Procedure
+1006,20006,2017-06-08,Routine office visit for an established patient.,99213,Patient Education
+1007,20007,2023-01-17,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1008,20008,2019-12-03,New patient office visit for a comprehensive examination.,99203,Patient Education
+1009,20009,2021-05-27,Laparoscopic appendectomy for removal of the appendix.,44950,Surgical Procedure
+1010,20010,2018-08-14,Routine office visit for an established patient.,99213,Patient Education
+1011,20011,2020-03-15,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1012,20012,2022-10-11,Established patient follow-up visit.,99212,Patient Education
+1013,20013,2017-04-24,New patient office visit for a comprehensive examination.,99203,Patient Education
+1014,20014,2019-07-18,Routine office visit for an established patient.,99213,Patient Education
+1015,20015,2021-11-06,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1016,20016,2018-03-31,Established patient follow-up visit.,99212,Patient Education
+1017,20017,2023-06-22,Colonoscopy for inspection of the large intestine.,45378,Surgical Procedure
+1018,20018,2020-09-08,Routine office visit for an established patient.,99213,Patient Education
+1019,20019,2017-12-15,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1020,20020,2022-05-03,New patient office visit for a comprehensive examination.,99203,Patient Education
+1021,20021,2019-01-28,Laparoscopic appendectomy for removal of the appendix.,44950,Surgical Procedure
+1022,20022,2021-08-16,Routine office visit for an established patient.,99213,Patient Education
+1023,20023,2018-06-04,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1024,20024,2020-11-21,Established patient follow-up visit.,99212,Patient Education
+1025,20025,2023-03-09,New patient office visit for a comprehensive examination.,99203,Patient Education
+1026,20026,2017-09-26,Routine office visit for an established patient.,99213,Patient Education
+1027,20027,2022-02-13,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1028,20028,2019-06-01,Established patient follow-up visit.,99212,Patient Education
+1029,20029,2021-10-19,Colonoscopy for inspection of the large intestine.,45378,Surgical Procedure
+1030,20030,2018-01-07,New patient office visit for a comprehensive examination.,99203,Patient Education
+1031,20031,2020-07-24,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1032,20032,2023-04-12,Routine office visit for an established patient.,99213,Patient Education
+1033,20033,2017-11-29,Laparoscopic appendectomy for removal of the appendix.,44950,Surgical Procedure
+1034,20034,2022-08-06,Established patient follow-up visit.,99212,Patient Education
+1035,20035,2019-03-25,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1036,20036,2021-06-13,New patient office visit for a comprehensive examination.,99203,Patient Education
+1037,20037,2018-10-30,Colonoscopy for inspection of the large intestine.,45378,Surgical Procedure
+1038,20038,2020-05-17,Routine office visit for an established patient.,99213,Patient Education
+1039,20039,2023-02-04,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1040,20040,2017-07-22,Established patient follow-up visit.,99212,Patient Education
+1041,20041,2022-12-09,New patient office visit for a comprehensive examination.,99203,Patient Education
+1042,20042,2019-04-27,Routine office visit for an established patient.,99213,Patient Education
+1043,20043,2021-09-14,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1044,20044,2018-02-01,Laparoscopic appendectomy for removal of the appendix.,44950,Surgical Procedure
+1045,20045,2020-06-19,Colonoscopy for inspection of the large intestine.,45378,Surgical Procedure
+1046,20046,2023-07-07,Routine office visit for an established patient.,99213,Patient Education
+1047,20047,2017-10-24,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1048,20048,2022-03-11,Established patient follow-up visit.,99212,Patient Education
+1049,20049,2019-08-29,New patient office visit for a comprehensive examination.,99203,Patient Education
+1050,20050,2021-01-16,Routine office visit for an established patient.,99213,Patient Education
+1051,20051,2018-05-04,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1052,20052,2020-09-21,Established patient follow-up visit.,99212,Patient Education
+1053,20053,2023-05-10,Colonoscopy for inspection of the large intestine.,45378,Surgical Procedure
+1054,20054,2017-08-27,New patient office visit for a comprehensive examination.,99203,Patient Education
+1055,20055,2022-01-14,Routine office visit for an established patient.,99213,Patient Education
+1056,20056,2019-06-02,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1057,20057,2021-10-20,Laparoscopic appendectomy for removal of the appendix.,44950,Surgical Procedure
+1058,20058,2018-03-08,Established patient follow-up visit.,99212,Patient Education
+1059,20059,2020-08-25,New patient office visit for a comprehensive examination.,99203,Patient Education
+1060,20060,2023-07-14,Routine office visit for an established patient.,99213,Patient Education
+1061,20061,2017-11-01,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1062,20062,2022-04-19,Colonoscopy for inspection of the large intestine.,45378,Surgical Procedure
+1063,20063,2019-09-06,Established patient follow-up visit.,99212,Patient Education
+1064,20064,2021-02-23,New patient office visit for a comprehensive examination.,99203,Patient Education
+1065,20065,2018-07-11,Routine office visit for an established patient.,99213,Patient Education
+1066,20066,2020-12-28,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1067,20067,2023-06-16,Laparoscopic appendectomy for removal of the appendix.,44950,Surgical Procedure
+1068,20068,2017-05-04,Established patient follow-up visit.,99212,Patient Education
+1069,20069,2022-09-21,New patient office visit for a comprehensive examination.,99203,Patient Education
+1070,20070,2019-02-09,Routine office visit for an established patient.,99213,Patient Education
+1071,20071,2021-07-27,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1072,20072,2018-12-14,Colonoscopy for inspection of the large intestine.,45378,Surgical Procedure
+1073,20073,2020-04-01,Established patient follow-up visit.,99212,Patient Education
+1074,20074,2023-08-19,New patient office visit for a comprehensive examination.,99203,Patient Education
+1075,20075,2017-03-07,Routine office visit for an established patient.,99213,Patient Education
+1076,20076,2022-06-24,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1077,20077,2019-11-12,Laparoscopic appendectomy for removal of the appendix.,44950,Surgical Procedure
+1078,20078,2021-04-29,Established patient follow-up visit.,99212,Patient Education
+1079,20079,2018-09-16,,99203,Patient Education
+1080,20080,2020-02-03,Routine office visit for an established patient.,99213,Patient Education
+1081,20081,2023-09-21,Colonoscopy for inspection of the large intestine.,45378,Surgical Procedure
+1082,20082,2017-06-19,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1083,20083,2022-11-07,Established patient follow-up visit.,99212,Patient Education
+1084,20084,2019-03-25,New patient office visit for a comprehensive examination.,99203,Patient Education
+1085,20085,2021-08-13,Routine office visit for an established patient.,99213,Patient Education
+1086,20086,2018-01-30,Laparoscopic appendectomy for removal of the appendix.,44950,Surgical Procedure
+1087,20087,2020-06-17,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1088,20088,2023-10-05,Established patient follow-up visit.,99212,Patient Education
+1089,20089,2017-09-22,New patient office visit for a comprehensive examination.,99203,Patient Education
+1090,20090,2022-02-09,Routine office visit for an established patient.,99213,Patient Education
+1091,20091,2019-07-28,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1092,20092,2021-12-15,Colonoscopy for inspection of the large intestine.,,Surgical Procedure
+1093,20093,2018-05-02,Established patient follow-up visit.,99212,Patient Education
+1094,20094,2020-10-19,New patient office visit for a comprehensive examination.,99203,Patient Education
+1095,20095,2023-03-08,Routine office visit for an established patient.,99213,Patient Education
+1096,20096,2017-08-25,Laparoscopic appendectomy for removal of the appendix.,44950,Surgical Procedure
+1097,20097,2022-01-12,Emergency department visit for chest pain evaluation.,99285,Emergency Services
+1098,20098,2019-06-29,Established patient follow-up visit.,99212,Patient Education
+1099,20099,2021-11-17,New patient office visit for a comprehensive examination.,99203,Patient Education
+1003,20003,2018-11-22,Emergency department visit for chest pain evaluation.,99285,Emergency Services

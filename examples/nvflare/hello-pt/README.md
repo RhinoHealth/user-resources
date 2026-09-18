@@ -1,8 +1,7 @@
 # NVIDIA FLARE Example - Hello PyTorch
 > Last validated: 2026-09-16
 
-## **Description**
-
+## Description
 This example adapts NVIDIA's [Hello PyTorch](https://github.com/NVIDIA/NVFlare/tree/main/examples/hello-world/hello-pt) NVIDIA FLARE example to run on Rhino's Federated Computing Platform (FCP).
 
 **It shows how to:**
@@ -10,15 +9,12 @@ This example adapts NVIDIA's [Hello PyTorch](https://github.com/NVIDIA/NVFlare/t
 * Add an `infer.py` script to perform inference on the trained model
 * Package the code in a Docker container that can be used with FCP
 
-Please see [RhinoDocs](docs.rhinofcp.com) for more info on RhinoFCP.
-
-## **Requirements**
-
+## Requirements
 This example uses **NVFlare 2.6.0**, **torch 2.4.0**, and **torchvision 0.19.0** on **Python 3.12**.
 
 **NVFlare must stay at 2.6.0 for this example**: FCP's server-side provisioning only has templates for NVFlare versions up to and including 2.6 - there's no newer option available on the platform at all. A container pinned to a newer NVFlare (e.g. 2.7+/2.8.x) will fail on FCP with confusing, indirect errors - a client error like `missing 'target' in server config ... the startup kit may have been provisioned with an older HA-based template`, or a server error like `Can't load class nvflare.app_common.logging.log_receiver.LogReceiver` - both symptoms of FCP generating a v2.6-era startup kit for a newer NVFlare that no longer matches it. This is unrelated to the local Docker walkthrough below, which has no provisioning-template dependency and can safely use a newer NVFlare - see "Using a different Python or NVFlare version" at the bottom.
 
-## **Resources**
+## Resources
 - `app` - NVFlare job folder, deployed to every site per `meta.json`'s `deploy_map`
   - `config` - This is the standard NVFlare directory for config files
     - `config_fed_client.json` - The standard NVFlare federated client config, setting to 4 epochs for the example
@@ -41,8 +37,7 @@ This example uses **NVFlare 2.6.0**, **torch 2.4.0**, and **torchvision 0.19.0**
 - `README.md` - This file
 - `requirements.txt` - The python requirements for this project
 
-## **Running this example locally**
-
+## Running this example locally
 The trained model and inference output are written to `/output`, matching how FCP mounts your container. Run this example inside Docker so `/input` and `/output` behave the same way they will on FCP.
 
 1. **Build the Docker image:**
@@ -115,24 +110,21 @@ The trained model and inference output are written to `/output`, matching how FC
 
 6. Since `/input` and `/output` were mounted from your machine, the output is also visible on your host at `~/hellopt-test/output`.
 
-## **Running this example on FCP**
-
+## Running this example on FCP
 `notebook.ipynb` walks through the whole FCP flow end-to-end: it authenticates, creates a project, registers the example's training data as a Dataset, creates the Code Object from your pushed image, trains, and downloads the resulting weights. It needs `rhino_health` installed (`pip install rhino_health`).
 
-## **Cleanup**
-
+## Cleanup
 **Locally:**
 - Remove the local Docker image, if you built one: `docker rmi hello-pt`
 - Remove the local test scratch directory: `rm -rf ~/hellopt-test`
 
 **On FCP:** `notebook.ipynb` creates a new Project (with a Dataset and Code Object inside it) every time it runs. Its last cell is guarded behind a `CLEANUP = False` flag - set it to `True` and re-run that cell to remove them via the SDK once you're done. This does not delete the pushed container image from your registry.
 
-## **Using a different Python or NVFlare version**
-
+## Using a different Python or NVFlare version
 **This only applies to the local Docker walkthrough** - the "Running this example on FCP" flow must stay on NVFlare 2.6.0 regardless of Python version, per the constraint under "Requirements" above.
 
 - If your local environment needs to stay on **Python 3.8**, use **NVFlare 2.4.2**, and keep `python:3.8-slim-bullseye` as the `Dockerfile` base image.
 - For any other Python/NVFlare pairing, update the `nvflare==` line in `requirements.txt` and the base image in the `Dockerfile` accordingly, then re-run the local steps above to confirm training and inference both complete successfully.
 
 ## Getting Help
-For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

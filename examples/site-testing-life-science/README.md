@@ -21,4 +21,7 @@ This page will document the steps needed to perform the site validation.
 
 Once everything is prepared, you may proceed by running the `./site-testing.ipynb` notebook. If everything succeeds, then the client is able to complete a simple project.
 
-If there are failures, you may see errors either in the notebook, or within the Rhino Health Server UI.
+If there are failures, you may see errors either in the notebook, or within the Rhino FCP UI.
+
+## Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

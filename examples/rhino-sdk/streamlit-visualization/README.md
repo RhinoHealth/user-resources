@@ -1,6 +1,4 @@
-# Streamlit Example
-<br>
-
+# Rhino SDK - Streamlit Example
 Here you can see an example of combining the data access features of the Rhino SDK, along with Streamlit's interactive web application tool to create visualizations customized to your unique Rhino FCP project and datasets.
 
 ## Streamlit Description & Setup
@@ -15,7 +13,7 @@ streamlit hello
 
 ## Rhino Project Setup
 For this example, you must have set up the following:
- * A project on the Rhino FC platform by the name of ``streamlit project``
+ * A project on the Rhino FCP by the name of ``streamlit project``
  * Within that project, load the 5 files listed in [./data](./data/) as datasets. These datasets consist of the [Desynpuf Synthetic Datasets from CMS](https://www.cms.gov/research-statistics-data-and-systems/downloadable-public-use-files/synpufs/downloads/synpuf_dug.pdf).
 
 ## Running and Deploying a Streamlit Project
@@ -26,4 +24,5 @@ streamlit run streamlit-app.py
 If you wish to deploy to Streamlit's community cloud, you can follow the instructions [here](https://docs.streamlit.io/deploy/streamlit-community-cloud/deploy-your-app/deploy).
 
 ## Getting Help
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
+

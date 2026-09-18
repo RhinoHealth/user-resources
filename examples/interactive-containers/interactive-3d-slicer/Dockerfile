@@ -42,7 +42,7 @@ COPY ./create_dataset_csv.py /
 # Set up Desktop and applications menu shortcuts.
 COPY ./Create-Output-Dataset.desktop /usr/share/applications/
 COPY ./Create-Output-Dataset-link.desktop /root/Desktop/
-COPY ./Rhino-Health-Logo.svg /usr/share/pixmaps/
+COPY ./Rhino-Logo.svg /usr/share/pixmaps/
 
 COPY --chmod=755 entrypoint.sh /
 
