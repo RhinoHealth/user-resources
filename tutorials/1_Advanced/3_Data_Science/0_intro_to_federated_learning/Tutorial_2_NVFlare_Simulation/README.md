@@ -208,4 +208,4 @@ In the next tutorial, you'll learn how to deploy these same configuration files 
 
 ## Getting Help
 
-For additional support, please reach out to [support@rhinohealth.com](support@rhinohealth.com)
+For additional support, please reach out to [support@rhinofcp.com](support@rhinofcp.com)

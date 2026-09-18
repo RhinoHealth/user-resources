@@ -6,4 +6,4 @@ Exec=sh -c '/usr/local/bin/python /create_dataset_csv.py > $HOME/Desktop/create-
 StartupNotify=false
 Terminal=false
 Hidden=false
-Icon=Rhino-Health-Logo
+Icon=Rhino-Logo

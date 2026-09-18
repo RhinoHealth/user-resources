@@ -51,4 +51,4 @@ Once your environment is set up, proceed to `Tutorial 1 - Introduction_to_FL`
 
 ## Getting Help
 
-For additional support, please reach out to [support@rhinohealth.com](support@rhinohealth.com)
+For additional support, please reach out to [support@rhinofcp.com](support@rhinofcp.com)
