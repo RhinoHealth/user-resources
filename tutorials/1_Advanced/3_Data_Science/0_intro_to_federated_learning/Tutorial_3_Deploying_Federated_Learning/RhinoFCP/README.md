@@ -72,18 +72,18 @@ These are the python requirements which will be installed within your containeri
 A script developed to allow convenient upload of docker images to your workgroup's ECR.
 
 ## Instructions
-1. Create a project within the Rhino FCP - See [Creating a Project](https://docs.rhinohealth.com/hc/en-us/articles/12522043724957-Creating-a-New-Project)
-2. Import the 4 datasets to the project. One for each client and the test dataset - See [Creating a Dataset](https://docs.rhinohealth.com/hc/en-us/articles/31357028507165-Creating-a-New-Dataset-in-the-Rhino-FCP-GUI-Importing-a-Dataset) and [Importing a Dataset from Network Storage](https://docs.rhinohealth.com/hc/en-us/articles/18246660924061-Importing-to-and-Exporting-Datasets-from-Your-Network-Storage) <br> Note: For this tutorial make sure to uncheck Sensitive Data when you import your dataset
+1. Create a project within the Rhino FCP - See [Creating a Project](https://docs.rhinofcp.com/projects/creating-a-new-project)
+2. Import the 4 datasets to the project. One for each client and the test dataset - See [Registering a Dataset](https://docs.rhinofcp.com/datasets/registering-configuring-and-exporting-datasets) <br> Note: For this tutorial make sure to uncheck Sensitive Data when you import your dataset
 3. Create the containerized application image
    ```bash
    cd RhinoFCP/
    ./docker-push.sh <your-workgroup-container-registry-name> <your-desired-container-tag>
    ```
-   To obtain your workgroup's ECR name refer to [Pushing Containers to the ECR](https://docs.rhinohealth.com/hc/en-us/articles/12385603287325-Pushing-Containers-to-the-ECR)
+   To obtain your workgroup's ECR name refer to [Pushing Containers to the ECR](https://docs.rhinofcp.com/getting-started/quick-start-guide/pushing-containers-to-the-ecr)
 
-   Further documentation on setting up your local environment to communicate with your workgroup's ECR can be found in [Configuring your Environment](https://docs.rhinohealth.com/hc/en-us/articles/12385555709085-Configuring-your-Environment)
-4. Create the code object within your project - See [Creating NVFlare Code Objects](https://docs.rhinohealth.com/hc/en-us/articles/12522224013085-Creating-New-NVFlare-Code-or-Code-Version) and the specific configurations below
-5. Launch the NVFlare training run within the project - See [Running NVFlare Code](https://docs.rhinohealth.com/hc/en-us/articles/12522228144669-Running-NVFlare-Code) and the specific configurations below
+   Further documentation on setting up your local environment to communicate with your workgroup's ECR can be found in [Configuring your Environment](https://docs.rhinofcp.com/getting-started/quick-start-guide/fcp-client-installation-and-environment-configuration)
+4. Create the code object within your project - See [Creating NVFlare Code Objects](https://docs.rhinofcp.com/creating-and-running-code-objects/creating-and-running-nvflare-code-and-running-inference#creating-an-nvflare-code-object) and the specific configurations below
+5. Launch the NVFlare training run within the project - See [Running NVFlare Code](https://docs.rhinofcp.com/creating-and-running-code-objects/creating-and-running-nvflare-code-and-running-inference#running-a-nvflare-code-object) and the specific configurations below
 
 *Incase the user does not have access to docker, or is not comfortable with the image creation portion of this workflow, the Rhino FCP offers an alternative solution called auto-containerization. The instructions for this can be found below under the* **Auto-Containers** *section.*
 
@@ -112,7 +112,7 @@ Global model weights from NVFlare trainings are accessible to download locally.
   * If multiple sets of global model weights were saved to `/output/model_parameters/` then a drop-down menu will appear to select which weights you would like to download.
 
 ### Inference Results
-If post training inference is conducted, the results will be saved and accessible from within the project in the Datasets tab. Depending on permissions, the results may be viewable within the project, however they can be exported to the client mounted storage, see [Exporting a Dataset](https://docs.rhinohealth.com/hc/en-us/articles/12384845925789-Exporting-a-Dataset).
+If post training inference is conducted, the results will be saved and accessible from within the project in the Datasets tab. Depending on permissions, the results may be viewable within the project, however they can be exported to the client mounted storage, see [Exporting a Dataset](https://docs.rhinofcp.com/datasets/registering-configuring-and-exporting-datasets#exporting-datasets).
 
 In the next tutorial we will show you how to analyze the models performance using the Rhino SDK to interact with datasets that exist in a project.
 

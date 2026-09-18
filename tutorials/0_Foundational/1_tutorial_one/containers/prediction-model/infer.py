@@ -1,5 +1,5 @@
-# Copyright (c) 2025, Rhino HealthTech, Inc.
-# Original file modified by Rhino Health to adapt it to the Rhino Health Federated Computing Platform.
+# Copyright (c) 2025, Rhino Federated Computing
+# Original file modified by Rhino Federated Computing to adapt it to the Rhino Federated Computing Platform.
 
 import sys
 import glob

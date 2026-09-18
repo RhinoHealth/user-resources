@@ -128,4 +128,4 @@ Any FAIL result should be traced back to Tutorial 4:
 
 ## Getting Help
 
-For additional support, please reach out to [support@rhinohealth.com](support@rhinohealth.com)
+For additional support, please reach out to [support@rhinofcp.com](support@rhinofcp.com)

@@ -151,4 +151,4 @@ Open `notebooks/data_discovery.ipynb` and select the **rhino_data_engineering** 
 
 ## Getting Help
 
-For additional support, please reach out to [support@rhinohealth.com](support@rhinohealth.com)
+For additional support, please reach out to [support@rhinofcp.com](support@rhinofcp.com)

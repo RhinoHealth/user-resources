@@ -208,4 +208,4 @@ Yes. If you run the registration cell twice, you will create two records (each w
 
 ## Getting Help
 
-For additional support, please reach out to [support@rhinohealth.com](support@rhinohealth.com)
+For additional support, please reach out to [support@rhinofcp.com](support@rhinofcp.com)
