@@ -92,4 +92,4 @@ Once you've mastered the fundamentals here, check out our `NVFlare_Simulation` t
 
 ## Getting Help
 
-For additional support, please reach out to [support@rhinohealth.com](support@rhinohealth.com)
+For additional support, please reach out to [support@rhinofcp.com](support@rhinofcp.com)

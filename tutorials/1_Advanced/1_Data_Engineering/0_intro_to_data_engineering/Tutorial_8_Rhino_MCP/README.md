@@ -18,7 +18,7 @@ The MCP server exposes 8 capability areas, each mapped to a set of named tools y
 | **Queries** | Run mean, Kaplan-Meier, Cox PH, Table 1, chi-square, SQL, and more via a single unified tool |
 | **Execution** | Upload Python code objects, execute them across sites, launch NVFlare training jobs |
 | **Monitoring** | Check run status, stream logs, list recent runs, halt jobs |
-| **Collaboration** | List, invite, and remove collaborators; check site connectivity and workgroup health |
+| **Collaboration** | List, invite, and remove collaborators; check site connectivity and workgroup status |
 | **Harmonization** | Manage schemas, browse vocabularies, apply semantic and syntactic mappings, run full pipelines |
 
 All results are aggregated — raw patient data never leaves hospital sites.
@@ -29,7 +29,7 @@ The Rhino MCP Server uses **OAuth 2.1 with PKCE** — the same standard used by 
 
 ```
 1. Add the MCP server URL to your AI client
-2. On first use, your browser opens automatically for Rhino Health login
+2. On first use, your browser opens automatically for Rhino FCP login
 3. A secure token is issued and stored by your AI client
 4. All subsequent tool calls use the token automatically
 ```
@@ -61,7 +61,7 @@ Use this unless you've been told to use a different environment. Choose your AI 
    - **Name:** `Rhino FCP`
    - **URL:** `https://mcp.rhinohealth.com/mcp`
 4. Click **Save**, then **Connect**
-5. A browser window opens — log in to Rhino Health. Done.
+5. A browser window opens — log in to Rhino FCP. Done.
 
 ---
 
@@ -80,7 +80,7 @@ claude mcp list
 
 # Start Claude and authenticate
 claude
-> "List my Rhino Health projects"
+> "List my Rhino FCP projects"
 # Browser opens for OAuth login on first use
 ```
 
@@ -115,7 +115,7 @@ If you prefer editing the config file directly (e.g., for scripting or CI):
 > **Prerequisite:** Node.js v18+ must be installed (`npx` must be on PATH).
 > Install via `brew install node` (macOS) or from nodejs.org.
 
-Quit Claude Desktop fully (**Cmd+Q**) and reopen. On first use, ask: `"List my Rhino Health projects"` — your browser opens for OAuth login.
+Quit Claude Desktop fully (**Cmd+Q**) and reopen. On first use, ask: `"List my Rhino FCP projects"` — your browser opens for OAuth login.
 
 ---
 
@@ -133,7 +133,7 @@ Create or edit `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (per-project)
 }
 ```
 
-Restart Cursor, open Agent mode (**Cmd+L**), and ask: `"List my Rhino Health projects"`.
+Restart Cursor, open Agent mode (**Cmd+L**), and ask: `"List my Rhino FCP projects"`.
 
 ---
 
@@ -207,7 +207,7 @@ curl https://mcp.rhinohealth.com/health
 Once connected, try these prompts to confirm everything is working:
 
 ```
-"Who am I on Rhino Health?"        → confirms identity and permissions
+"Who am I on Rhino FCP?"        → confirms identity and permissions
 "List my projects"                  → shows accessible projects
 "What datasets are in [project]?"   → explores a specific project
 ```
@@ -298,7 +298,7 @@ The Rhino MCP exposes the following capabilities. Your AI client selects the app
 | `NOT_AUTHENTICATED` error | Token expired — restart your AI client to trigger a new login |
 | Tools appear but return no data | Confirm project access in the Rhino platform; check that your account has workgroup membership |
 
-Need help? Contact [support@rhinohealth.com](mailto:support@rhinohealth.com) with your client name, error message, and the output of the health check curl command.
+Need help? Contact [support@rhinofcp.com](mailto:support@rhinofcp.com) with your client name, error message, and the output of the health check curl command.
 
 ---
 

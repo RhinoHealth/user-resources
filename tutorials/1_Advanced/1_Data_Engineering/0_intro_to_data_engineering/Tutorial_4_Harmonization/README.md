@@ -37,7 +37,7 @@ The RhinoDHE is the Rhino FCP's system for transforming source data into a targe
 
 In all three cases, the harmonization mechanism is the same: a Semantic Mapping for value translation, and a Syntactic Mapping for structural transformation.
 
-For more info, see [docs](https://docs.rhinohealth.com/hc/en-us/articles/20060155424413-About-the-Rhino-Data-Harmonization-Engine-RhinoDHE)
+For more info, see [RhinoDocs](https://docs.rhinofcp.com/data-harmonization/overview)
 
 
 ---
@@ -56,14 +56,14 @@ Translates individual **values** between vocabularies:
 | `"Outpatient"` | 9202 | Outpatient Visit |
 | `45378` (CPT) | 4287782 | Colonoscopy |
 
-The platform proposes matches using AI. A data steward reviews and approves/rejects each pairing before the mapping can be used in a run. [docs](https://docs.rhinohealth.com/hc/en-us/articles/19820382979869-Creating-a-Semantic-Mapping)
+The platform proposes matches using AI. A data steward reviews and approves/rejects each pairing before the mapping can be used in a run. [RhinoDocs](https://docs.rhinofcp.com/data-harmonization/semantic-mapping)
 
 
 **Status lifecycle:** `Not Started → In Progress → Needs Review → Approved`
 
 ### Layer 2: Syntactic Mapping (Structural Transformation)
 
-Defines **field-level rules**: which source column maps to which target column, what type conversion to apply, and which semantic mapping to invoke for coded columns. [docs](https://docs.rhinohealth.com/hc/en-us/articles/23459070770461-Creating-a-Syntactic-Mapping)
+Defines **field-level rules**: which source column maps to which target column, what type conversion to apply, and which semantic mapping to invoke for coded columns. [RhinoDocs](https://docs.rhinofcp.com/data-harmonization/syntactic-mapping)
 
 ### Syntactic Mapping Transformations
 
@@ -176,20 +176,12 @@ When auto-generation does not produce the right rule for a column, you can edit 
 
 | Resource | Description |
 |---|---|
-| [About RhinoDHE](https://docs.rhinohealth.com/hc/en-us/articles/20060155424413) | Overview of the Rhino Data Harmonization Engine |
-| [Creating a Syntactic Mapping](https://docs.rhinohealth.com/hc/en-us/articles/23459070770461) | Step-by-step guide for syntactic mapping setup |
-| [Syntactic Mapping Transformations](https://docs.rhinohealth.com/hc/en-us/articles/22869986524061) | Full list of supported transformation types |
-| [Creating a Semantic Mapping](https://docs.rhinohealth.com/hc/en-us/articles/19820382979869) | Guide for vocabulary-level term mapping |
-| [Creating a Custom Vocabulary](https://docs.rhinohealth.com/hc/en-us/articles/19823208544413) | How to define your own vocabulary for non-standard source codes |
-| [Running a RhinoDHE Code Object](https://docs.rhinohealth.com/hc/en-us/articles/23456568259485) | Guide for executing a harmonization run |
-| [OMOP ETL via RhinoDHE](https://docs.rhinohealth.com/hc/en-us/articles/26126228977437) | OMOP-specific harmonization tutorial |
-| [FHIR ETL via RhinoDHE](https://docs.rhinohealth.com/hc/en-us/articles/26128716368797) | FHIR-specific harmonization tutorial |
 | [Rhino FCP Dashboard](https://dashboard.rhinohealth.com/login) | Web UI for monitoring runs and managing mappings |
 | [Rhino SDK Docs](https://rhinohealth.github.io/rhino_sdk_docs/html/index.html) | Full SDK reference |
-| [support@rhinohealth.com](mailto:support@rhinohealth.com) | Direct support |
+| [Rhino FCP Docs](https://docs.rhinofcp.com) | Rhino Federated Computing Platform docs |
 
 ---
 
 ## Getting Help
 
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com)
+For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com)

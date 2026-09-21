@@ -28,7 +28,7 @@ cd data/scripts
 python sample.py
 ```
 
-To reproduce the federated experiment highlighted in this guide, you will need to import `A.csv` and `B.csv` to your project in the Rhino FCP. To do so, first load the files onto the client ([docs](https://docs.rhinohealth.com/hc/en-us/articles/11386174986397-How-can-I-import-data-in-my-local-environment-onto-my-Rhino-Health-client-using-SFTP)) and then create a dataset in your project ([docs](https://docs.rhinohealth.com/hc/en-us/articles/12385893636509-Creating-a-New-Dataset-or-Dataset-Version)). In "real life", different collaborators possess the different data splits (i.e., `A.csv` and `B.csv` in this case), but no one has access to a the centralized dataset due data sharing limitations.
+To reproduce the federated experiment highlighted in this guide, you will need to import `A.csv` and `B.csv` to your project in the Rhino FCP. To do so, first load the files onto the client ([docs](https://docs.rhinofcp.com/getting-started/quick-start-guide/adding-data-to-your-rhino-federated-computing-platform-fcp-client-using-sftp)) and then register a dataset in your project ([docs](https://docs.rhinofcp.com/datasets/registering-configuring-and-exporting-datasets)). In "real life", different collaborators possess the different data splits (i.e., `A.csv` and `B.csv` in this case), but no one has access to a the centralized dataset due data sharing limitations.
 
 ## Developing local code
 
@@ -188,7 +188,7 @@ First, we adapted the training script itself. See the modified script at `xgboos
     flare.send(output_model)
     ```
 9. We also adapted the "local" config file. See the modified file at `xgboost_flare/app/custom/fl_config.py`. In this file, we made two key changes:
-    - We removed the filepath constants and added them to the individual training and inference scripts. We've also updated the filepaths to locations in the `/input/` and `/output/` directories - which is where datasets are accessed when running code on the Rhino FCP. See our [tutorial](https://docs.rhinohealth.com/hc/en-us/articles/8088478664349-Tutorial-1-Rhino-Health-Federated-Computing-Platform-Hello-World-Basic-Usage) for explanation of filepaths on the Rhino FCP.
+    - We removed the filepath constants and added them to the individual training and inference scripts. We've also updated the filepaths to locations in the `/input/` and `/output/` directories - which is where datasets are accessed when running code on the Rhino FCP. See our [tutorial](https://docs.rhinofcp.com/tutorials-recipes-and-demos/tutorial-1-basic-usage) for explanation of filepaths on the Rhino FCP.
     - Set `NUM_ROUNDS` to 1 - in federated XGBoost we do one round of boosting at a time.
 
 
@@ -250,9 +250,9 @@ You can also avoid creating your own Dockerfile by using Rhino's auto-container 
 
 ### Running model training on Rhino
 
-Once the code, configurations, and Dockerfile are ready - you can push the code to the same project where you imported `A.csv` and `B.csv`. See our [documentation](https://docs.rhinohealth.com/hc/en-us/articles/12385603287325-Pushing-Containers-to-the-ECR) for instructions.
+Once the code, configurations, and Dockerfile are ready - you can push the code to the same project where you imported `A.csv` and `B.csv`. See our [documentation](https://docs.rhinofcp.com/getting-started/quick-start-guide/pushing-containers-to-the-ecr) for instructions.
 
-You can then create an NVFlare code object ([docs](https://docs.rhinohealth.com/hc/en-us/articles/12522224013085-Creating-New-NVFlare-Code-or-Code-Version)) and run it on the two datasets you imported ([docs](https://docs.rhinohealth.com/hc/en-us/articles/12522228144669-Running-NVFlare-Code)).
+You can then create an NVFlare code object and run it on the two datasets you imported ([docs](https://docs.rhinofcp.com/creating-and-running-code-objects/creating-and-running-nvflare-code-and-running-inference)).
 
 After the training code has successfully run, you can click the three dots on the right-hand side of the completed code run and click "download model parameters" to retrieve a local copy of the model.
 

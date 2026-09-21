@@ -50,19 +50,19 @@ variable "vm_machine_type" {
 
 # --- VM & Script Variables ---
 variable "rhino_agent_id" {
-  description = "The agent ID for the Rhino Health installation."
+  description = "The agent ID for the Rhino FCP installation."
   type        = string
   sensitive   = true
 }
 
 variable "rhino_package_registry_user" {
-  description = "The user for the Rhino Health package registry."
+  description = "The user for the Rhino FCP package registry."
   type        = string
   sensitive   = true
 }
 
 variable "rhino_package_registry_password" {
-  description = "The password for the Rhino Health package registry."
+  description = "The password for the Rhino FCP package registry."
   type        = string
   sensitive   = true
 }

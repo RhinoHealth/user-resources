@@ -3,7 +3,7 @@
 
 ### **Description**
 
-This example contains files to train a pneumonia detection model from Chest X-rays using Rhino Health's Federated Computing Platform (FCP) and NVIDIA FLARE v2.6 with the modern Client API.
+This example contains files to train a pneumonia detection model from Chest X-rays using Rhino's Federated Computing Platform (FCP) and NVIDIA FLARE v2.6 with the modern Client API.
 
 It shows how to:
 * Use the new NVIDIA FLARE v2.6 Client API (`import nvflare.client as flare`) for cleaner, more intuitive federated learning code
@@ -12,8 +12,6 @@ It shows how to:
 * Store model parameters in the standard format compatible with FCP inference
 * Package the code in a Docker container that can be used with FCP
 * Maintain compatibility with existing JSON configuration patterns
-
-Please reference to the [tutorial](https://docs.rhinohealth.com/hc/en-us/articles/8088478664349-Tutorial-1-Basic-Usage) for in depth explanations on how to use NVFLARE on FCP.
 
 ### **Resources**
 - `app/config` - This is the standard NVFlare directory for config files
@@ -39,4 +37,4 @@ The new NVIDIA FLARE v2.6 Client API provides:
 - **Backward compatibility** with existing FCP infrastructure
 
 # Getting Help
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com).
+For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

@@ -23,7 +23,7 @@ This example provides files that can be used with the Rhino FCP Generalized Comp
 2. Encrypt the code to be run (in our example `dataprep.py`) using the encryption key: `python encrypt_code.py ./dataprep.py ~/myprecious dataprep_enc`
 3. (Optional) You can now delete the `dataprep.py` file (or move it to a different directory) - it will not be used when building the container image, but if you want to validate this you can delete/move this file
 4. Build the container image from the Dockerfile: `../../../rhino-utils/docker-push.sh rhino-gc-workgroup-my-workgroup data-prep-secure`
-5. Create a Model object in FCP using this container image in the Rhino Health UI or via the SDK
+5. Create a Model object in FCP using this container image in the Rhino FCP UI or via the SDK
 6. Run this model passing in the encryption key (which also acts as a decryption key in this case since fernet is a symmetric encryption) as a secret run parameter with the name `key`: `{"key": "YOUR_KEY"}`
 
 Note that this example uses fernet as the encryption mechanism, but any other encryption mechanism can be used.

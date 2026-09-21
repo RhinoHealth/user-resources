@@ -73,7 +73,7 @@ cp data/procedures.csv /mnt/rhino-data/source/
 
 The Rhino client can read from this mount as if files are local. Ask your administrator for the exact mount path and access instructions.
 
-For more info on client-mounted storage, see documentation [here](https://docs.rhinohealth.com/hc/en-us/articles/25630326465693-Mounting-Storage-to-Your-Rhino-Client)
+For more info on client-mounted storage, see documentation [here](https://docs.rhinofcp.com/settings/mounting-storage-to-your-rhino-client)
 
 ### Method 2 — Import from SQL Database
 
@@ -99,14 +99,11 @@ dataset = session.dataset.import_dataset_from_sql(
 print(f"Imported dataset: {dataset.uid}")
 ```
 
-See the [Rhino SDK documentation on SQL import](https://docs.rhinohealth.com/hc/en-us/articles/34425969191581) for supported database types and connection string formats.
-
-
 ### Method 3 — Direct SFTP
 
 SFTP (Secure File Transfer Protocol) is a method for transferring files from one's local environment directly onto the client edge node. This works for most client configurations.
 
-Instructions can be found [here](https://docs.rhinohealth.com/hc/en-us/articles/11386174986397-How-can-I-import-data-in-my-local-environment-onto-my-Rhino-FCP-client-using-SFTP)
+Instructions can be found [here](https://docs.rhinofcp.com/getting-started/quick-start-guide/registering-data-to-your-rhino-federated-computing-platform-fcp-client-using-sftp)
 
 **Using the command line (macOS/Linux/Windows with OpenSSH):**
 ```bash
@@ -187,14 +184,10 @@ After transferring files and before running Tutorial 1:
 | Resource | Description |
 |---|---|
 | [Rhino FCP Dashboard](https://dashboard.rhinohealth.com/login) | Log in here to check workgroup/agent status |
-| [Rhino SFTP Guide](https://docs.rhinohealth.com/hc/en-us/articles/12385912890653) | Official SFTP data transfer documentation |
-| [Client Mounted Storage](https://docs.rhinohealth.com/hc/en-us/articles/25630326465693-Mounting-Storage-to-Your-Rhino-Client) | Instructions for mounting differnet kinds of storage |
-| [Network Storage Import / Export](https://docs.rhinohealth.com/hc/en-us/articles/18246660924061) | Guide for importing/exporting via network storage mounts |
-| [SQL Import Guide](https://docs.rhinohealth.com/hc/en-us/articles/34425969191581) | Importing datasets directly from a SQL database |
-| [Importing via Dashboard UI](https://docs.rhinohealth.com/hc/en-us/articles/31357028507165) | Step-by-step guide for uploading through the web interface |
+| [Rhino Docs](https://docs.rhinofcp.com) | Official documentation on Rhino FCP |
 
 ---
 
 ## Getting Help
 
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com)
+For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com)
