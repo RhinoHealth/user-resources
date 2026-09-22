@@ -3,6 +3,7 @@ This folder contains examples for interacting with Rhino's Federated Computing P
 
 # Table of Contents
 - [federated-join](./federated-join/Federated_Join_Notebook.ipynb) - Demonstrate the Rhino FCP concept of a federated join, where datasets across sites can be treated as a single, local dataset
+- [resource-utilization](./resource-utilization/README.md) - Sample each collaborating workgroup's live CPU/memory/storage/GPU usage and check it against configurable thresholds, to decide if it's safe to run a job before actually kicking it off
 - [streamlit-visualization](./streamlit-visualization/README.md) - An example showing the capabilities of combining the Rhino SDK with an interactive application tool such as streamlit
 - [xgboost-horizontal](./xgboost-horizontal/README.md) - End-to-end guide for horizontal federated learning with XGBoost (bagged tree-based collaboration) using NVFlare 2.4's Client API on FCP
 - [aggregate_quantile_example.ipynb](./aggregate_quantile_example.ipynb) - Demonstrate the Rhino SDK's ability to calculate federated percentiles with differential privacy
