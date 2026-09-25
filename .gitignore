@@ -3,3 +3,4 @@
 **/.idea
 **/.jupyter
 venv
+__pycache__/
