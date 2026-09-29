@@ -14,7 +14,7 @@ usage() {
 }
 
 # Check if the correct number of arguments are provided
-if [ "$#" -ne 3 ]; then
+if [ "$#" -ne 4 ]; then
     usage
 fi
 
