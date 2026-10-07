@@ -1,4 +1,5 @@
 # Tutorial 1 -  “Hello World” - Basic Usage of Rhino Federated Computing Platform (FCP) 
+> Last validated: 2026-10-06
 
 ## Description
 
