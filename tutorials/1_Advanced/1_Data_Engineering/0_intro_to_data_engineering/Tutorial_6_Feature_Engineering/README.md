@@ -71,7 +71,7 @@ If you prefer not to use the notebook, you can create and run this Code Object d
 
 **Option B — Python Code Snippet (UI paste-in)**
 1. Dashboard → Code → New Code Object → **Python Code** → Code Snippet
-2. Select **Python 3.9**, paste the contents of `scripts/feature_engineering_code_snippet.py`
+2. Select the latest available version above 3.9, unless your code requires a specific version, paste the contents of `scripts/feature_engineering_code_snippet.py`
 3. Add 3 inputs, add 1 output (Auto-Generate Schema)
 4. Click Run
 

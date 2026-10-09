@@ -1,4 +1,5 @@
 # Introduction to Data Engineering on the Rhino FCP
+> Last validated: 2026-10-08
 
 ## Overview
 
