@@ -62,6 +62,27 @@ resource "google_compute_subnetwork" "main" {
 #   }
 # }
 
+# Allows SSH only from Google IAP TCP forwarding so instances without public IPs
+# remain reachable from the Google Cloud console and gcloud.
+resource "google_compute_firewall" "allow_iap_ssh" {
+  project                 = var.project_id
+  name                    = local.firewall_ingress_iap_ssh_name
+  network                 = google_compute_network.main.name
+  description             = "Allows SSH access from Google IAP."
+  source_ranges           = ["35.235.240.0/20"]
+  direction               = "INGRESS"
+  target_service_accounts = [google_service_account.vm.email]
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  log_config {
+    metadata = "INCLUDE_ALL_METADATA"
+  }
+}
+
 # Allows outbound (egress) TCP traffic on port 443 to specified destination IPs.
 resource "google_compute_firewall" "allow_egress_rhino" {
   project            = var.project_id
@@ -231,9 +252,25 @@ resource "google_compute_instance" "main" {
   }
 
   # metadata_startup_script = file("${path.module}/install.sh")
-  metadata_startup_script = format(
-    "#! /bin/bash\ncurl -fsS --proto '=https' https://activate.rhinohealth.com | sudo RHINO_AGENT_ID='%s' PACKAGE_REGISTRY_USER='%s' PACKAGE_REGISTRY_PASSWORD='%s' SKIP_HW_CHECK=True bash -",
+  metadata_startup_script = format(<<-EOT
+    #! /bin/bash
+    set -euo pipefail
+
+    state_file="/var/lib/rhino/.activation-complete"
+
+    if [[ -f "$state_file" ]]; then
+      echo "Rhino activation already completed; skipping startup script."
+      exit 0
+    fi
+
+    curl -fsS --proto '=https' https://activate.rhinohealth.com | sudo RHINO_AGENT_ID='%s' ROLE_ID='%s' SECRET_ID='%s' PACKAGE_REGISTRY_USER='%s' PACKAGE_REGISTRY_PASSWORD='%s' SKIP_HW_CHECK=True bash -
+
+    sudo mkdir -p "$(dirname "$state_file")"
+    sudo touch "$state_file"
+    EOT,
     var.rhino_agent_id,
+    var.rhino_role_id,
+    var.rhino_secret_id,
     var.rhino_package_registry_user,
     var.rhino_package_registry_password
   )
