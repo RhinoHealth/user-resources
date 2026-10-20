@@ -36,23 +36,26 @@ class StaggeredScatterAndGather(ScatterAndGather):
     """ScatterAndGather that trains at most `max_concurrent` sites per agent at a time within each round.
 
     Args:
-        max_concurrent: sites of one agent that may train at the same time (K). Size it so K training sites plus
-            every waiting site's CUDA context fit in the GPU.
-        agent_max_concurrent: per-agent overrides of `max_concurrent`, keyed by agent name.
-        wave_mode: "sliding" starts the next waiting site as soon as any slot frees; "batch" waits for the agent's
-            whole wave to finish before starting the next one.
-        max_retries: times a failed site is retried in the same round. A site whose training process crashed does
-            not come back, so 0 is the safe default.
-        min_successful_clients: sites that must succeed for a round to count. Defaults to `min_clients`. Set
-            `min_clients` to the number of sites in the job, so the platform starts it with every site, and this
-            lower, so one failed site doesn't stop the job for everyone.
-        exclude_failed_clients: stop scheduling a site after it fails, for the rest of the job, instead of waiting
-            up to `train_timeout` for it every round.
-        agent_name_pattern: regex removed from a site name to get its agent name; sites with the same result share
-            one GPU agent. The default turns `my_agent_3` into `my_agent`.
-        wait_for_clients_timeout: seconds the first round waits for `min_clients` sites to connect.
-        **kwargs: ScatterAndGather arguments. `train_timeout` applies per site task, counted from when that site's
-            task is scheduled, so size it for one site's local training, not the whole round.
+        max_concurrent (int): sites of one agent that may train at the same time (K). Size it so K training sites
+            plus every waiting site's CUDA context fit in the GPU. Defaults to 2.
+        agent_max_concurrent (dict[str, int], optional): per-agent overrides of `max_concurrent`, keyed by agent
+            name, e.g. `{"gpu_agent_a": 4, "gpu_agent_b": 2}` lets 4 sites of `gpu_agent_a` and 2 of `gpu_agent_b`
+            train at once, while every other agent uses `max_concurrent`. Defaults to None (no overrides).
+        wave_mode (str): "sliding" starts the next waiting site as soon as any slot frees; "batch" waits for the
+            agent's whole wave to finish before starting the next one. Defaults to "batch".
+        max_retries (int): times a failed site is retried in the same round. A site whose training process crashed
+            does not come back, so 0 is the safe default.
+        min_successful_clients (int, optional): sites that must succeed for a round to count. Defaults to
+            `min_clients`. Set `min_clients` to the number of sites in the job, so the platform starts it with every
+            site, and this lower, so one failed site doesn't stop the job for everyone.
+        exclude_failed_clients (bool): stop scheduling a site after it fails, for the rest of the job, instead of
+            waiting up to `train_timeout` for it every round. Defaults to True.
+        agent_name_pattern (str): regex removed from a site name to get its agent name; sites with the same result
+            share one GPU agent. The default, `_\\d+$`, turns `my_agent_3` into `my_agent`.
+        wait_for_clients_timeout (float): seconds the first round waits for `min_clients` sites to connect.
+            Defaults to 300.
+        **kwargs: ScatterAndGather arguments. `train_timeout` (int) applies per site task, counted from when that
+            site's task is scheduled, so size it for one site's local training, not the whole round.
     """
 
     def __init__(
@@ -176,7 +179,8 @@ class StaggeredScatterAndGather(ScatterAndGather):
         return [name for name in self._job_sites if name not in self._excluded]
 
     def _wait_for_clients(self, fl_ctx: FLContext, abort_signal: Optional[Signal]) -> Optional[list[str]]:
-        # The job can start before every site has registered; training a partial set would leave sites out.
+        # Sites register with the server one by one, and round 0 can begin before all of them have. The site list
+        # is fixed here for the whole job, so a site missing now would never be scheduled: wait for min_clients.
         deadline = time.time() + self._wait_for_clients_timeout
         while True:
             names = sorted(client.name for client in self._engine.get_clients())
@@ -243,7 +247,7 @@ class StaggeredScatterAndGather(ScatterAndGather):
 
     def _schedule_waiting_sites(self, round_state: "_StaggeredRound", data: Shareable, fl_ctx: FLContext) -> None:
         for agent, queue in round_state.pending.items():
-            agent_in_flight = round_state.in_flight_on(agent)
+            agent_in_flight = round_state.num_training_on_agent(agent)
             # Batch mode: the agent's next wave starts only when its whole current wave is done.
             if self._wave_mode == BATCH and agent_in_flight:
                 continue
@@ -258,7 +262,7 @@ class StaggeredScatterAndGather(ScatterAndGather):
                     agent=agent,
                     attempt=round_state.attempts[name],
                     agent_in_flight=agent_in_flight,
-                    in_flight=round_state.num_in_flight(),
+                    in_flight=round_state.num_training(),
                 )
 
     def _finish_round(self, round_state: "_StaggeredRound", fl_ctx: FLContext) -> None:
@@ -377,14 +381,14 @@ class _StaggeredRound:
     def has_work(self) -> bool:
         return bool(self.in_flight) or any(self.pending.values())
 
-    def num_in_flight(self) -> int:
+    def num_training(self) -> int:
         return len(self.in_flight)
 
     def num_remaining(self) -> int:
         """Sites that may still succeed this round: training now or waiting for a slot."""
         return len(self.in_flight) + sum(len(queue) for queue in self.pending.values())
 
-    def in_flight_on(self, agent: str) -> int:
+    def num_training_on_agent(self, agent: str) -> int:
         return sum(1 for name in self.in_flight if self.agent_of[name] == agent)
 
     def finished_sites(self) -> list[str]:
@@ -395,7 +399,7 @@ class _StaggeredRound:
         self.in_flight[name] = task
         self._task_started_at[name] = time.time()
         agent = self.agent_of[name]
-        self.max_in_flight[agent] = max(self.max_in_flight[agent], self.in_flight_on(agent))
+        self.max_in_flight[agent] = max(self.max_in_flight[agent], self.num_training_on_agent(agent))
 
     def finish(self, name: str) -> TaskCompletionStatus:
         self.train_seconds[name] = round(time.time() - self._task_started_at[name], 1)
