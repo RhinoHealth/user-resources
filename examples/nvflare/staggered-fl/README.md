@@ -109,10 +109,10 @@ All are in `config_fed_server.json` under the workflow's `args`, except `launch_
 ### One process per site, or one per round
 | | One process per site (`launch_once: true`, default) | New process per round (`launch_once: false`) |
 |---|---|---|
-| GPU memory per waiting site | ~0.3 GB (CUDA context), if the model is freed | 0 |
-| Overhead per site per turn | ~8–10 s (small Lightning model) / ~22 s (mid-size CNN) | ~20–25 s |
-| State between rounds (optimizer, LR schedule, epoch count) | kept | lost unless your script saves it |
-| Use when | almost always | very many sites per GPU, where 0.3 GB each adds up (30 sites ≈ 9 GB) |
+| GPU memory per waiting site | the CUDA context (~0.3 GB), only if your script frees its model and tensors after each round | 0 |
+| Overhead per site per turn | lower: Python and your imports start once per job | higher: Python and your imports start every turn |
+| State between rounds (optimizer, LR schedule, epoch count) | kept in memory | lost unless your script saves and reloads it |
+| Use when | almost always | many sites per GPU, where ~0.3 GB each adds up (30 sites ≈ 9 GB), or a script that can't free its GPU memory between rounds |
 
 ### Timeouts
 - **`train_timeout`** (server): seconds one site may train, counted from when **its turn** starts, not from the start
@@ -208,7 +208,8 @@ less the longer each site trains.
 - **A crashed site is not recovered** within the job; it is only excluded, with a clear log line.
 - **No overcommit protection:** the controller doesn't check free GPU memory before starting a site.
 - **The slowest site sets the round time:** a site on a slower machine (or the CPU) holds every round open.
-- **Validated on one setup:** an FCP GPU agent with an NVIDIA L4, NVFlare 2.8.1.
+- **Tested on one GPU type and NVFlare version only:** a single-GPU FCP agent with an NVIDIA L4, NVFlare 2.8.1. Other
+  GPUs, agents with several GPUs, and other NVFlare versions have not been tested.
 - **Network:** a 15-minute stall of client-server connections was seen once at 30 sites with K = 6; it was not
   reproduced and not shown to be caused by staggering.
 - **Continuing a failed job:** the latest and the best global model are saved in `/output` every round, but starting a
