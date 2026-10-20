@@ -212,6 +212,39 @@ class StaggeredScatterAndGather(ScatterAndGather):
                 f"agent_name_pattern ({self._agent_name_pattern.pattern!r}).",
             )
 
+    def _schedule_waiting_sites(self, round_state: "_StaggeredRound", data: Shareable, fl_ctx: FLContext) -> None:
+        for agent, queue in round_state.pending.items():
+            agent_in_flight = round_state.num_training_on_agent(agent)
+            # Batch mode: the agent's next wave starts only when its whole current wave is done.
+            if self._wave_mode == BATCH and agent_in_flight:
+                continue
+            while queue and agent_in_flight < round_state.limits[agent]:
+                name = queue.popleft()
+                round_state.start(name, self._schedule_client_task(name, data, fl_ctx))
+                agent_in_flight += 1
+                self._log_event(
+                    fl_ctx,
+                    "task_scheduled",
+                    client=name,
+                    agent=agent,
+                    attempt=round_state.attempts[name],
+                    agent_in_flight=agent_in_flight,
+                    in_flight=round_state.num_training(),
+                )
+
+    def _schedule_client_task(self, client_name: str, data: Shareable, fl_ctx: FLContext) -> Task:
+        task = Task(
+            name=self.train_task_name,
+            data=data,
+            props={},
+            timeout=self._train_timeout,
+            before_task_sent_cb=self._prepare_train_task_data,
+            after_task_sent_cb=self._on_task_sent,
+            result_received_cb=self._on_train_result,
+        )
+        self.broadcast(task=task, fl_ctx=fl_ctx, targets=[client_name], min_responses=1)
+        return task
+
     def _collect_finished_tasks(self, round_state: "_StaggeredRound", fl_ctx: FLContext) -> None:
         for name in round_state.finished_sites():
             status = round_state.finish(name)
@@ -244,26 +277,6 @@ class StaggeredScatterAndGather(ScatterAndGather):
                 excluded=self._exclude_failed_clients,
                 sites_left=self._num_succeeded() + round_state.num_remaining(),
             )
-
-    def _schedule_waiting_sites(self, round_state: "_StaggeredRound", data: Shareable, fl_ctx: FLContext) -> None:
-        for agent, queue in round_state.pending.items():
-            agent_in_flight = round_state.num_training_on_agent(agent)
-            # Batch mode: the agent's next wave starts only when its whole current wave is done.
-            if self._wave_mode == BATCH and agent_in_flight:
-                continue
-            while queue and agent_in_flight < round_state.limits[agent]:
-                name = queue.popleft()
-                round_state.start(name, self._schedule_client_task(name, data, fl_ctx))
-                agent_in_flight += 1
-                self._log_event(
-                    fl_ctx,
-                    "task_scheduled",
-                    client=name,
-                    agent=agent,
-                    attempt=round_state.attempts[name],
-                    agent_in_flight=agent_in_flight,
-                    in_flight=round_state.num_training(),
-                )
 
     def _finish_round(self, round_state: "_StaggeredRound", fl_ctx: FLContext) -> None:
         num_succeeded = self._num_succeeded()
@@ -298,6 +311,23 @@ class StaggeredScatterAndGather(ScatterAndGather):
         self._log_event(fl_ctx, "job_failed", reason="not_enough_successful_clients", succeeded=succeeded, failed=failed)
         self.system_panic(message, fl_ctx)
 
+    def _on_task_sent(self, client_task: ClientTask, fl_ctx: FLContext) -> None:
+        self._log_event(fl_ctx, "task_sent", client=client_task.client.name)
+
+    def _on_train_result(self, client_task: ClientTask, fl_ctx: FLContext) -> None:
+        name = client_task.client.name
+        rc = client_task.result.get_return_code()
+        if rc and rc != ReturnCode.OK:
+            self._log_event(fl_ctx, "result_error", client=name, rc=rc)
+            with self._lock:
+                self._error_results[name] = _describe_return_code(rc)
+            client_task.result = None
+            return
+        self._log_event(fl_ctx, "result_received", client=name)
+        self._process_train_result(client_task, fl_ctx)
+        with self._lock:
+            self._succeeded.add(name)
+
     def _log_site_failed(
         self, fl_ctx: FLContext, name: str, reason: str, excluded: bool, sites_left: Optional[int]
     ) -> None:
@@ -316,35 +346,9 @@ class StaggeredScatterAndGather(ScatterAndGather):
             return "site stopped responding"
         return f"task ended with status '{status.value}'"
 
-    def _schedule_client_task(self, client_name: str, data: Shareable, fl_ctx: FLContext) -> Task:
-        task = Task(
-            name=self.train_task_name,
-            data=data,
-            props={},
-            timeout=self._train_timeout,
-            before_task_sent_cb=self._prepare_train_task_data,
-            after_task_sent_cb=self._on_task_sent,
-            result_received_cb=self._on_train_result,
-        )
-        self.broadcast(task=task, fl_ctx=fl_ctx, targets=[client_name], min_responses=1)
-        return task
-
-    def _on_task_sent(self, client_task: ClientTask, fl_ctx: FLContext) -> None:
-        self._log_event(fl_ctx, "task_sent", client=client_task.client.name)
-
-    def _on_train_result(self, client_task: ClientTask, fl_ctx: FLContext) -> None:
-        name = client_task.client.name
-        rc = client_task.result.get_return_code()
-        if rc and rc != ReturnCode.OK:
-            self._log_event(fl_ctx, "result_error", client=name, rc=rc)
-            with self._lock:
-                self._error_results[name] = _describe_return_code(rc)
-            client_task.result = None
-            return
-        self._log_event(fl_ctx, "result_received", client=name)
-        self._process_train_result(client_task, fl_ctx)
-        with self._lock:
-            self._succeeded.add(name)
+    def _log_event(self, fl_ctx: FLContext, event: str, **fields: Any) -> None:
+        record = {"event": event, "t": round(time.time(), 3), "round": self._current_round, **fields}
+        self.log_info(fl_ctx, "STAGGER " + json.dumps(record))
 
     def _num_succeeded(self) -> int:
         with self._lock:
@@ -355,10 +359,6 @@ class StaggeredScatterAndGather(ScatterAndGather):
 
     def _limit_of(self, agent: str) -> int:
         return self._agent_max_concurrent.get(agent, self._max_concurrent)
-
-    def _log_event(self, fl_ctx: FLContext, event: str, **fields: Any) -> None:
-        record = {"event": event, "t": round(time.time(), 3), "round": self._current_round, **fields}
-        self.log_info(fl_ctx, "STAGGER " + json.dumps(record))
 
 
 class _StaggeredRound:
@@ -378,22 +378,6 @@ class _StaggeredRound:
         self.started_at = time.time()
         self._task_started_at: dict[str, float] = {}
 
-    def has_work(self) -> bool:
-        return bool(self.in_flight) or any(self.pending.values())
-
-    def num_training(self) -> int:
-        return len(self.in_flight)
-
-    def num_remaining(self) -> int:
-        """Sites that may still succeed this round: training now or waiting for a slot."""
-        return len(self.in_flight) + sum(len(queue) for queue in self.pending.values())
-
-    def num_training_on_agent(self, agent: str) -> int:
-        return sum(1 for name in self.in_flight if self.agent_of[name] == agent)
-
-    def finished_sites(self) -> list[str]:
-        return [name for name, task in self.in_flight.items() if task.completion_status is not None]
-
     def start(self, name: str, task: Task) -> None:
         self.attempts[name] += 1
         self.in_flight[name] = task
@@ -407,6 +391,22 @@ class _StaggeredRound:
 
     def requeue(self, name: str) -> None:
         self.pending[self.agent_of[name]].append(name)
+
+    def finished_sites(self) -> list[str]:
+        return [name for name, task in self.in_flight.items() if task.completion_status is not None]
+
+    def has_work(self) -> bool:
+        return bool(self.in_flight) or any(self.pending.values())
+
+    def num_remaining(self) -> int:
+        """Sites that may still succeed this round: training now or waiting for a slot."""
+        return len(self.in_flight) + sum(len(queue) for queue in self.pending.values())
+
+    def num_training(self) -> int:
+        return len(self.in_flight)
+
+    def num_training_on_agent(self, agent: str) -> int:
+        return sum(1 for name in self.in_flight if self.agent_of[name] == agent)
 
 
 def _describe_return_code(rc: str) -> str:
