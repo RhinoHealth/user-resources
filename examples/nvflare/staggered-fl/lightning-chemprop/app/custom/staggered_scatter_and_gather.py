@@ -308,7 +308,9 @@ class StaggeredScatterAndGather(ScatterAndGather):
             f"{TROUBLESHOOTING_HINT}"
         )
         self.log_error(fl_ctx, message)
-        self._log_event(fl_ctx, "job_failed", reason="not_enough_successful_clients", succeeded=succeeded, failed=failed)
+        self._log_event(
+            fl_ctx, "job_failed", reason="not_enough_successful_clients", succeeded=succeeded, failed=failed
+        )
         self.system_panic(message, fl_ctx)
 
     def _on_task_sent(self, client_task: ClientTask, fl_ctx: FLContext) -> None:
