@@ -75,24 +75,6 @@ def main() -> None:
             raise
 
 
-def _parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs-per-round", type=int, default=50, help="local epochs in each FL round")
-    parser.add_argument("--batch-size", type=int, default=64)
-    parser.add_argument("--num-workers", type=int, default=0, help="data loader worker processes")
-    return parser.parse_args()
-
-
-def _find_dataset() -> Path:
-    dataset_dirs = sorted(path for path in DATASETS_DIR.iterdir() if path.is_dir()) if DATASETS_DIR.is_dir() else []
-    if len(dataset_dirs) != 1:
-        raise RuntimeError(
-            f"Expected exactly one dataset under {DATASETS_DIR}, found {len(dataset_dirs)}. Run the job with one "
-            f"dataset per site."
-        )
-    return dataset_dirs[0] / DATASET_FILE_NAME
-
-
 def _build_loaders(dataset_path: Path, args: argparse.Namespace) -> tuple[DataLoader, DataLoader]:
     table = pd.read_csv(dataset_path)
     missing = {SMILES_COLUMN, TARGET_COLUMN} - set(table.columns)
@@ -122,6 +104,24 @@ def _build_loaders(dataset_path: Path, args: argparse.Namespace) -> tuple[DataLo
         seed=SEED,
     )
     return train_loader, val_loader
+
+
+def _find_dataset() -> Path:
+    dataset_dirs = sorted(path for path in DATASETS_DIR.iterdir() if path.is_dir()) if DATASETS_DIR.is_dir() else []
+    if len(dataset_dirs) != 1:
+        raise RuntimeError(
+            f"Expected exactly one dataset under {DATASETS_DIR}, found {len(dataset_dirs)}. Run the job with one "
+            f"dataset per site."
+        )
+    return dataset_dirs[0] / DATASET_FILE_NAME
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--epochs-per-round", type=int, default=50, help="local epochs in each FL round")
+    parser.add_argument("--batch-size", type=int, default=64)
+    parser.add_argument("--num-workers", type=int, default=0, help="data loader worker processes")
+    return parser.parse_args()
 
 
 if __name__ == "__main__":
