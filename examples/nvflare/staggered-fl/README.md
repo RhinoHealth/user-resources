@@ -83,7 +83,7 @@ Copy what the reference example does; the lines that matter are marked `# Stagge
 
 ## Settings you must decide
 All are in `config_fed_server.json` under the workflow's `args`, except `launch_once`, the client timeouts (both in
-`config_fed_client.json`) and `timeout_seconds` (in the training run you start from the SDK).
+`config_fed_client.json`) and the training run's timeout (**Timeout in seconds** when you start it).
 
 | Setting | Required? | What to set                                                                                    |
 |---|---|------------------------------------------------------------------------------------------------|
@@ -120,8 +120,8 @@ All are in `config_fed_server.json` under the workflow's `args`, except `launch_
 - **`train_timeout`** (server): seconds one site may train, counted from when **its turn** starts, not from the start
   of the round. Use about 1.5 × one site's local training time plus process start-up. With no limit, a site that
   hangs holds its slot forever.
-- **`timeout_seconds`** (the training run, in the SDK): FCP stops the whole job after this long, and staggering makes
-  jobs longer. Use `num_rounds × ⌈N ÷ K⌉ × (local training time + overhead) × 1.3`; the example notebook computes it.
+- **Run timeout** (**Timeout in seconds** when you start the training run): FCP stops the whole job after this long, and staggering makes
+  jobs longer. Use `num_rounds × ⌈N ÷ K⌉ × (local training time + overhead) × 1.3`.
 - **Client timeouts** (`config_fed_client.json`): `external_pre_init_timeout` (start-up of the training process) and
   `heartbeat_timeout` (how long without a heartbeat before the process counts as gone) at 600 s; long training steps
   can delay heartbeats, so keep it high. `peer_read_timeout` at 30 s.
@@ -162,7 +162,7 @@ less the longer each site trains.
 ## Estimating run time
 - **Round:** ≈ ⌈N ÷ K⌉ × (one site's training time at K + overhead per turn). Training gets slower as K grows (in the
   measurements, +14% at K = 4 for the Lightning model, +50% for the CNN), so measure it once at your K.
-- **Job:** ≈ `num_rounds` × round time. Use it for `timeout_seconds`.
+- **Job:** ≈ `num_rounds` × round time. Use it for the run timeout.
 - **Example:** 8 sites, K = 4, 75 s of training at K = 4, 10 s overhead, 3 rounds: 2 waves × 85 s ≈ 170 s per round,
   ≈ 9 minutes per job.
 
@@ -171,7 +171,8 @@ less the longer each site trains.
   `round_start` line: its `agents` map lists every agent with its sites and K. If each agent has only one site, the
   sites are not being grouped (see "Troubleshooting"). Each round ends with a `round_done` line and a plain
   `Round <r>: <n> of <N> sites succeeded in <s> s.`
-- **`stagger_report.py`:** download the server log and run `python stagger_report.py <server-log-file>`. It prints one
+- **`stagger_report.py`:** save the server log to a file and run `python stagger_report.py <server-log-file>`. The
+  FCP UI can't download logs; the example notebook saves it with the SDK (`session.code_run.get_logs`). It prints one
   line per round and exits with 1 if an agent ever trained more than K sites at once or the job failed.
 - **Site logs** (FCP UI, per workgroup): the training script's own output, including its errors.
 - **GPU memory** (if you have `kubectl` access to the agent): run a small pod on the GPU node and sample `nvidia-smi`:
@@ -203,8 +204,8 @@ less the longer each site trains.
 | `Site … failed …` | Read that site's log in the FCP UI for its error; the round continues without it |
 | `Job stopped in round …` | Too few sites succeeded: fix the failing sites, or lower `min_successful_clients` |
 | `Job stopped before training: only … sites connected` | `min_clients` is larger than the number of sites in the job, or some sites didn't start |
-| The run ends with a timeout in FCP | `timeout_seconds` is too short for a staggered job (see "Timeouts") |
-| Config error when the job starts | The example configs contain `//` comment lines: remove them (the example notebook does) |
+| The run ends with a timeout in FCP | The run timeout is too short for a staggered job (see "Timeouts") |
+| Config error when the job starts | The example configs contain `//` comment lines: remove them before pasting the configs into the run |
 
 ## Known limits
 - **A crashed site is not recovered** within the job; it is only excluded, with a clear log line.
