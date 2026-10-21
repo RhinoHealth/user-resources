@@ -7,7 +7,7 @@ on PyTorch Lightning, that predicts whether a molecule inhibits the CYP3A4 enzym
 trains on its own share of the molecules, and the server averages the sites' models every round.
 
 The sites share one GPU agent and **take turns** on it: at most 4 sites train at a time (configurable in [config_fed_server.json](app/config/config_fed_server.json)), and the rest wait for a free
-slot. The concept, the settings and the measured results are in the [staggered FL guide](../README.md); this README
+slot. The concept, the settings and the measured results are in the [staggered FL guide](../../README.md); this README
 covers what is specific to this example and how to run it.
 
 **It shows how to:**
@@ -84,8 +84,8 @@ Script flags (set through `app_config`): `--epochs-per-round` (default 50), `--b
 2. **Build and push the image** to your workgroup's container registry (see
    [Pushing Containers to the ECR](https://docs.rhinofcp.com/getting-started/quick-start-guide/pushing-containers-to-the-ecr)):
    ```bash
-   # cd examples/nvflare/staggered-fl/lightning-chemprop
-   ../../../../utils/docker-push.sh <your-workgroup-repo-name> <a-tag-you-choose>
+   # cd examples/nvflare/staggered-fl/lightning-chemprop/scatter-and-gather
+   ../../../../../utils/docker-push.sh <your-workgroup-repo-name> <a-tag-you-choose>
    ```
    It prints `Container image URI: ...` when done; copy that URI into the notebook.
 3. **Run `notebook.ipynb`** (needs `pip install rhino_health pandas`). It:
@@ -104,7 +104,7 @@ Script flags (set through `app_config`): `--epochs-per-round` (default 50), `--b
 4. **Check the run.** In the run's server log, the first `STAGGER` `round_start` line should list one agent with all
    N sites and `max_concurrent` 4, and each round should end with `Round <r>: 8 of 8 sites succeeded`. To check that
    no more than 4 sites trained at once, download the server log and run
-   `python ../stagger_report.py <server-log-file>`.
+   `python ../../stagger_report.py <server-log-file>`.
 
  sites, one NVIDIA L4 GPU): rounds of about 3 minutes, peak GPU memory about 3.2 GB, and a
 global validation ROC AUC of about 0.84 after 3 rounds.
@@ -115,7 +115,7 @@ global validation ROC AUC of about 0.84 after 3 rounds.
   project, workgroups, data schema or datasets, the shards on the agent, or the pushed image.
 
 ## Using your own model
-Follow "Adapting your own model" in the [staggered FL guide](../README.md). In this example, the parts to copy are
+Follow "Adapting your own model" in the [staggered FL guide](../../README.md). In this example, the parts to copy are
 `staggered_scatter_and_gather.py`, the lines marked `# Staggering:` in the script, the commented settings in both
 configs, and the two `NVIDIA_*` lines in the `Dockerfile`.
 

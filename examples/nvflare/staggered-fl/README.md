@@ -14,8 +14,8 @@ unchanged, so the result is the same federated model.
 This folder holds the guide (this file), a log report tool, and reference examples you can copy from.
 
 ## Resources
-- `lightning-chemprop` - Reference example with a PyTorch Lightning model (Chemprop, molecule classification). Start
-  here; its README walks through running it on FCP
+- `lightning-chemprop/scatter-and-gather` - Reference example with a PyTorch Lightning model (Chemprop, molecule
+  classification) and the `ScatterAndGather` workflow. Start here; its README walks through running it on FCP
 - `README.md` - This guide: the concept, the settings you must choose, measured results, monitoring, failures and limits
 - `stagger_report.py` - Reads a job's server log and prints, per round, the duration, failed sites and the most sites
   that trained at once on each agent; exits with 1 if an agent went over its limit or the job failed
