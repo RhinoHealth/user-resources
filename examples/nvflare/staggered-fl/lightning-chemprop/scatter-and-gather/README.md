@@ -17,7 +17,7 @@ covers what is specific to this example and how to run it.
 
 ## Requirements
 - **NVFlare 2.8.1**, Chemprop 2.0.5, PyTorch Lightning 2.6.6, torch 2.14.1, Python 3.11, CUDA 12.4 base image.
-- **An FCP environment with the NVFlare 2.8 code type**, and for the notebook **rhino_health SDK 2.1.25 or newer**
+- **An FCP environment with the NVFlare 2.8 code type** and **rhino_health SDK 2.1.25 or newer**
   (`CodeTypes.NVIDIA_FLARE_V2_8`).
 - **A project with N collaborating workgroups whose sites run on the same GPU agent** (see "Running this example on
   FCP"). The example is set for N = 8.
@@ -26,7 +26,7 @@ covers what is specific to this example and how to run it.
 - `app` - NVFlare job folder, deployed to every site per `meta.json`'s `deploy_map`
   - `config`
     - `config_fed_client.json` - Client config: one training process per site (`launch_once: true`), 50 epochs per
-      round, timeouts. Staggering settings are commented; remove the `//` lines before using it (step 6 below)
+      round, timeouts. Staggering settings are commented; remove the `//` lines before using it outside the notebook
     - `config_fed_server.json` - Server config: `StaggeredScatterAndGather` with K = 4, sliding, 8 sites, failure
       handling, 3 rounds; saves the global model to `/output/model_parameters.pt`. Commented the same way
   - `custom`
@@ -39,9 +39,8 @@ covers what is specific to this example and how to run it.
   Chemprop examples)
 - `Dockerfile` - Builds the image: CUDA 12.4 runtime, Python 3.11, the requirements, and the GPU access env vars
 - `meta.json` - NVFlare job metadata, required by FCP at the container's working directory
-- `notebook.ipynb` - Runs steps 3 to 8 of "Running this example on FCP" with the SDK: makes the shards, creates the
-  data schema and the datasets, creates the Code Object from your pushed image, starts the training run, checks the
-  staggering and downloads the model
+- `notebook.ipynb` - Runs the example on FCP: makes the shards, creates the data schema and the datasets, creates the
+  Code Object from your pushed image, and starts the training run
 - `README.md` - This file
 - `requirements.txt` - Pinned Python requirements
 
@@ -65,7 +64,7 @@ covers what is specific to this example and how to run it.
 | server | `path` | `staggered_scatter_and_gather.StaggeredScatterAndGather` | The staggered workflow                                                  |
 | server | `max_concurrent` | 4 | ~0.5 GB per training site, ~2 CPU cores each; 4 was 3.5× faster than 1  |
 | server | `wave_mode` | `"sliding"` | A waiting site starts as soon as any slot frees                         |
-| server | `min_clients` | 8 | **Required:** the number of sites                                        |
+| server | `min_clients` | 8 | **Required:** the number of sites. The notebook sets it from your datasets |
 | server | `min_successful_clients` | 7 | One failed site doesn't stop the job for everyone                       |
 | server | `exclude_failed_clients` | `true` | A failed site is skipped in later rounds                                |
 | server | `max_retries` | 0 | A crashed site doesn't come back                                        |
@@ -80,56 +79,42 @@ Script flags (set through `app_config`): `--epochs-per-round` (default 50), `--b
 ## Running this example on FCP
 1. **Workgroups and agent.** You need a project with N workgroups collaborating in it, and every workgroup's site must
    run on the same GPU agent. Rhino support sets this up on request: putting several workgroups on one agent needs a
-   Rhino admin. Give the site workgroups a common name prefix (e.g. `stagger-site-01` …
-   `stagger-site-08`); the notebook finds them by it.
+   Rhino admin. Give the site workgroups a common name prefix (e.g. `stagger-site-01` … `stagger-site-08`); the
+   notebook finds them by it.
 2. **Build and push the image** to your workgroup's container registry (see
    [Pushing Containers to the ECR](https://docs.rhinofcp.com/getting-started/quick-start-guide/pushing-containers-to-the-ecr)):
    ```bash
    # cd examples/nvflare/staggered-fl/lightning-chemprop/scatter-and-gather
    ../../../../../utils/docker-push.sh <your-workgroup-repo-name> <a-tag-you-choose>
    ```
-   It prints `Container image URI: ...` when done; you need that URI in step 5.
-
-   **Steps 3 to 8 can run from `notebook.ipynb`** instead of by hand. It needs you to be a member of every site
-   workgroup, and the shard files on the agent (step 4) before it registers the datasets.
-3. **Make the data shards**, one CSV per site (needs `pip install pandas`):
-   ```bash
-   python ../data/make_shards.py --num-shards <N>
-   ```
-   This writes `../data/shards/shard_01.csv` … `shard_NN.csv`, with the columns `id`, `smiles` and `cyp3a4` (about
-   1,375 molecules each for N = 8).
-4. **Upload the datasets**, one shard to each site workgroup. Put the shard files where the GPU agent can read them:
-   its storage, or a bucket connected to it as Client Mounted Storage (paths under `/rhino_data/external/...`). Then,
-   in the FCP UI, switch to each site workgroup in turn and add its shard under **Datasets → Add Dataset**: shard 1 in
-   the first workgroup, shard 2 in the second, and so on. Use the same data schema for all of them, with `id` and
-   `smiles` as String inputs and `cyp3a4` as an Integer output. Wait until every dataset has finished importing.
-5. **Create the Code Object** in the project: type **NVIDIA FLARE v2.8**, the shards' data schema as its input, and
-   the container image URI from step 2.
-6. **Run the training** from the Code Object (**Run Model Training**):
-   - select the N datasets;
-   - **Timeout in seconds**: `num_rounds × ⌈N ÷ 4⌉ × 85 × 1.3`, and at least 1800 (1800 for N = 8);
-   - **Federated server config override** and **Federated client config override**: paste
-     `config_fed_server.json` and `config_fed_client.json` without their `//` comment lines, which the image's copies
-     still have. This prints them without the comments:
-     ```bash
-     grep -v '^[[:space:]]*//' app/config/config_fed_server.json
-     grep -v '^[[:space:]]*//' app/config/config_fed_client.json
-     ```
-     If N isn't 8, set `min_clients` in the server config to N, and `min_successful_clients` to at most N.
-7. **Check the run.** In the run's server log, the first `STAGGER` `round_start` line should list one agent with all
-   N sites and `max_concurrent` 4, and each round should end with `Round <r>: N of N sites succeeded`. To check that
-   no more than 4 sites trained at once, save the server log to a file and run
-   `python ../../stagger_report.py <server-log-file>`. The FCP UI can't download logs: copy the server log from the
-   run's logs, or save it with the SDK as the notebook's "Check the staggering" cell does.
-8. **Download the trained model** from **Code Runs**: the 3 dots next to the run, **Download Model Parameters**.
+   It prints `Container image URI: ...` when done; copy that URI into the notebook.
+3. **Run `notebook.ipynb`**. Its first cell installs `rhino_health` and `pandas`; set `RHINO_API_URL` to your FCP
+   environment. It:
+   - finds your project and its site workgroups by name prefix;
+   - splits the CYP3A4 data into one file per site (`../data/shards/shard_01.csv` …, about 1,375 molecules each, with the
+     columns `id`, `smiles` and `cyp3a4`). **You copy `../data/shards` to the GPU agent's storage**, or to a bucket connected to it as
+     Client Mounted Storage, when the notebook asks: it can't reach the agent's disk;
+   - creates the data schema for the shards;
+   - registers one shard as a dataset in each site workgroup. This needs you to be a member of every site workgroup;
+     if you aren't, register them in the FCP UI (**Datasets → Add Dataset**, once per workgroup) and set
+     `REGISTER_DATASETS = False`;
+   - creates the Code Object (`CodeTypes.NVIDIA_FLARE_V2_8`) from your image;
+   - reads the two configs, removes the `//` comment lines, and sets `min_clients` to the number of datasets;
+   - computes `timeout_seconds` from the number of sites, K and the rounds;
+   - starts the training run, waits for it, and runs `../../stagger_report.py` on its server log (the FCP UI can't
+     download logs, so the notebook saves the log with the SDK);
+   - downloads the trained model.
+4. **Check the run.** In the run's server log, the first `STAGGER` `round_start` line should list one agent with all
+   N sites and `max_concurrent` 4, and each round should end with `Round <r>: 8 of 8 sites succeeded`. The notebook's
+   "Check the staggering" cell checks that no more than 4 sites trained at once.
 
 Expected results (8 sites, one NVIDIA L4 GPU): rounds of about 3 minutes, peak GPU memory about 3.2 GB, and a
 global validation ROC AUC of about 0.84 after 3 rounds.
 
 ## Cleanup
 - `rm -rf ../data/shards` removes the local shard files.
-- Remove the Code Object, the datasets and the uploaded shard files in FCP when you no longer need them. The
-  notebook's last cell removes the Code Object it created when `CLEANUP = True`.
+- The notebook's last cell removes the Code Object it created when `CLEANUP = True`. It doesn't touch your
+  project, workgroups, data schema or datasets, the shards on the agent, or the pushed image.
 
 ## Using your own model
 Follow "Adapting your own model" in the [staggered FL guide](../../README.md). In this example, the parts to copy are
