@@ -19,8 +19,8 @@ covers what is specific to this example and how to run it.
 - **NVFlare 2.8.1**, Chemprop 2.0.5, PyTorch Lightning 2.6.6, torch 2.14.1, Python 3.11, CUDA 12.4 base image.
 - **An FCP environment with the NVFlare 2.8 code type** and **rhino_health SDK 2.1.25 or newer**
   (`CodeTypes.NVIDIA_FLARE_V2_8`).
-- **A project with N collaborating workgroups whose sites run on the same GPU agent**, each with one dataset (see
-  "Running this example on FCP"). The example is set for N = 8.
+- **A project with N collaborating workgroups whose sites run on the same GPU agent** (see "Running this example on
+  FCP"). The example is set for N = 8.
 
 ## Resources
 - `app` - NVFlare job folder, deployed to every site per `meta.json`'s `deploy_map`
@@ -39,8 +39,8 @@ covers what is specific to this example and how to run it.
   - `make_shards.py` - Splits the CYP3A4 data in this repository into one CSV per site
 - `Dockerfile` - Builds the image: CUDA 12.4 runtime, Python 3.11, the requirements, and the GPU access env vars
 - `meta.json` - NVFlare job metadata, required by FCP at the container's working directory
-- `notebook.ipynb` - Runs the example on FCP: creates the Code Object from your pushed image and starts the training
-  run on your project's datasets
+- `notebook.ipynb` - Runs the example on FCP: makes the shards, creates the data schema and the datasets, creates the
+  Code Object from your pushed image, and starts the training run
 - `README.md` - This file
 - `requirements.txt` - Pinned Python requirements
 
@@ -78,42 +78,41 @@ Script flags (set through `app_config`): `--epochs-per-round` (default 50), `--b
 
 ## Running this example on FCP
 1. **Workgroups and agent.** You need a project with N workgroups collaborating in it, and every workgroup's site must
-   run on the same GPU agent. Setting this up is done by your FCP administrator.
-2. **Data.** Split the CYP3A4 data into one file per site (writes `data/shards/shard_01.csv` … `shard_08.csv`, about
-   1,375 molecules each, with the columns `id`, `smiles` and `cyp3a4`):
-   ```bash
-   # cd examples/nvflare/staggered-fl/lightning-chemprop
-   python data/make_shards.py --num-shards 8
-   ```
-   Copy the shards to your on-prem client's storage, and in each workgroup register one shard as a dataset in the
-   project, all with the same data schema (columns `id`, `smiles`, `cyp3a4`). In the FCP UI this is **Datasets → Add
-   Dataset**; with the SDK it is `session.dataset.add_dataset(DatasetCreateInput(..., csv_filesystem_location=<path to
-   the shard>, method="filesystem"))` run as that workgroup. Give the datasets a common name prefix (e.g.
-   `cyp3a4-shard-01` … `cyp3a4-shard-08`); the notebook finds them by it.
-3. **Build and push the image** to your workgroup's container registry (see
+   run on the same GPU agent. Rhino support sets this up on request: putting several workgroups on one agent needs Rhino a
+   admin. Give the site workgroups a common name prefix (e.g. `stagger-site-01` … `stagger-site-08`); the
+   notebook finds them by it.
+2. **Build and push the image** to your workgroup's container registry (see
    [Pushing Containers to the ECR](https://docs.rhinofcp.com/getting-started/quick-start-guide/pushing-containers-to-the-ecr)):
    ```bash
+   # cd examples/nvflare/staggered-fl/lightning-chemprop
    ../../../../utils/docker-push.sh <your-workgroup-repo-name> <a-tag-you-choose>
    ```
    It prints `Container image URI: ...` when done; copy that URI into the notebook.
-4. **Run `notebook.ipynb`** (needs `pip install rhino_health`). It:
-   - finds your project and its datasets by name prefix;
+3. **Run `notebook.ipynb`** (needs `pip install rhino_health pandas`). It:
+   - finds your project and its site workgroups by name prefix;
+   - splits the CYP3A4 data into one file per site (`data/shards/shard_01.csv` …, about 1,375 molecules each, with the
+     columns `id`, `smiles` and `cyp3a4`). **You copy `data/shards` to the GPU agent's storage** when the notebook asks:
+     it can't reach the agent's disk;
+   - creates the data schema for the shards;
+   - registers one shard as a dataset in each site workgroup. This needs you to be a member of every site workgroup;
+     if you aren't, register them in the FCP UI (**Datasets → Add Dataset**, once per workgroup) and set
+     `REGISTER_DATASETS = False`;
    - creates the Code Object (`CodeTypes.NVIDIA_FLARE_V2_8`) from your image;
    - reads the two configs, removes the `//` comment lines, and sets `min_clients` to the number of datasets;
    - computes `timeout_seconds` from the number of sites, K and the rounds;
    - starts the training run, waits for it, and downloads the trained model.
-5. **Check the run.** In the run's server log, the first `STAGGER` `round_start` line should list one agent with all
+4. **Check the run.** In the run's server log, the first `STAGGER` `round_start` line should list one agent with all
    N sites and `max_concurrent` 4, and each round should end with `Round <r>: 8 of 8 sites succeeded`. To check that
    no more than 4 sites trained at once, download the server log and run
    `python ../stagger_report.py <server-log-file>`.
 
-**Expected results** (8 sites, one NVIDIA L4 GPU): rounds of about 3 minutes, peak GPU memory about 3.2 GB, and a
+ sites, one NVIDIA L4 GPU): rounds of about 3 minutes, peak GPU memory about 3.2 GB, and a
 global validation ROC AUC of about 0.84 after 3 rounds.
 
 ## Cleanup
 - `rm -rf data/shards` removes the local shard files.
 - The notebook's last cell removes the Code Object it created when `CLEANUP = True`. It doesn't touch your
-  project, workgroups or datasets, or the pushed image.
+  project, workgroups, data schema or datasets, the shards on the agent, or the pushed image.
 
 ## Using your own model
 Follow "Adapting your own model" in the [staggered FL guide](../README.md). In this example, the parts to copy are
