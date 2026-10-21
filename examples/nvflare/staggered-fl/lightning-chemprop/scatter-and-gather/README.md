@@ -35,8 +35,8 @@ covers what is specific to this example and how to run it.
       (receive the global model, validate it, train, send back). Lines that matter for staggering are marked
       `# Staggering:`
     - `staggered_scatter_and_gather.py` - The staggered server workflow. Copy it unchanged into your own job
-- `data`
-  - `make_shards.py` - Splits the CYP3A4 data in this repository into one CSV per site
+- `../data/make_shards.py` - Splits the CYP3A4 data in this repository into one CSV per site (shared by the
+  Chemprop examples)
 - `Dockerfile` - Builds the image: CUDA 12.4 runtime, Python 3.11, the requirements, and the GPU access env vars
 - `meta.json` - NVFlare job metadata, required by FCP at the container's working directory
 - `notebook.ipynb` - Runs the example on FCP: makes the shards, creates the data schema and the datasets, creates the
@@ -90,8 +90,8 @@ Script flags (set through `app_config`): `--epochs-per-round` (default 50), `--b
    It prints `Container image URI: ...` when done; copy that URI into the notebook.
 3. **Run `notebook.ipynb`** (needs `pip install rhino_health pandas`). It:
    - finds your project and its site workgroups by name prefix;
-   - splits the CYP3A4 data into one file per site (`data/shards/shard_01.csv` …, about 1,375 molecules each, with the
-     columns `id`, `smiles` and `cyp3a4`). **You copy `data/shards` to the GPU agent's storage** when the notebook asks:
+   - splits the CYP3A4 data into one file per site (`../data/shards/shard_01.csv` …, about 1,375 molecules each, with the
+     columns `id`, `smiles` and `cyp3a4`). **You copy `../data/shards` to the GPU agent's storage** when the notebook asks:
      it can't reach the agent's disk;
    - creates the data schema for the shards;
    - registers one shard as a dataset in each site workgroup. This needs you to be a member of every site workgroup;
@@ -110,7 +110,7 @@ Script flags (set through `app_config`): `--epochs-per-round` (default 50), `--b
 global validation ROC AUC of about 0.84 after 3 rounds.
 
 ## Cleanup
-- `rm -rf data/shards` removes the local shard files.
+- `rm -rf ../data/shards` removes the local shard files.
 - The notebook's last cell removes the Code Object it created when `CLEANUP = True`. It doesn't touch your
   project, workgroups, data schema or datasets, the shards on the agent, or the pushed image.
 
