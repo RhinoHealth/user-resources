@@ -110,46 +110,9 @@ Script flags (set through `app_config`): `--epochs-per-round` (default 50), `--b
 **Expected results** (8 sites, one NVIDIA L4 GPU): rounds of about 3 minutes, peak GPU memory about 3.2 GB, and a
 global validation ROC AUC of about 0.84 after 3 rounds.
 
-## Running this example locally
-The NVFlare simulator runs the same job on your machine, on the CPU if there is no GPU. All sites read the same
-dataset here, so it checks that the job runs, not the training results.
-
-1. **Build the image:**
-   ```bash
-   # cd examples/nvflare/staggered-fl/lightning-chemprop
-   docker build -t staggered-fl-lightning .
-   ```
-2. **Prepare data and a small config.** Make one shard, mount it as a dataset, and make configs for 2 sites, K = 1,
-   2 rounds and 1 epoch per round:
-   ```bash
-   python data/make_shards.py --num-shards 8 --output-dir ~/staggered-fl-test/shards
-   mkdir -p ~/staggered-fl-test/input/datasets/local-dataset ~/staggered-fl-test/config ~/staggered-fl-test/output
-   head -302 ~/staggered-fl-test/shards/shard_01.csv > ~/staggered-fl-test/input/datasets/local-dataset/dataset.csv
-   grep -v '^[[:space:]]*//' app/config/config_fed_client.json \
-     | sed 's/--epochs-per-round 50/--epochs-per-round 1/' > ~/staggered-fl-test/config/config_fed_client.json
-   grep -v '^[[:space:]]*//' app/config/config_fed_server.json \
-     | sed -e 's/"min_clients": 8/"min_clients": 2/' -e 's/"min_successful_clients": 7/"min_successful_clients": 2/' \
-           -e 's/"max_concurrent": 4/"max_concurrent": 1/' -e 's/"num_rounds": 3/"num_rounds": 2/' \
-     > ~/staggered-fl-test/config/config_fed_server.json
-   chmod 777 ~/staggered-fl-test/output
-   ```
-   (`head -302` keeps 301 molecules: Chemprop's 80/20 split fails when the number of molecules is a multiple of 5.)
-3. **Run the simulator** with 2 sites named like FCP names them on one agent:
-   ```bash
-   docker run --rm \
-     -v ~/staggered-fl-test/input:/input:ro -v ~/staggered-fl-test/output:/output \
-     -v ~/staggered-fl-test/config/config_fed_server.json:/home/localuser/app/config/config_fed_server.json:ro \
-     -v ~/staggered-fl-test/config/config_fed_client.json:/home/localuser/app/config/config_fed_client.json:ro \
-     staggered-fl-lightning bash -c \
-     'nvflare simulator /home/localuser -w /tmp/ws -c site_1,site_2 -t 2; cp /tmp/ws/server/log.txt /output/server_log.txt'
-   python ../stagger_report.py ~/staggered-fl-test/output/server_log.txt
-   ```
-   The report should show 2 rounds with 2 sites succeeded and `site 1/1`: one site training at a time.
-   `~/staggered-fl-test/output/model_parameters.pt` is the trained global model.
-
 ## Cleanup
-- **Locally:** `docker rmi staggered-fl-lightning` and `rm -rf ~/staggered-fl-test data/shards`.
-- **On FCP:** the notebook's last cell removes the Code Object it created when `CLEANUP = True`. It doesn't touch your
+- `rm -rf data/shards` removes the local shard files.
+- The notebook's last cell removes the Code Object it created when `CLEANUP = True`. It doesn't touch your
   project, workgroups or datasets, or the pushed image.
 
 ## Using your own model
