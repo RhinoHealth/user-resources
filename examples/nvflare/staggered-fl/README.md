@@ -1,5 +1,4 @@
 # Staggered Federated Learning on a Shared GPU
-> Last validated: pending (validation on FCP is in progress)
 
 ## Description
 Several sites (workgroups) can run their federated learning clients on the **same GPU agent**. With NVFlare's
