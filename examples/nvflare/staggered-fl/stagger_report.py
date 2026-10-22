@@ -2,7 +2,7 @@
 
 Usage: python stagger_report.py <server-log-file>
 
-Reads the `STAGGER {json}` lines that StaggeredScatterAndGather writes, and prints per round: duration, sites that
+Reads the `STAGGER {json}` lines that StaggeredFedAvg and StaggeredScatterAndGather write, and prints per round: duration, sites that
 succeeded or failed, and the most sites any agent trained at once next to its limit. Exits with 1 when an agent went
 over its limit or the job failed, so it can also gate an automated test.
 """
@@ -22,7 +22,7 @@ def main() -> int:
         return 2
     events = read_events(Path(sys.argv[1]))
     if not events:
-        print("No STAGGER lines found: is this the server log of a job that uses StaggeredScatterAndGather?")
+        print("No STAGGER lines found: is this the server log of a job that uses a staggered controller?")
         return 1
     problems = report(events)
     for problem in problems:

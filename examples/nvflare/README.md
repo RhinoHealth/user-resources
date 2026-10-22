@@ -19,7 +19,7 @@ This folder contains examples for using Rhino's Federated Computing Platform (FC
 - [regression-poisson](./regression-poisson/README.md) - Use NVFlare v2.3 to fit a poisson regression model using FCP
 - [regression-quantile](./regression-quantile/README.md) - Use NVFlare v2.3 to fit a quantile regression model using FCP
 - [split-learning](./split-learning/README.md) - Adapts NVIDIA's [Split Learning](https://github.com/NVIDIA/NVFlare/tree/2.3/examples/advanced/vertical_federated_learning) NVFlare v2.3 example to run on FCP
-- [staggered-fl](./staggered-fl/README.md) - Let many sites that share one GPU agent take turns on it (at most K training at once), with a guide to the settings and measured results, and a PyTorch Lightning (Chemprop) example, using NVFlare v2.8
+- [staggered-fl](./staggered-fl/README.md) - Let many sites that share one GPU agent take turns on it (at most K training at once), with a guide to the settings and measured results, and PyTorch Lightning (Chemprop) examples for the FedAvg and ScatterAndGather workflows, using NVFlare v2.8
 - [xgboost](./xgboost/README.md) - Use NVFlare v2.3 to train an XGBoost model using FCP
 
 ## Getting Help
