@@ -1,5 +1,4 @@
 # NVIDIA FLARE Example - Staggered Federated Learning with PyTorch Lightning (Chemprop) and FedAvg
-> Last validated: pending (validation on FCP is in progress)
 
 ## Description
 This example trains a [Chemprop](https://github.com/chemprop/chemprop) model, a message-passing neural network built
