@@ -1,0 +1,31 @@
+// Remove every line that starts with // before using this file: JSON does not allow comments.
+// Lines marked Staggering: are the settings that make sites on one GPU agent take turns; the rest is a
+// regular NVFlare job.
+{
+  "format_version": 2,
+  "executors": [
+    {
+      "tasks": [
+        "train"
+      ],
+      "executor": {
+        // Staggering: the in-process client runs the training script inside the site's client process for the whole
+        // job. Between its turns the site waits in flare.receive(), holding only its CUDA context (~0.3 GB) because
+        // the script frees its model after each round.
+        "path": "nvflare.app_opt.pt.in_process_client_api_executor.PTInProcessClientAPIExecutor",
+        "args": {
+          "task_script_path": "/home/localuser/app/custom/densenet_pneumonia_training.py",
+          // Arguments for the training script. Keep each round short (a few hundred steps) so train_timeout stays
+          // small and a failure costs less.
+          "task_script_args": "--local-steps 200",
+          "params_exchange_format": "pytorch",
+          "params_transfer_type": "FULL",
+          "train_with_evaluation": true
+        }
+      }
+    }
+  ],
+  "task_data_filters": [],
+  "task_result_filters": [],
+  "components": []
+}
