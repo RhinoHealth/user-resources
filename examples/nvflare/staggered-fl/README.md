@@ -118,7 +118,7 @@ All are in `config_fed_server.json` under the workflow's `args`, except the clie
 | `num_clients` (`StaggeredFedAvg`) / `min_clients` (`StaggeredScatterAndGather`) | **required** | The number of sites (datasets) in the job. FCP starts the job only when every site is up |
 | `max_concurrent` (K) | optional, default 2 | See "Choosing K"                                                                               |
 | `wave_mode` | optional, default `"batch"` | `"sliding"`: faster, same memory                                                               |
-| `min_successful_clients` | optional, default: the number of sites | Sites that must succeed for a round to count. See "Failures"                                   |
+| `min_successful_clients` | optional, default `num_clients` / `min_clients` | Sites that must succeed for a round to count. See "Failures"                                   |
 | `exclude_failed_clients` | optional, default `true` | Skip a failed site for the rest of the job                                                     |
 | `max_retries` | optional, default 0 | Keep 0: a site whose training failed usually fails again                                        |
 | `train_timeout` | optional, default 0 (no limit): **set it** | See "Timeouts"                                                                                 |
