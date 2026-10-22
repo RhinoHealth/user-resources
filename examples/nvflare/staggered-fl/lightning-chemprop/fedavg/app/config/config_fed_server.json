@@ -7,10 +7,10 @@
   "task_result_filters": [],
   "workflows": [
     {
-      "id": "staggered_scatter_and_gather",
-      // Staggering: ScatterAndGather that limits how many sites train at once on each GPU agent
-      // (app/custom/staggered_scatter_and_gather.py).
-      "path": "staggered_scatter_and_gather.StaggeredScatterAndGather",
+      "id": "staggered_fed_avg",
+      // Staggering: FedAvg that limits how many sites train at once on each GPU agent
+      // (app/custom/staggered_fed_avg.py).
+      "path": "staggered_fed_avg.StaggeredFedAvg",
       "args": {
         // Staggering (optional, default 2): K, the sites of one agent that train at the same time. K training sites
         // plus ~0.3 GB per waiting site must fit in the GPU; see 'Choosing K' in the guide.
@@ -21,36 +21,30 @@
         // Staggering (optional, default "_\\d+$"): regex removed from a site name to get its agent; sites with the same
         // result share one GPU agent. The default turns my_agent_3 into my_agent.
         "agent_name_pattern": "_\\d+$",
-        // Staggering (optional, default 300): seconds round 0 waits for min_clients sites to connect before stopping
+        // Staggering (optional, default 300): seconds round 0 waits for num_clients sites to connect before stopping
         // the job.
         "wait_for_clients_timeout": 300,
         // Staggering (optional, default "batch"): "sliding" starts a waiting site as soon as any slot frees (faster,
         // recommended); "batch" waits for the whole wave of K to finish first.
         "wave_mode": "sliding",
-        // Staggering (required): set to the number of sites (datasets) in the job. FCP starts the job only when this
-        // many sites are up, so a lower value can leave workgroups out.
-        "min_clients": 8,
-        // Staggering (optional, default min_clients): sites that must succeed for a round to count. The default
+        // Staggering (required): set to the number of sites (datasets) in the job. Every site trains every round;
+        // FedAvg's usual sampling of num_clients sites is not used.
+        "num_clients": 8,
+        // Staggering (optional, default num_clients): sites that must succeed for a round to count. The default
         // requires every site, so one failed site stops the job for every workgroup; set it lower to tolerate failures.
         "min_successful_clients": 7,
         // Staggering (optional, default true): a site that fails is skipped for the rest of the job instead of holding
-        // a slot until train_timeout every round (a crashed training process does not come back).
+        // a slot until train_timeout every round.
         "exclude_failed_clients": true,
-        // Staggering (optional, default 0): retries of a failed site within the same round. Keep 0: a crashed site does
-        // not recover.
+        // Staggering (optional, default 0): retries of a failed site within the same round. Keep 0: a site whose
+        // training failed usually fails again.
         "max_retries": 0,
         "num_rounds": 3,
         // Staggering (optional, default 0 = no limit; set it): seconds one site may train, counted from when its turn
-        // starts, not from the round start. About 1.5 x one site's local training time plus process startup. With no
-        // limit, a hung site holds its slot forever.
+        // starts, not from the round start. About 1.5 x one site's local training time. With no limit, a hung site
+        // holds its slot forever.
         "train_timeout": 900,
-        "start_round": 0,
-        // Not used by the staggered controller: a round ends when every scheduled site has finished or failed.
-        "wait_time_after_min_received": 0,
-        "aggregator_id": "aggregator",
-        "persistor_id": "persistor",
-        "shareable_generator_id": "shareable_generator",
-        "train_task_name": "train"
+        "persistor_id": "persistor"
       }
     }
   ],
@@ -66,31 +60,10 @@
       }
     },
     {
-      "id": "shareable_generator",
-      "path": "nvflare.app_common.shareablegenerators.full_model_shareable_generator.FullModelShareableGenerator",
-      "args": {}
-    },
-    {
-      "id": "aggregator",
-      "path": "nvflare.app_common.aggregators.intime_accumulate_model_aggregator.InTimeAccumulateWeightedAggregator",
-      "args": {
-        "expected_data_kind": "WEIGHT_DIFF"
-      }
-    },
-    {
       "id": "model_selector",
       "path": "nvflare.app_common.widgets.intime_model_selector.IntimeModelSelector",
       "args": {
         "key_metric": "val/roc"
-      }
-    },
-    {
-      "id": "receiver",
-      "path": "nvflare.app_opt.tracking.tb.tb_receiver.TBAnalyticsReceiver",
-      "args": {
-        "events": [
-          "fed.analytix_log_stats"
-        ]
       }
     }
   ]

@@ -1,13 +1,10 @@
 """Federated Chemprop (PyTorch Lightning) training of a CYP3A4 inhibition classifier from SMILES strings.
 
-Lines marked `# Staggering:` are what makes this script work with StaggeredScatterAndGather; everything else is a
-regular NVFlare Lightning client.
+Lines marked `# Staggering:` are what makes this script work with StaggeredFedAvg; everything else is a regular
+NVFlare Lightning client.
 """
 
 import argparse
-import os
-import sys
-import traceback
 from pathlib import Path
 
 import nvflare.client.lightning as flare
@@ -55,7 +52,7 @@ def main() -> None:
     # Patching makes trainer.fit/validate receive the global model and send the result back to the server.
     flare.patch(trainer)
 
-    # Staggering: one process serves every round of the job (`launch_once: true` in config_fed_client.json). Between
+    # Staggering: the in-process client runs this script once for the whole job (config_fed_client.json). Between
     # its turns the site waits here in flare.receive(), keeping its optimizer, LR schedule and epoch count. No GPU
     # cleanup is needed: NVFlare's Lightning patch moves the model to the CPU after each round, so a waiting site
     # holds only its CUDA context (~0.3 GB) while other sites train.
@@ -125,13 +122,6 @@ def _parse_args() -> argparse.Namespace:
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except Exception:
-        traceback.print_exc()
-        sys.stdout.flush()
-        sys.stderr.flush()
-        # Staggering: end the process now. A plain raise leaves it alive (NVFlare's threads keep running) but
-        # silent, and the site would only count as failed after heartbeat_timeout, holding a training slot and
-        # stalling the round. With the process gone, the server excludes this site within seconds.
-        os._exit(1)
+    # Staggering: let errors propagate. The in-process client reports them to the server at once, so the site is
+    # excluded within seconds; ending the process here (os._exit) would only be noticed at train_timeout.
+    main()

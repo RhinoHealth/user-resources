@@ -3,89 +3,29 @@
 // regular NVFlare job.
 {
   "format_version": 2,
-  "app_script": "chemprop_fl_classification.py",
-  // Arguments for the training script. Keep each round short (a few epochs) so train_timeout stays small and a
-  // failure costs less.
-  "app_config": "--epochs-per-round 50",
   "executors": [
     {
       "tasks": [
         "train"
       ],
       "executor": {
-        "path": "nvflare.app_opt.pt.client_api_launcher_executor.PTClientAPILauncherExecutor",
+        // Staggering: the in-process client runs the training script inside the site's client process for the whole
+        // job. Between its turns the site waits in flare.receive(), holding only its CUDA context (~0.3 GB) and
+        // keeping optimizer and LR state.
+        "path": "nvflare.app_opt.pt.in_process_client_api_executor.PTInProcessClientAPIExecutor",
         "args": {
-          "launcher_id": "launcher",
-          "pipe_id": "pipe",
+          "task_script_path": "/home/localuser/app/custom/chemprop_fl_classification.py",
+          // Arguments for the training script. Keep each round short (a few epochs) so train_timeout stays small and a
+          // failure costs less.
+          "task_script_args": "--epochs-per-round 50",
           "params_exchange_format": "pytorch",
           "params_transfer_type": "DIFF",
-          "train_with_evaluation": true,
-          // Staggering: seconds to wait for the training process to start and call flare.init().
-          "external_pre_init_timeout": 600,
-          // Staggering: seconds without a heartbeat before the training process counts as gone. Keep it high: long
-          // training steps can delay heartbeats.
-          "heartbeat_timeout": 600,
-          "peer_read_timeout": 30
+          "train_with_evaluation": true
         }
       }
     }
   ],
   "task_data_filters": [],
   "task_result_filters": [],
-  "components": [
-    {
-      "id": "launcher",
-      "path": "nvflare.app_common.launchers.subprocess_launcher.SubprocessLauncher",
-      "args": {
-        "script": "python3 -u /home/localuser/app/custom/{app_script} {app_config}",
-        // Staggering: one training process per site for the whole job. It waits between its turns holding only its CUDA
-        // context (~0.3 GB) and keeps optimizer and LR state. false starts a new process every round: 0 GB while
-        // waiting but ~20 s more overhead per turn and no state carried over; use it for very many sites per GPU.
-        "launch_once": true,
-        "shutdown_timeout": 30
-      }
-    },
-    {
-      "id": "pipe",
-      "path": "nvflare.fuel.utils.pipe.cell_pipe.CellPipe",
-      "args": {
-        "mode": "PASSIVE",
-        "site_name": "{SITE_NAME}",
-        "token": "{JOB_ID}",
-        "root_url": "{ROOT_URL}",
-        "secure_mode": "{SECURE_MODE}",
-        "workspace_dir": "{WORKSPACE}"
-      }
-    },
-    {
-      "id": "metrics_pipe",
-      "path": "nvflare.fuel.utils.pipe.cell_pipe.CellPipe",
-      "args": {
-        "mode": "PASSIVE",
-        "site_name": "{SITE_NAME}",
-        "token": "{JOB_ID}",
-        "root_url": "{ROOT_URL}",
-        "secure_mode": "{SECURE_MODE}",
-        "workspace_dir": "{WORKSPACE}"
-      }
-    },
-    {
-      "id": "metric_relay",
-      "path": "nvflare.app_common.widgets.metric_relay.MetricRelay",
-      "args": {
-        "pipe_id": "metrics_pipe",
-        "event_type": "fed.analytix_log_stats",
-        "read_interval": 0.1
-      }
-    },
-    {
-      "id": "config_preparer",
-      "path": "nvflare.app_common.widgets.external_configurator.ExternalConfigurator",
-      "args": {
-        "component_ids": [
-          "metric_relay"
-        ]
-      }
-    }
-  ]
+  "components": []
 }
