@@ -25,7 +25,8 @@ A plain-PyTorch script has to free its GPU memory between turns itself; this exa
   (`CodeTypes.NVIDIA_FLARE_V2_8`).
 - **A project with N collaborating workgroups whose sites run on the same GPU agent** (see "Running this example on
   FCP"). The example is set for N = 8.
-- **The Kaggle "Chest X-Ray Images (Pneumonia)" archive** (~1.2 GB), downloaded from Kaggle (see "Data").
+- **The Kaggle "Chest X-Ray Images (Pneumonia)" archive** (`archive.zip`, ~2.3 GB), downloaded from Kaggle (see
+  "Data"). No need to unzip it.
 
 ## Resources
 - `app` - NVFlare job folder, deployed to every site per `meta.json`'s `deploy_map`
@@ -42,7 +43,8 @@ A plain-PyTorch script has to free its GPU memory between turns itself; this exa
       marked `# Staggering:`
     - `network.py` - The model: DenseNet-121 with a two-class head
     - `staggered_scatter_and_gather.py` - The staggered server workflow.
-- `../data/make_shards.py` - Splits the Kaggle archive into one dataset per site, by patient
+- `../data/make_shards.py` - Takes about 150 images per site from the Kaggle archive and splits them into one dataset
+  per site, by patient
 - `Dockerfile` - Builds the image: CUDA 13.0 runtime, Python 3.12, the requirements, the DenseNet-121 ImageNet weights,
   and the GPU access env vars
 - `meta.json` - NVFlare job metadata, required by FCP at the container's working directory
@@ -77,7 +79,7 @@ A plain-PyTorch script has to free its GPU memory between turns itself; this exa
 | server | `min_successful_clients` | 7 | One failed site doesn't stop the job for everyone |
 | server | `exclude_failed_clients` | `true` | A failed site is skipped in later rounds |
 | server | `max_retries` | 0 | A site whose training failed usually fails again |
-| server | `train_timeout` | 900 | One site trains for ~80 s here; 900 s leaves room for larger data |
+| server | `train_timeout` | 900 | One site trains for ~90 s here; 900 s leaves room for larger data |
 | server | `agent_max_concurrent`, `agent_name_pattern`, `wait_for_clients_timeout` | defaults | See the guide |
 | client | `path` | `PTInProcessClientAPIExecutor` | The script runs once per site for the whole job, inside the site's client process. The other option is `PTClientAPILauncherExecutor` with a `SubprocessLauncher` (`launch_once: true`), which runs the script as its own process (see the [Lightning scatter-and-gather example](../../lightning-chemprop/scatter-and-gather/README.md) and "Choosing the client mode" in the guide) |
 | client | `task_script_args` | `--local-steps 200` | Training steps (batches of 32) per round |
@@ -94,8 +96,8 @@ optimizer state to the CPU before freeing the model and back to the GPU on the n
    Rhino admin. Give the site workgroups a common name prefix (e.g. `stagger-site-01` … `stagger-site-08`); the
    notebook finds them by it.
 2. **Download the data.** Download the archive from
-   [Kaggle](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia) and unzip it anywhere on your
-   machine (see "Data").
+   [Kaggle](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia) to `../data/archive.zip`, or
+   anywhere and set `ARCHIVE` in the notebook. There is no need to unzip it (see "Data").
 3. **Build and push the image** to your workgroup's container registry (see
    [Pushing Containers to the ECR](https://docs.rhinofcp.com/getting-started/quick-start-guide/pushing-containers-to-the-ecr)):
    ```bash
@@ -106,10 +108,17 @@ optimizer state to the CPU before freeing the model and back to the GPU on the n
 4. **Run `notebook.ipynb`**. Its first cell installs `rhino_health` and `pandas`; set `RHINO_API_URL` to your FCP
    environment. It:
    - finds your project and its site workgroups by name prefix;
-   - splits the archive into one dataset per site, by patient: `../data/images/` (all 5,856 images under unique
-     names) and `../data/shards/shard_01.csv` … (about 730 images each, with the columns `JPG_file`, `Patient_ID` and
-     `Pneumonia`). **You copy `../data/images` and `../data/shards` to the GPU agent's storage**, or to a bucket
-     connected to it as Client Mounted Storage, when the notebook asks: it can't reach the agent's disk;
+   - takes about 150 images per site from the archive and splits them by patient: `../data/images/` (the images,
+     flat, under unique names) and `../data/shards/shard_01.csv` … (one per site, with the columns `JPG_file`,
+     `Patient_ID` and `Pneumonia`);
+   - **you then copy `../data/images` and `../data/shards`, side by side in one folder, to the GPU agent's storage** or
+     to a bucket connected to it as Client Mounted Storage, and set `DATA_LOCATION` to that folder as the agent sees
+     it (the notebook can't reach the agent's disk):
+     ```
+     <DATA_LOCATION>/
+     ├── images/   all the .jpeg files, flat
+     └── shards/   shard_01.csv … shard_NN.csv
+     ```
    - creates the data schema for the shards (`JPG_file` is a file name, so the import copies each image into the
      site's dataset);
    - registers one shard as a dataset in each site workgroup. This needs you to be a member of every site workgroup;
@@ -125,8 +134,9 @@ optimizer state to the CPU before freeing the model and back to the GPU on the n
    N sites and `max_concurrent` 4, and each round should end with `Round <r>: 8 of 8 sites succeeded`. The notebook's
    "Check the staggering" cell checks that no more than 4 sites trained at once.
 
-Expected results (8 sites, one NVIDIA L4 GPU): rounds of about 3 to 3.5 minutes, peak GPU memory about 12 GB, and
-about 0.3 GB per waiting site.
+Expected results (8 sites, ~150 images each, one NVIDIA L4 GPU): rounds of about 3.5 minutes (one site trains for
+about 90 s), peak GPU memory about 12 GB, about 0.3 GB per waiting site, and a validation ROC AUC of about 0.99 after
+the first round.
 
 ## Cleanup
 - `rm -rf ../data/images ../data/shards` removes the local images and shard files.
@@ -143,9 +153,10 @@ For this example, we used the
 [Kaggle Chest X-Ray Images (Pneumonia) dataset](https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia):
 5,856 chest X-rays (JPEG) labelled normal or pneumonia, to simulate sites that each hold their own patients' images.
 
-The data is not in this repository. Download it from Kaggle (see above), unzip it, and run `make_shards.py` on it (the
-notebook does this for you). Patients are read from the file names, and all images of one patient go to the same
-site.
+The data is not in this repository. Download the archive from Kaggle (see above) and run `make_shards.py` on the zip
+(the notebook does this for you). It takes about 150 images per site, which is enough to show the staggering;
+`--images-per-site 0` uses all 5,856 images, and the time per round stays the same because each round trains a fixed
+number of steps. Patients are read from the file names, and all images of one patient go to the same site.
 
 ## Getting Help
 For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to
