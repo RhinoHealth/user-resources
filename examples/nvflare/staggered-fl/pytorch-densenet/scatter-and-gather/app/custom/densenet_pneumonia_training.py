@@ -105,6 +105,8 @@ def _train(model: DenseNetPneumonia, dataset: ChestXRayDataset, device: torch.de
         shuffle=True,
         num_workers=args.num_workers,
         pin_memory=device.type == "cuda",
+        # A small dataset is passed over many times per round; restarting the workers for every pass is slow.
+        persistent_workers=args.num_workers > 0,
     )
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     criterion = torch.nn.CrossEntropyLoss()
