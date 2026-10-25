@@ -1,0 +1,65 @@
+diff --color -ru a/examples/nvflare/README.md b/examples/nvflare/README.md
+--- a/examples/nvflare/README.md	2026-10-22 15:37:55
++++ b/examples/nvflare/README.md	2026-10-22 15:37:55
+@@ -19,7 +19,7 @@
+ - [regression-poisson](./regression-poisson/README.md) - Use NVFlare v2.3 to fit a poisson regression model using FCP
+ - [regression-quantile](./regression-quantile/README.md) - Use NVFlare v2.3 to fit a quantile regression model using FCP
+ - [split-learning](./split-learning/README.md) - Adapts NVIDIA's [Split Learning](https://github.com/NVIDIA/NVFlare/tree/2.3/examples/advanced/vertical_federated_learning) NVFlare v2.3 example to run on FCP
+-- [staggered-fl](./staggered-fl/README.md) - Let many sites that share one GPU agent take turns on it (at most K training at once), with a guide to the settings and measured results, and PyTorch Lightning (Chemprop) examples for the FedAvg and ScatterAndGather workflows, using NVFlare v2.8
++- [staggered-fl](./staggered-fl/README.md) - Let many sites that share one GPU agent take turns on it (at most K training at once), with a guide to the settings and measured results, PyTorch Lightning (Chemprop) examples for the FedAvg and ScatterAndGather workflows, and a plain PyTorch (DenseNet) example, using NVFlare v2.8
+ - [xgboost](./xgboost/README.md) - Use NVFlare v2.3 to train an XGBoost model using FCP
+ 
+ ## Getting Help
+diff --color -ru a/examples/nvflare/staggered-fl/README.md b/examples/nvflare/staggered-fl/README.md
+--- a/examples/nvflare/staggered-fl/README.md	2026-10-22 15:37:55
++++ b/examples/nvflare/staggered-fl/README.md	2026-10-22 15:37:55
+@@ -20,6 +20,10 @@
+   process per site
+ - `lightning-chemprop/data/make_shards.py` - Splits the CYP3A4 data into one dataset per site, for the Chemprop
+   examples
++- `pytorch-densenet/scatter-and-gather` - Reference example for plain PyTorch (DenseNet-121, chest X-ray
++  classification): the `ScatterAndGather` workflow and the in-process client, with the script freeing its GPU memory
++  after each round. Start here if your training script has its own training loop
++- `pytorch-densenet/data/make_shards.py` - Splits the Kaggle chest X-ray archive into one dataset per site, by patient
+ - `README.md` - This guide: the concept, the settings you must choose, measured results, monitoring, failures and limits
+ - `stagger_report.py` - Reads a job's server log and prints, per round, the duration, failed sites and the most sites
+   that trained at once on each agent; exits with 1 if an agent went over its limit or the job failed
+@@ -56,7 +60,7 @@
+ | Your job's server workflow | Staggered controller | Example |
+ |---|---|---|
+ | `FedAvg` (or another `ModelController` job) | `staggered_fed_avg.StaggeredFedAvg` | `lightning-chemprop/fedavg` |
+-| `ScatterAndGather` | `staggered_scatter_and_gather.StaggeredScatterAndGather` | `lightning-chemprop/scatter-and-gather` |
++| `ScatterAndGather` | `staggered_scatter_and_gather.StaggeredScatterAndGather` | `lightning-chemprop/scatter-and-gather`, `pytorch-densenet/scatter-and-gather` |
+ 
+ - **Switching** is the controller file plus the workflow `path` in `config_fed_server.json`:
+   ```json
+@@ -88,7 +92,7 @@
+    - **PyTorch Lightning** with `flare.patch(trainer)`: nothing to do; the patch moves the model to the CPU after each
+      round.
+    - **Plain PyTorch:** at the end of each round, after copying the weights to the CPU for `flare.send`, drop every GPU
+-     tensor and release the cache:
++     tensor and release the cache (see the DenseNet example):
+      ```python
+      params = {k: v.cpu() for k, v in model.state_dict().items()}
+      del model, optimizer
+@@ -147,7 +151,7 @@
+ | Overhead per site per turn | lowest | low: Python and your imports start once per job | higher: Python and your imports start every turn |
+ | State between rounds (optimizer, LR schedule, epoch count) | kept in memory | kept in memory | lost unless your script saves and reloads it |
+ | Fail fast | let the error propagate | `os._exit(1)` in the entry point | `os._exit(1)` in the entry point |
+-| Use when | most jobs; what NVFlare's tutorials use (the FedAvg example) | the script needs its own process, e.g. its own environment (the scatter-and-gather example) | many sites per GPU, where ~0.3 GB each adds up (30 sites ≈ 9 GB), or a script that can't free its GPU memory between rounds |
++| Use when | most jobs; what NVFlare's tutorials use (the FedAvg and DenseNet examples) | the script needs its own process, e.g. its own environment (the scatter-and-gather example) | many sites per GPU, where ~0.3 GB each adds up (30 sites ≈ 9 GB), or a script that can't free its GPU memory between rounds |
+ 
+ ```json
+ // In-process: the script runs inside the site's client process
+@@ -206,6 +210,11 @@
+ 
+ The two in-process runs produced identical per-site validation results: the controller changes when sites train, not
+ what the model learns.
++
++**Plain PyTorch with the in-process client** (mid-size CNN, `StaggeredScatterAndGather`, K = 4): rounds of 188–193 s
++(vs 200–220 s with one process per site), ~14 s of GPU idle time between one site and the next (vs ~22 s), and the
++same 12.1 GB peak. With the script freeing its model after each round, a waiting site held 42 MB of PyTorch memory
++plus its CUDA context (~0.3 GB): the in-process client itself keeps nothing on the GPU.
+ 
+ **Scale:** 30 sites on one agent at K = 4 ran at the same ~28 s per site per round as 8 sites, with the same peak GPU
+ memory (10.9 GB): round time grows linearly with N, memory does not.
