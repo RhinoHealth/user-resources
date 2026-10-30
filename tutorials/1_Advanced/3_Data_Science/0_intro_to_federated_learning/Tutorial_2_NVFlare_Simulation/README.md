@@ -1,6 +1,19 @@
 # Introduction to NVFlare
+> Last validated: 2026-10-26
 
 This tutorial demonstrates how to convert existing PyTorch code into a federated learning workflow using NVIDIA FLARE (NVFlare), an open-source framework for secure, production-ready federated learning.
+
+## Resources
+- `notebooks/`
+  - `NVFlare_Simulation.ipynb` - Builds an NVFlare job (FedAvg controller, model persistor, script runner), exports it and runs it in the NVFlare simulator
+- `src/`
+  - `train.py` - Client training script using the NVFlare Client API (`import nvflare.client as flare`); runs on each simulated site
+  - `utils/`
+    - `train_util.py` - Model (`SimpleClassifier`), trainer (`ClassificationTrainer`), synthetic per-site datasets (`get_datasets`) and logger setup
+    - `log_config.json` - NVFlare logging configuration used by the simulator to keep console output readable
+- `README.md` - This file
+
+Running the notebook creates `output/` (the final global model, `global_model.pt`) and `simulation/` (the exported job and simulator workdir). These are generated and not committed.
 
 ## Tutorial Structure
 
@@ -35,7 +48,7 @@ The core of any NVFlare application is the training script. Here's `train.py`:
 
 ### Local Training
 ```python
-from util import get_datasets, SimpleClassifier, ClassificationTrainer
+from utils.train_util import get_datasets, SimpleClassifier, ClassificationTrainer
 
 def train():
     # Load local data
@@ -65,7 +78,7 @@ if __name__ == "__main__":
 ```python
 # (1) Import the NVFlare client
 import nvflare.client as flare
-from util import get_datasets, SimpleClassifier, ClassificationTrainer
+from utils.train_util import get_datasets, SimpleClassifier, ClassificationTrainer
 
 def train():
     # (2) Initialize NVFlare client
@@ -114,9 +127,10 @@ if __name__ == "__main__":
 ```python
 import nvflare.client as flare
 ```
-#### 2. **Initialize Client**
+#### 2. **Initialize NVFlare Client**
 ```python
 flare.init()
+site_name = flare.get_site_name()
 ```
 - Sets up secure communication channels with NVFlare server
 - Must be called before any other NVFlare operations
@@ -155,7 +169,7 @@ trainer.train(dataloader=train_loader, epochs=1)
 ```
 - Train the global model on local training set
 
-#### 8. **Send Updates**
+#### 8. **Package Updates**
 ```python
 output_model = flare.FLModel(
     params=trainer.model.state_dict(),
@@ -200,12 +214,21 @@ Now that you understand how to structure an NVFlare training script, proceed to 
 
 **Continue to:** `notebooks/NVFlare_Simulation.ipynb`
 
+### Expected Output
+The simulation runs 10 rounds across 3 sites. Each round, every site evaluates the global model on its local test data. Accuracy should rise from about 0.34 to about 0.65 by round 10.
+
+At the end you will see `END_RUN received` and `request to stop the job` messages. These are normal and mean the job finished.
+
+The notebook creates these folders (they are not committed):
+- `output/global_model.pt`: the final global model
+- `simulation/`: the exported job and simulator workdir
+
 ## Next Steps
 
 In the next tutorial, you'll learn how to deploy these same configuration files to a real federated learning platform (Rhino FCP) and run distributed training across actual remote sites using real data and a real model.
 
-**Continue to:** `Tutorial 3 - Deploying_Federated_Learning`
+**Continue to:** `Tutorial_3_Deploying_Federated_Learning`
 
 ## Getting Help
 
-For additional support, please reach out to [support@rhinofcp.com](support@rhinofcp.com)
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
