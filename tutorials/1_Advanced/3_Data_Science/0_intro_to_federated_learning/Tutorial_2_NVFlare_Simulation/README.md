@@ -215,7 +215,7 @@ Now that you understand how to structure an NVFlare training script, proceed to 
 **Continue to:** `notebooks/NVFlare_Simulation.ipynb`
 
 ### Expected Output
-The simulation runs 10 rounds across 3 sites. Each round, every site evaluates the global model on its local test data. Accuracy should rise from about 0.58 to about 0.65 by round 10.
+The simulation runs 10 rounds across 3 sites. Each round, every site evaluates the global model on its local test data. Accuracy should rise from about 0.34 to about 0.65 by round 10.
 
 At the end you will see `END_RUN received` and `request to stop the job` messages. These are normal and mean the job finished.
 

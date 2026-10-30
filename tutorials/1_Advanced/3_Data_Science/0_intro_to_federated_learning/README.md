@@ -35,7 +35,7 @@ Tutorial N - Name/
   * This is only required for certain portions of `Tutorial 3 - Deploying_Federated_Learning`
 
 ### Getting Started
-Before starting, we will need to configure our environment to ensure we have the necessary packages. It is recommeneded you do this in an isolated python virtual environment.
+Before starting, we will need to configure our environment to ensure we have the necessary packages. It is recommended you do this in an isolated python virtual environment.
 ```bash
 cd tutorials/1_Advanced/3_Data_Science/0_intro_to_federated_learning
 python3.11 -m venv .venv/intro_to_federated_learning
