@@ -1,4 +1,5 @@
-# Introdution to Federated Learning and the Rhino FCP
+# Introduction to Federated Learning and the Rhino FCP
+> Last validated: 2026-10-26
 
 ## Goal
 We have prepared a thorough set of guides to help users learn answers to the following questions:
@@ -8,9 +9,9 @@ We have prepared a thorough set of guides to help users learn answers to the fol
 
 ## Contents and Instructions
 This guide is broken into several sub-sections and should be accomplished in the following order:
-* `Tutorial 1 - Introduction_to_FL`
-* `Tutorial 2 - NVFlare_Simulation`
-* `Tutorial 3 - Deploying_Federated_Learning`
+* `Tutorial_1_Introduction_to_FL`
+* `Tutorial_2_NVFlare_Simulation`
+* `Tutorial_3_Deploying_Federated_Learning`
 
 Each of these sections contain their own set of instructions and information which will provide answers to the questions stated above.
 
@@ -24,7 +25,7 @@ Tutorial N - Name/
 ├── data/                  # Tutorial-specific data (if needed)
 ├── src/                   # Python source files (if needed)
 └── notebooks/             # Jupyter notebooks
-    └── tutorial.ipynb
+    └── <tutorial_notebook>.ipynb
 ```
 
 ### Prerequisites
@@ -34,21 +35,24 @@ Tutorial N - Name/
   * This is only required for certain portions of `Tutorial 3 - Deploying_Federated_Learning`
 
 ### Getting Started
-Before starting, we will need to configure our environment to ensure we have the necessary packages. It is recommened you do this in an isolated python virtual environment.
+Before starting, we will need to configure our environment to ensure we have the necessary packages. It is recommeneded you do this in an isolated python virtual environment.
 ```bash
+cd tutorials/1_Advanced/3_Data_Science/0_intro_to_federated_learning
 python3.11 -m venv .venv/intro_to_federated_learning
 source .venv/intro_to_federated_learning/bin/activate 
 # On Windows: .venv\intro_to_federated_learning\Scripts\activate
 pip install -r requirements.txt
 ```
+> **Note:** Run `pip install -r requirements.txt` from the `0_intro_to_federated_learning/` folder. That is where `requirements.txt` lives.
+
 #### Note
-If you plan on running this notebook with Jupyter Notebook, you must register the venv as a kernel after activating it. Please make sure you select this kernel within Jupyter Notbook.
+If you plan on running this notebook with Jupyter Notebook, you must register the venv as a kernel after activating it. Please make sure you select this kernel within Jupyter Notebook.
 ```bash
 python -m ipykernel install --user --name intro_to_federated_learning --display-name "intro_to_federated_learning"
 ```
 
-Once your environment is set up, proceed to `Tutorial 1 - Introduction_to_FL`
+Once your environment is set up, proceed to `Tutorial_1_Introduction_to_FL`
 
 ## Getting Help
 
-For additional support, please reach out to [support@rhinofcp.com](support@rhinofcp.com)
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
