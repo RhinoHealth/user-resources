@@ -20,6 +20,10 @@ This folder holds the guide (this file), a log report tool, and reference exampl
   process per site
 - `lightning-chemprop/data/make_shards.py` - Splits the CYP3A4 data into one dataset per site, for the Chemprop
   examples
+- `pytorch-densenet/scatter-and-gather` - Reference example for plain PyTorch (DenseNet-121, chest X-ray
+  classification): the `ScatterAndGather` workflow and the in-process client, with the script freeing its GPU memory
+  after each round. Start here if your training script has its own training loop
+- `pytorch-densenet/data/make_shards.py` - Splits the Kaggle chest X-ray archive into one dataset per site, by patient
 - `README.md` - This guide: the concept, the settings you must choose, measured results, monitoring, failures and limits
 - `stagger_report.py` - Reads a job's server log and prints, per round, the duration, failed sites and the most sites
   that trained at once on each agent; exits with 1 if an agent went over its limit or the job failed
@@ -56,7 +60,7 @@ the same way; pick the one your job already uses:
 | Your job's server workflow | Staggered controller | Example |
 |---|---|---|
 | `FedAvg` (or another `ModelController` job) | `staggered_fed_avg.StaggeredFedAvg` | `lightning-chemprop/fedavg` |
-| `ScatterAndGather` | `staggered_scatter_and_gather.StaggeredScatterAndGather` | `lightning-chemprop/scatter-and-gather` |
+| `ScatterAndGather` | `staggered_scatter_and_gather.StaggeredScatterAndGather` | `lightning-chemprop/scatter-and-gather`, `pytorch-densenet/scatter-and-gather` |
 
 - **Switching** is the controller file plus the workflow `path` in `config_fed_server.json`:
   ```json
@@ -88,7 +92,7 @@ Copy what the reference example does; the lines that matter are marked `# Stagge
    - **PyTorch Lightning** with `flare.patch(trainer)`: nothing to do; the patch moves the model to the CPU after each
      round.
    - **Plain PyTorch:** at the end of each round, after copying the weights to the CPU for `flare.send`, drop every GPU
-     tensor and release the cache:
+     tensor and release the cache (see the DenseNet example):
      ```python
      params = {k: v.cpu() for k, v in model.state_dict().items()}
      del model, optimizer
@@ -147,7 +151,7 @@ script lives and what a waiting site holds.
 | Overhead per site per turn | lowest | low: Python and your imports start once per job | higher: Python and your imports start every turn |
 | State between rounds (optimizer, LR schedule, epoch count) | kept in memory | kept in memory | lost unless your script saves and reloads it |
 | Fail fast | let the error propagate | `os._exit(1)` in the entry point | `os._exit(1)` in the entry point |
-| Use when | most jobs; what NVFlare's tutorials use (the FedAvg example) | the script needs its own process, e.g. its own environment (the scatter-and-gather example) | many sites per GPU, where ~0.3 GB each adds up (30 sites ≈ 9 GB), or a script that can't free its GPU memory between rounds |
+| Use when | most jobs; what NVFlare's tutorials use (the FedAvg and DenseNet examples) | the script needs its own process, e.g. its own environment (the scatter-and-gather example) | many sites per GPU, where ~0.3 GB each adds up (30 sites ≈ 9 GB), or a script that can't free its GPU memory between rounds |
 
 ```json
 // In-process: the script runs inside the site's client process
@@ -206,6 +210,11 @@ PyTorch Lightning model** (~0.5 GB per training site, ~65 s of training per site
 
 The two in-process runs produced identical per-site validation results: the controller changes when sites train, not
 what the model learns.
+
+**Plain PyTorch with the in-process client** (mid-size CNN, `StaggeredScatterAndGather`, K = 4): rounds of 188–193 s
+(vs 200–220 s with one process per site), ~14 s of GPU idle time between one site and the next (vs ~22 s), and the
+same 12.1 GB peak. With the script freeing its model after each round, a waiting site held 42 MB of PyTorch memory
+plus its CUDA context (~0.3 GB): the in-process client itself keeps nothing on the GPU.
 
 **Scale:** 30 sites on one agent at K = 4 ran at the same ~28 s per site per round as 8 sites, with the same peak GPU
 memory (10.9 GB): round time grows linearly with N, memory does not.
