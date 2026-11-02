@@ -1,0 +1,10 @@
+{
+  "name": "staggered_fl_lightning_chemprop",
+  "resource_spec": {},
+  "min_clients": 1,
+  "deploy_map": {
+    "app": [
+      "@ALL"
+    ]
+  }
+}
