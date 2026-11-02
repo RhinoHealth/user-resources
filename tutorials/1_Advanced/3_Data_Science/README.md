@@ -6,9 +6,12 @@ Federated model training and analysis.
 
 A 3-part introduction to federated learning on the Rhino FCP:
 
-- **Tutorial 1 - Introduction to Federated Learning** - the core problem (siloed, privacy-restricted data) and how federated learning solves it
-- **Tutorial 2 - NVFlare Simulation** - convert existing PyTorch code into a federated learning workflow using NVIDIA FLARE (NVFlare), and simulate it
-- **Tutorial 3 - Deploying Federated Learning** - deploy a federated DeepChem model for real on the Rhino FCP, in a drug-discovery scenario across multiple parties
+## Resources
+- `Tutorial_1_Introduction_to_FL/` - Concepts of federated learning, with a hand-built FedAvg example
+- `Tutorial_2_NVFlare_Simulation/` - Converting PyTorch code to NVFlare and running it in the NVFlare simulator
+- `Tutorial_3_Deploying_Federated_Learning/` - End-to-end drug discovery example: local, simulated and Rhino FCP federated training, plus federated metrics
+- `requirements.txt` - Python dependencies for all three tutorials
+- `README.md` - This file
 
 ## [federated_imaging_breastMNIST](./federated_imaging_breastMNIST/)
 

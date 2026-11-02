@@ -5,7 +5,7 @@ import tensorflow as tf
 tf.get_logger().setLevel('ERROR')
 
 # Define Training Site
-SITE = "site-3" # MUST DEFINE SITE ∈ {"site-1", "site-2", "site-3", "centralized"}
+SITE = "centralized" # MUST DEFINE SITE ∈ {"site-1", "site-2", "site-3", "centralized"}
 assert SITE in {"site-1", "site-2", "site-3", "centralized"}, f"Invalid SITE: {SITE}"
 
 # Defining Train Data Path

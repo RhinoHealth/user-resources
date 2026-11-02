@@ -1,4 +1,5 @@
 # Introduction to Federated Learning
+> Last validated: 2026-10-26
 
 ## The Problem
 
@@ -68,6 +69,13 @@ In this hands-on tutorial, you'll dive into the different aspects of federated l
 - Implement a federated learning server for weight aggregation
 - Run a complete federated learning experiment and see the performance improvements
 
+## Resources
+- `notebooks/`
+  - `Introduction-What_Is_FL.ipynb` - Walkthrough comparing local and federated training, with a manual implementation of clients, server and FedAvg
+- `src/`
+  - `util.py` - Helper functions used by the notebook: synthetic dataset generation per site (`get_datasets`) and accuracy plotting (`make_plot`)
+- `README.md` - This file
+
 ### What You'll Build
 
 By the end of this tutorial, you'll have implemented a working federated learning system that demonstrates how multiple clients can collaboratively train a shared model, each improving their local performance without ever sharing their private data.
@@ -88,8 +96,8 @@ Open the accompanying Jupyter notebook `notebooks/Introduction-What_Is_FL.ipynb`
 
 Once you've mastered the fundamentals here, check out our `NVFlare_Simulation` tutorial to learn how to implement federated learning at scale using NVIDIA's production-ready framework.
 
-**Continue to:** `Tutorial 2 - NVFlare_Simulation`
+**Continue to:** `Tutorial_2_NVFlare_Simulation`
 
 ## Getting Help
 
-For additional support, please reach out to [support@rhinofcp.com](support@rhinofcp.com)
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

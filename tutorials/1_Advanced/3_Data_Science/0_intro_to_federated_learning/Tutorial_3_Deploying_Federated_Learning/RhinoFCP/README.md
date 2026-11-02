@@ -1,4 +1,3 @@
-
 # Federated Learning Using Rhino FCP
 
 ## Goal
@@ -63,7 +62,7 @@ Inference workflows on the Rhino FCP will always pass in the model weights path 
 There are other common files associated with deploying any federated learning applications the Rhino FCP.
 
 #### `Dockerfile`
-We have provided a template for containerizing a federated learning application. In most cases, this template will natively work with other applications as long as they follow the same directory structure as this `RhinoFCP/` directory. Common changes to fit specific projects may inclue altering the base image of the file, and importing other files necessary for compute.
+We have provided a template for containerizing a federated learning application. In most cases, this template will natively work with other applications as long as they follow the same directory structure as this `RhinoFCP/` directory. Common changes to fit specific projects may include altering the base image of the file, and importing other files necessary for compute.
 
 #### `requirements.txt`
 These are the python requirements which will be installed within your containerized application.
@@ -73,7 +72,7 @@ A script developed to allow convenient upload of docker images to your workgroup
 
 ## Instructions
 1. Create a project within the Rhino FCP - See [Creating a Project](https://docs.rhinofcp.com/projects/creating-a-new-project)
-2. Import the 4 datasets to the project. One for each client and the test dataset - See [Registering a Dataset](https://docs.rhinofcp.com/datasets/registering-configuring-and-exporting-datasets) <br> Note: For this tutorial make sure to uncheck Sensitive Data when you import your dataset
+2. Import the 4 datasets to the project: one for each client and the test dataset. See [Registering a Dataset](https://docs.rhinofcp.com/datasets/registering-configuring-and-exporting-datasets) <br> Note: For this tutorial, uncheck **Sensitive Data** when you import each dataset. All 4 datasets have the same columns, so create a schema on the first import and reuse it for the other three.
 3. Create the containerized application image
    ```bash
    cd RhinoFCP/
@@ -85,7 +84,7 @@ A script developed to allow convenient upload of docker images to your workgroup
 4. Create the code object within your project - See [Creating NVFlare Code Objects](https://docs.rhinofcp.com/creating-and-running-code-objects/creating-and-running-nvflare-code-and-running-inference#creating-an-nvflare-code-object) and the specific configurations below
 5. Launch the NVFlare training run within the project - See [Running NVFlare Code](https://docs.rhinofcp.com/creating-and-running-code-objects/creating-and-running-nvflare-code-and-running-inference#running-a-nvflare-code-object) and the specific configurations below
 
-*Incase the user does not have access to docker, or is not comfortable with the image creation portion of this workflow, the Rhino FCP offers an alternative solution called auto-containerization. The instructions for this can be found below under the* **Auto-Containers** *section.*
+*In case the user does not have access to docker, or is not comfortable with the image creation portion of this workflow, the Rhino FCP offers an alternative solution called auto-containerization. The instructions for this can be found below under the* **Auto-Containers** *section.*
 
 ### Specific Configurations
 #### Creating the code object
@@ -98,6 +97,13 @@ A script developed to allow convenient upload of docker images to your workgroup
   * Otherwise, all three datasets would be imported into a single client for training
 * VALIDATION DATASETS: Select the test dataset
   * When an `infer.py` file and a validation dataset are available when an NVFlare training run is complete, inference will automatically start using the global model from the training.
+
+### Expected Results
+In the **Code Runs** tab you should see:
+* A Training run (Type **T**) with 3 input datasets and status *Completed: Success*
+* A Validation run (Type **V**) that starts automatically after training, with 1 input and 1 output dataset
+
+In the **Datasets** tab, the test dataset gets a new version with the model's predictions and an auto-generated schema.
 
 ## Outputs
 NVFlare training runs will often consist of 1 or 2 outputs.
@@ -139,7 +145,7 @@ To utilize Rhino FCP's **auto-container** feature, follow these steps:
 
 ## Best Practices
 * While the auto-container feature is convenient, it lacks the layer caching features of Docker and any time a new version is created it must build the entire image from scratch. Becoming comfortable with Docker can greatly speed up image generation.
-* While it may seem faster to move from local training directly to federated training on the platform, setting up the simulation provides an efficient way to work through bugs during developement which would otherwise require time to create the containerized versions, upload to the RhinoFCP, and test there. When done with the RhinoFCP in mind, the files developed during simulation should require minimal changes to transition to production use.
+* While it may seem faster to move from local training directly to federated training on the platform, setting up the simulation provides an efficient way to work through bugs during development which would otherwise require time to create the containerized versions, upload to the RhinoFCP, and test there. When done with the RhinoFCP in mind, the files developed during simulation should require minimal changes to transition to production use.
 
 ## Other Notes
 * Inference can be run on platform post training as well. 
