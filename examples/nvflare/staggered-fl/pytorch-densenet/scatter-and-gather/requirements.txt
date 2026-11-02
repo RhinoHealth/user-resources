@@ -1,0 +1,5 @@
+nvflare==2.8.1
+# Pinned to 2.8.1: the newest NVFlare the FCP v2.8 code type (CodeTypes.NVIDIA_FLARE_V2_8, SDK 2.1.25+) runs.
+pandas==2.3.3
+torch==2.11.0
+torchvision==0.26.0
