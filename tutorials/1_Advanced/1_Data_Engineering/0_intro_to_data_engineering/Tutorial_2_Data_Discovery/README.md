@@ -2,9 +2,7 @@
 
 This tutorial explores all three registered datasets using federated analytics — statistical queries that run on the site's server and return only aggregate results. You will learn what your data looks like before writing a single line of cleaning code.
 
----
-
-## What You Will Do
+# What You Will Do
 
 1. Compute row counts and null rates across all three datasets
 2. Explore Patients Dataset - profile demographics (gender, race, ethnicity distributions)
@@ -13,11 +11,9 @@ This tutorial explores all three registered datasets using federated analytics �
 5. Run federated SQL aggregate queries
 6. Learn about **Interactive Containers** for deeper exploratory analysis
 
----
+# Key Concepts
 
-## Key Concepts
-
-### What Is Federated Analytics?
+## What are Federated Analytics?
 
 Federated analytics means running statistical computations on data that stays on-site, and receiving only the aggregated results. This is the same principle that makes federated learning possible, applied to data exploration.
 
@@ -30,7 +26,7 @@ When you call `dataset.get_metric(Mean("age"))`, here is what happens:
 
 This means **you can ask meaningful questions about your data without anyone gaining access to the underlying records**. In a multi-site project, the FCP aggregates results from all sites automatically, giving you a combined answer.
 
-#### What Kinds of Metrics Are Available?
+## What Kinds of Metrics Are Available?
 
 The Rhino SDK's `rhino_health.lib.metrics` library includes (but is not limited to):
 
@@ -48,11 +44,11 @@ The Rhino SDK's `rhino_health.lib.metrics` library includes (but is not limited 
 
 For complex queries beyond single-column metrics, federated SQL is available (see the SQL section in the notebook).
 
-#### Privacy Suppression
+## Privacy Suppression
 
 The platform includes a privacy engine that may suppress individual histogram bins where a value appears in very few rows — this is intentional and prevents re-identification. If a histogram returns fewer bins than you expect, it does not mean the data is wrong; it means some rare values were withheld for privacy.
 
-### What Is the Dataset Analytics View?
+## What Is the Dataset Analytics View?
 
 In addition to running metrics programmatically, the FCP Dashboard provides a built-in **Dataset Analytics** view for each registered dataset. To access it:
 
@@ -62,13 +58,13 @@ In addition to running metrics programmatically, the FCP Dashboard provides a bu
 
 This view provides an automatic profile of every column: data type, count, null rate, and a histogram for categorical columns or a distribution chart for numeric columns. It is a good quick-check to run immediately after registering a dataset, before writing any code.
 
-### What Is a Federated Dataset?
+## What is a Federated Dataset?
 
 A **Federated Dataset** is a grouping of individual site datasets that share the same schema. Instead of running a metric on Site A's data and then Site B's data separately, you create a Federated Dataset that covers both, and run the metric once. The FCP routes the computation to each site and returns a single aggregated result.
 
 This is the mechanism that makes multi-site research possible without sharing data. In this single-site tutorial, we demonstrate how to create one — even with one site, the pattern is identical to the multi-site case.
 
-### What Is an Interactive Container?
+## What is an Interactive Container?
 
 An **Interactive Container** is a special type of Code Object that does not run a script and exit — instead, it starts a live, browser-accessible environment (e.g., a JupyterLab server) running directly on the site's server, with the dataset mounted at `/input/dataset.csv` for a single input, or `/input/<input_number>/dataset.csv` for multiple inputs (index starting at 0).
 
@@ -82,7 +78,7 @@ This is fundamentally different from the Code Objects used in Tutorial 3:
 | **Duration** | Minutes | Hours (session-based) |
 | **Data access** | Script reads input CSV | You browse files directly |
 
-#### When to Use an Interactive Container
+## When to Use an Interactive Container
 
 Interactive containers are most useful when:
 - You want to explore the raw data interactively before deciding what transformations are needed
@@ -90,7 +86,7 @@ Interactive containers are most useful when:
 - You need to write and test a new cleaning script before registering it as a formal Code Object
 - A data steward at the site needs to manually inspect specific records to resolve a data quality issue
 
-#### How to Launch an Interactive Container
+## How to Launch an Interactive Container
 
 Interactive containers are launched from the FCP Dashboard (not the SDK notebook):
 
@@ -108,9 +104,7 @@ Inside the container, your dataset is available at `/input/0/dataset.csv`. You c
 
 > **Privacy note:** While Interactive Containers give you direct access to the dataset file, this access is governed by your FCP permissions. They are intended for authorized data stewards at the site, not for sharing data externally.
 
----
-
-## What This Step Informs
+# What This Tutorial Informs
 
 Data discovery drives the decisions in every subsequent tutorial:
 
@@ -123,17 +117,15 @@ Data discovery drives the decisions in every subsequent tutorial:
 | Unexpected CPT codes not in the reference list | Flag for manual review before Tutorial 4 mapping |
 | Very low procedure counts for a code | May be privacy-suppressed — note for mapping coverage |
 
----
-
-## Running the Notebook
+# Step 1: Running the Notebook
 
 See `Running Notebooks` section in root level [README.md](../README.md)
 
-Open `notebooks/data_discovery.ipynb` and select the **rhino_data_engineering** kernel.
+Open `notebooks/2_data_discovery.ipynb` and select the **rhino_data_engineering** kernel.
 
----
+# Step 2: Checking Your Work 
 
-## Checking Your Work in the FCP Dashboard
+In the FCP Dashboard UI:
 
 ### Viewing Dataset Analytics
 1. Navigate to **Projects → [Your Project] → Datasets**
@@ -147,8 +139,5 @@ Open `notebooks/data_discovery.ipynb` and select the **rhino_data_engineering** 
 3. Click **Open** to re-enter a running session
 4. Click **Stop** when you are done — sessions that are left running consume compute resources
 
----
-
-## Getting Help
-
-For additional support, please reach out to [support@rhinofcp.com](support@rhinofcp.com)
+# Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

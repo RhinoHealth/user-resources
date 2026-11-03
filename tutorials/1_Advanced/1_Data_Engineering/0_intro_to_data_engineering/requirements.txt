@@ -1,5 +1,6 @@
 # ── Rhino Health SDK ─────────────────────────────────────────────────────────
-# The main SDK for interacting with the Rhino FCP. Install with:
+# The main SDK for interacting with the Rhino FCP. 
+# Install with:
 #   pip install rhino-health
 rhino-health
 
@@ -10,7 +11,7 @@ notebook>=7.0
 # JupyterLab (modern interface) — optional, comment out if using Notebook only
 jupyterlab>=4.0
 
-# Required to register this venv as a Jupyter kernel (used in setup instructions)
+# Required to register venv as a Jupyter kernel (used in setup instructions)
 ipykernel>=6.0
 
 # ── Data manipulation (orchestration notebooks) ───────────────────────────────
