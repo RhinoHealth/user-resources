@@ -5,9 +5,9 @@ This tutorial explores all three registered datasets using federated analytics �
 # What You Will Do
 
 1. Compute row counts and null rates across all three datasets
-2. Explore Patients Dataset - profile demographics (gender, race, ethnicity distributions)
-3. Explore Encounters Dataset - analyze encounter types & temporal coverage
-4. Explore Procedure Dataset - evaluate codes and categories
+2. **Explore Patients Dataset** - profile demographics (gender, race, ethnicity distributions)
+3. **Explore Encounters Dataset** - analyze encounter types & temporal coverage
+4. **Explore Procedure Dataset** - evaluate codes and categories
 5. Run federated SQL aggregate queries
 6. Learn about **Interactive Containers** for deeper exploratory analysis
 
@@ -19,12 +19,14 @@ Federated analytics means running statistical computations on data that stays on
 
 When you call `dataset.get_metric(Mean("age"))`, here is what happens:
 
-1. Your notebook sends an instruction to the FCP cloud: *"Compute the mean of the 'age' column on dataset X"*
-2. The FCP forwards this to the Rhino agent at the site hosting that dataset
-3. The agent reads the CSV locally, computes the mean, and sends back a single number
+1. Your notebook sends an instruction to the FCP Orchestrator: *"Compute the mean of the 'age' column on dataset X"*
+2. The FCP Orchestrator forwards this to the Rhino Client at the site hosting that dataset
+3. The Rhino Client reads the CSV locally, computes the mean, and sends back a single number
 4. You receive that number — not any individual patient rows
 
-This means **you can ask meaningful questions about your data without anyone gaining access to the underlying records**. In a multi-site project, the FCP aggregates results from all sites automatically, giving you a combined answer.
+This means **you can ask meaningful questions about your data without anyone gaining access to the underlying records**. 
+
+>In a multi-site project, the FCP aggregates results from all sites automatically, giving you a combined answer.
 
 ## What Kinds of Metrics Are Available?
 
@@ -46,11 +48,13 @@ For complex queries beyond single-column metrics, federated SQL is available (se
 
 ## Privacy Suppression
 
-The platform includes a privacy engine that may suppress individual histogram bins where a value appears in very few rows — this is intentional and prevents re-identification. If a histogram returns fewer bins than you expect, it does not mean the data is wrong; it means some rare values were withheld for privacy.
+The platform includes a privacy engine that may suppress analytics where a value appears in very few rows — this is intentional to prevent re-identification.
+
+> Exactly what you are able to see and do is tied to your Project's [Permission Policy](https://docs.rhinofcp.com/projects/persona-and-permissions-policies-reference), whigh gets set up at the time of creation.
 
 ## What Is the Dataset Analytics View?
 
-In addition to running metrics programmatically, the FCP Dashboard provides a built-in **Dataset Analytics** view for each registered dataset. To access it:
+In addition to running metrics programmatically, the FCP Dashboard provides a built-in [**Dataset Analytics**](https://docs.rhinofcp.com/datasets/working-with-dataset-analytics) view for each registered dataset. To access it:
 
 1. Navigate to **Projects → [Your Project] → Datasets**
 2. Click on a dataset name
@@ -66,7 +70,7 @@ This is the mechanism that makes multi-site research possible without sharing da
 
 ## What is an Interactive Container?
 
-An **Interactive Container** is a special type of Code Object that does not run a script and exit — instead, it starts a live, browser-accessible environment (e.g., a JupyterLab server) running directly on the site's server, with the dataset mounted at `/input/dataset.csv` for a single input, or `/input/<input_number>/dataset.csv` for multiple inputs (index starting at 0).
+An [**Interactive Container**](https://docs.rhinofcp.com/creating-and-running-code-objects/creating-and-running-interactive-container-code) is a special type of Code Object that does not run a script and exit — instead, it starts a live, browser-accessible environment (e.g., a JupyterLab server) running directly on the site's server, with the dataset mounted at `/input/dataset.csv` for a single input, or `/input/<input_number>/dataset.csv` for multiple inputs (index starting at 0).
 
 This is fundamentally different from the Code Objects used in Tutorial 3:
 
@@ -75,8 +79,8 @@ This is fundamentally different from the Code Objects used in Tutorial 3:
 | **Mode** | Runs a script and exits | Starts a live environment |
 | **Access** | Script output only | Full interactive session |
 | **Use case** | Automated transformation | Exploratory analysis, debugging |
-| **Duration** | Minutes | Hours (session-based) |
-| **Data access** | Script reads input CSV | You browse files directly |
+| **Duration** | Minutes | Hours (session-based with eventual timeouts) |
+| **Data access** | Script reads input CSV | You browse files directly (must have relevant permissions) |
 
 ## When to Use an Interactive Container
 
@@ -95,7 +99,7 @@ Interactive containers are launched from the FCP Dashboard (not the SDK notebook
 3. Select **Interactive Container** as the code object type
 4. Provide a **Name** for the code object
 5. Select input / output schemas (if you want to enforce structure)
-6. Choose a base image (e.g. interactive-jupyter-notebook)
+6. Choose a base image containing the required dependencies (e.g. interactive-jupyter-notebook)
 7. Click **Create New Code Object**
 8. Click **Run** - and select input datasets
 9. Once the container is running under **Code Runs** (status: `Active`), click the window link to launch the interface in your browser
