@@ -1,5 +1,5 @@
 # Introduction to Data Engineering
-> Last validated: 2026-11-03
+> Last validated: 2026-11-04
 
 # Overview
 

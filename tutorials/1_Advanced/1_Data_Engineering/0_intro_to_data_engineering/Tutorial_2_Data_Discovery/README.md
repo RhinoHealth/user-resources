@@ -110,7 +110,7 @@ Inside the container, your dataset is available at `/input/0/dataset.csv`. You c
 
 # What This Tutorial Informs
 
-Data discovery drives the decisions in every subsequent tutorial:
+Data discovery drives decisions in subsequent tutorials:
 
 | Finding | Action |
 |---|---|
