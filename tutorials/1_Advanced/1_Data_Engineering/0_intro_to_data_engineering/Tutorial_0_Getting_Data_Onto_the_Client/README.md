@@ -1,50 +1,23 @@
 # Tutorial 0 — Getting Data Onto the Rhino Client
 
-> **Skip this tutorial if your data files are already on the Rhino client.**
-> See [How to Check](#how-to-check-if-your-data-is-already-present) below.
+> **You may skip this tutorial if your data files are already on your Rhino client.**
+> See [Step 1](#step-1-check-your-data) below.
 
-This tutorial covers how to transfer your CSV files to the Rhino client (also called the Rhino agent or edge node) so they can be registered in Tutorial 1.
+This tutorial covers how to transfer the example CSV files to your Rhino Client, so they can be registered in Tutorial 1.
 
----
+# Understanding Where Data Lives
 
-## Prerequisites
+The Rhino Client exposes a filesystem that Code Objects and Dataset Registration uses. Your administrator will tell you which directory has been designated for input data — typically something like `/rhino_data/`
 
-- A Rhino client deployed and connected
-    - See `Confirm Your Rhino Client Is Running` section in root level [README.md](../README.md)
-- The credentials or network access required to transfer files to the client
-    - Can be done directly or via client-mounted cloud storage 
-    - Ask your Rhino administrator if unsure
-- The three source CSV files in the `data/` folder of this repository on your local machine
-
----
-
-## How to Check if Your Data Is Already Present
-
-Before transferring files, confirm they do not already exist on the client.
-
-**Via the FCP Dashboard:**
-1. Log in at [https://dashboard.rhinohealth.com/login](https://dashboard.rhinohealth.com/login)
-2. Navigate to **Projects → [Your Project] → Datasets**
-3. If datasets named `Patients — Site A`, `Encounters — Site A`, and `Procedures — Site A` already exist with row counts, your data is present — **skip to Tutorial 1**
-
-**Via an Interactive Container (if unsure of the path):**
-You can launch a quick Interactive Container (see Tutorial 2 for details) and check whether files exist at expected paths using a shell command like `ls /rhino_data/`.
-
----
-
-## Understanding Where Data Lives on the Client
-
-The Rhino client exposes a filesystem that Code Objects and dataset registrations use. Your administrator will tell you which directory has been designated for input data — commonly something like `/rhino_data/`
-
-If you're using client-mounted storage, the path may look more like this: `/rhino_data/external/s3/` or `/rhino_data/external/gcp3` (Find this path by going to settings, via the gear icon, and then clicking on the Client Mounted Storage tab)
+If you're using client-mounted storage, the path may look more like this: `/rhino_data/external/s3/` or `/rhino_data/external/gcp3` (Find this path by going to Settings, via the gear icon, and then clicking on the Client Mounted Storage tab)
 
 When you register a dataset in Tutorial 1, you always provide the **exact** path to the data (e.g., `/rhino_data/external/s3/intro_to_data_engineering/patients.csv`)
 
-### Code Object Path Convention
+## Code Object Path Convention
 
-**NOTE:** When Code Objects run in Tutorial 3, they read from standard paths like `/input/dataset.csv` (single input) or `/input/0/dataset.csv`, `/input/1/dataset.csv` (multiple inputs). 
+**NOTE:** When Code Objects run in Tutorial 3, they read from standard paths like `/input/dataset.csv` (if single input) or `/input/0/dataset.csv`, `/input/1/dataset.csv` (multiple inputs). 
 
-> These paths are **automatically managed** by the Rhino agent — you do not copy files there manually.
+> These paths are **automatically managed** by the Rhino Client when you execute a Code Run — you do not copy files there manually.
 
 | Scenario | Input Path | Output Path |
 |---|---|---|
@@ -54,28 +27,67 @@ When you register a dataset in Tutorial 1, you always provide the **exact** path
 
 In this workflow, each Code Object takes **one input**, so files will be at `/input/dataset.csv`. The path conventions are handled automatically by the Rhino agent — your script just reads from `/input/dataset.csv` and writes to `/output/dataset.csv`.
 
----
+# Step 0: Prerequisites
 
-## Methods for Getting Data Onto the Client
+Before starting this specific tutorial, ensure you have the following:
 
-Choose the method that matches your client configuration and the access your administrator has provided.
+- The credentials or network access required to transfer files to your Rhino Client
+    - Can be done directly or via client-mounted cloud storage 
+    - Ask your Rhino administrator if unsure
+- The three source CSV files in the `data/` folder of this repository on your local machine
 
-### Method 1 — Network / Client Storage Mount (Recommended)
+# Step 1: Check Your Data
 
-If your client is configured with a shared network storage location (NFS share, SMB/CIFS mount, or cloud object storage mount like AWS S3 or GCP buckets), you can copy files directly using standard filesystem operations.
+Before transferring files, confirm they do not already exist on the client by inspecting the storage directly (if you have access) or:
 
-```bash
-# If the network share is mounted at /mnt/rhino-data on your machine:
-cp data/patients.csv   /mnt/rhino-data/source/
-cp data/encounters.csv /mnt/rhino-data/source/
-cp data/procedures.csv /mnt/rhino-data/source/
+**Via the FCP Dashboard:**
+1. Log in via the UI if you haven't already
+2. Navigate to **Projects → [Click Your Project to Select It] → Datasets**
+3. If datasets named `Patients — Site A`, `Encounters — Site A`, and `Procedures — Site A` already exist with row counts, your data is already present in the client and have already been registered to your project
+
+**Via an Interactive Container (if unsure of the path):**
+You can launch a quick Interactive Container (see Tutorial 2 for details) and check whether files exist at expected paths using a shell command like `ls /rhino_data/`.
+
+> If you have verified example data is already present on the Rhino Client, you can skip the remainder of this tutorial
+
+# Step 2: Upload Example Data
+
+Choose the method that matches your client configuration and the access your administrator has provided. We recommend the following, in order:
+
+## Option 2A: Using Client-Mounted Storage
+Follow [this guide](https://docs.rhinofcp.com/settings/mounting-storage-to-your-rhino-client) for instructions on how to mount the client-mounted storage of your choice (e.g., AWS S3, GCP Bucket, Azure blob).
+
+Once your client mounted storage is connected, you'll want to copy the example CSV files in [/data](../data) from your local machine into a new folder you create within that mounted storage.
+
+## Option 2B: Using SFTP
+Follow [this guide](https://docs.rhinofcp.com/getting-started/quick-start-guide/registering-data-to-your-rhino-federated-computing-platform-fcp-client-using-sftp) for instructions on how to how to connect to your Rhino client via SFTP.
+
+Once you're connected to the client SFTP server, yyou'll want to copy the example CSV files in [/data](../data) from your local machine into a new folder you create on your Rhino client.
+
+**Using bash (CLI):**
+```
+sftp> cd /rhino_data/intro_to_data_engineering/
+sftp> put encounters.csv
+sftp> put patients.csv
+sftp> put procedures.csv
+sftp> ls -lh          # confirm the files are there
+sftp> exit
 ```
 
-The Rhino client can read from this mount as if files are local. Ask your administrator for the exact mount path and access instructions.
+**Using FileZilla (GUI, any OS):**
+1. Download [FileZilla](https://filezilla-project.org/)
+2. Open **File → Site Manager → New Site**
+3. Set Protocol: SFTP, Host: `<CLIENT_HOSTNAME>`, Port: `<PORT>`
+4. Enter your username and password
+5. Connect → navigate to `/data/source/` in the remote panel
+6. Drag and drop the three CSV files from your local panel to the remote panel
 
-For more info on client-mounted storage, see documentation [here](https://docs.rhinofcp.com/settings/mounting-storage-to-your-rhino-client)
+**Using WinSCP (Windows):**
+1. Download [WinSCP](https://winscp.net)
+2. Create a new session: File Protocol = SFTP, host, port, credentials
+3. Connect → navigate to the target directory → drag and drop files
 
-### Method 2 — Import from SQL Database
+## Option 2C: Importing from SQL Database
 
 If your data lives in a relational database (e.g., Epic, Cerner, Redshift, BigQuery, Snowflake) accessible from the Rhino client's network, you can import it directly as a dataset without creating a CSV first.
 
@@ -99,47 +111,19 @@ dataset = session.dataset.import_dataset_from_sql(
 print(f"Imported dataset: {dataset.uid}")
 ```
 
-### Method 3 — Direct SFTP
+# Step 3: Verify Example Data
 
-SFTP (Secure File Transfer Protocol) is a method for transferring files from one's local environment directly onto the client edge node. This works for most client configurations.
+Before proceeding, confirm that all example data is available to your Rhino Client:
 
-Instructions can be found [here](https://docs.rhinofcp.com/getting-started/quick-start-guide/registering-data-to-your-rhino-federated-computing-platform-fcp-client-using-sftp)
+- **Option 2A:** Verify that all files are present in the client-mounted storage. You can typically do this through the cloud's UI.
+- **Option 2B/C:** Verify that all files were successfully uploaded to your Rhino Client. You can do this by navigating to the folder using cd and listing its contents using ls.
 
-**Using the command line (macOS/Linux/Windows with OpenSSH):**
-```bash
-sftp rhinosftp@RHINO_CLIENT_IP_ADDRESS
+> Make note of the folder path where your data is now stored (e.g., /rhino_data/external/import-external-datasets-dev/user-resource-examples/intro_to_data_engineering/). You'll need this path to register the data in the next tutorial.
 
-# Once connected, navigate to the data directory and upload:
-sftp> cd /rhino_data/intro_to_data_engineering/
-sftp> put patients.csv
-sftp> put encounters.csv
-sftp> put procedures.csv
-sftp> ls -lh          # confirm the files are there
-sftp> exit
-```
+Wait until all example data has finished loading completely before continuing to Tutorial 1.
 
-**Using FileZilla (GUI, any OS):**
-1. Download [FileZilla](https://filezilla-project.org/)
-2. Open **File → Site Manager → New Site**
-3. Set Protocol: SFTP, Host: `<CLIENT_HOSTNAME>`, Port: `<PORT>`
-4. Enter your username and password
-5. Connect → navigate to `/data/source/` in the remote panel
-6. Drag and drop the three CSV files from your local panel to the remote panel
 
-**Using WinSCP (Windows):**
-1. Download [WinSCP](https://winscp.net)
-2. Create a new session: File Protocol = SFTP, host, port, credentials
-3. Connect → navigate to the target directory → drag and drop files
-
----
-
-## Verifying the Transfer
-
-After transferring files, verify they are accessible before proceeding to Tutorial 1.
-
-**Via the FCP Dashboard:**
-- Navigate to **Workgroups → [Your Workgroup] → Status**
-- The agent should be green / connected
+You can also try checking:
 
 **Via SSH (if you have access):**
 ```bash
@@ -155,39 +139,5 @@ ls -lh /rhino_data/intro_to_data_engineering/
 
 A quick way to confirm is to attempt a dataset registration in Tutorial 1. If the path is wrong, you will immediately get an error saying the agent cannot find the file.
 
----
-
-## What to Note for Tutorial 1
-
-Once your files are on the client, record the **full absolute paths** you used. You will paste these into the Configuration cell of Tutorial 1:
-
-```
-ENCOUNTERS_PATH = "/rhino_data/intro_to_data_engineering/encounters.csv"
-PATIENTS_PATH   = "/rhino_data/intro_to_data_engineering/patients.csv"
-PROCEDURES_PATH = "/rhino_data/intro_to_data_engineering/procedures.csv"
-```
-
----
-
-## Checking Your Work in the FCP Dashboard
-
-After transferring files and before running Tutorial 1:
-
-1. Confirm your agent node is "Online"
-2. If you used **"Method 4 — Direct Upload via the FCP Dashboard"** — check **Projects → [Your Project] → Datasets** to confirm the datasets appear
-3. If you used **SFTP or network storage** — you will confirm file accessibility implicitly when Tutorial 1's registration cells run successfully
-
----
-
-## Helpful Links
-
-| Resource | Description |
-|---|---|
-| [Rhino FCP Dashboard](https://dashboard.rhinohealth.com/login) | Log in here to check workgroup/agent status |
-| [Rhino Docs](https://docs.rhinofcp.com) | Official documentation on Rhino FCP |
-
----
-
-## Getting Help
-
-For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com)
+# Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

@@ -2,9 +2,7 @@
 
 This tutorial verifies that the harmonized datasets produced in Tutorial 4 actually conform to the OMOP Common Data Model standard. It is your quality assurance step — run it before using the harmonized data in any analysis or model training.
 
----
-
-## What You Will Do
+# What You Will Do
 
 1. Check that all required OMOP columns are present in each output table
 2. Verify that key fields have no null values where OMOP requires them
@@ -13,9 +11,7 @@ This tutorial verifies that the harmonized datasets produced in Tutorial 4 actua
 5. Check referential integrity — that IDs linking the three tables are consistent
 6. Receive a final pass/warn/fail summary with recommended next steps
 
----
-
-## Why Validation Matters
+# Why Validation Matters
 
 Harmonization is an automated process, and automated processes can produce subtle errors without announcing them:
 
@@ -28,9 +24,7 @@ Harmonization is an automated process, and automated processes can produce subtl
 - Creates a documented audit trail that the data meets the standard (often required for publication or IRB reporting)
 - Identifies gaps in your semantic mappings that should be closed before scaling to additional sites
 
----
-
-## What OMOP Requires
+# What OMOP Requires
 
 ### OMOP Person Table
 
@@ -63,9 +57,7 @@ The `person` table must have one row per unique patient. Key rules:
 | `procedure_concept_id` | Valid OMOP concept (from CPT mapping, or 0 for unmapped) |
 | `procedure_date` | Non-null, valid date |
 
----
-
-## What Is Concept ID = 0?
+# What Is Concept ID = 0?
 
 In OMOP CDM, `concept_id = 0` is the standard way to represent *"no matching standard concept was found."* It is technically valid — OMOP allows it — but it means that record will be excluded from any analysis that filters for standard concepts (which is most OMOP-based queries).
 
@@ -76,9 +68,7 @@ A `concept_id = 0` in your harmonized data can mean:
 
 This tutorial flags any `concept_id = 0` rate above 20% as a warning. If you see high rates, return to Tutorial 4 and add the missing source values to the appropriate semantic mapping, then re-run.
 
----
-
-## How Validation Works on Federated Data
+# How Validation Works on Federated Data
 
 Because raw data never leaves the site, validation checks run as **federated metrics and SQL queries** — the same mechanism used in Tutorial 2. You receive aggregate counts and rates, not individual rows. This means:
 
@@ -86,9 +76,7 @@ Because raw data never leaves the site, validation checks run as **federated met
 - You can see *what percentage* of procedures mapped to concept_id = 0, but not *which* procedures
 - If you need to investigate specific failing records, use an **Interactive Container** (covered in Tutorial 2) to inspect the harmonized output file directly on the server
 
----
-
-## Understanding Validation Results
+# Understanding Validation Results
 
 | Result | Meaning | What To Do |
 |---|---|---|
@@ -104,9 +92,16 @@ Any FAIL result should be traced back to Tutorial 4:
 4. Re-run the harmonization (Tutorial 4 run cells)
 5. Re-run this validation notebook
 
----
+# Step 1: Running the Notebook
 
-## Checking Your Work in the FCP Dashboard
+See `Running Notebooks` section in root level [README.md](../README.md)
+
+Open `notebooks/5_validation.ipynb` and select the **rhino_data_engineering** kernel.
+
+
+# Step 2: Checking Your Work
+
+In the FCP Dashboard UI:
 
 ### Reviewing Harmonized Datasets
 1. Navigate to **Projects → [Your Project] → Datasets**
@@ -126,6 +121,5 @@ Any FAIL result should be traced back to Tutorial 4:
 
 ---
 
-## Getting Help
-
-For additional support, please reach out to [support@rhinofcp.com](support@rhinofcp.com)
+# Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

@@ -2,20 +2,16 @@
 
 This tutorial cleans and standardizes the three prepared datasets using **Python Code Objects** — automated scripts that execute directly on the site's server. After this step, your data will be in a consistent, well-structured format ready for OMOP harmonization in Tutorial 4.
 
----
-
-## What You Will Do
+# What You Will Do
 
 1. Write three Python cleaning scripts (one per dataset), each defined directly in the notebook
 2. Register each as a Code Object in the Rhino FCP
 3. Run each Code Object against its source dataset
 4. Receive three cleaned output datasets, still on-site, registered with the FCP
 
----
+# Key Concepts
 
-## Key Concepts
-
-### What Is a Code Object?
+## What is a Code Object?
 
 A Code Object is a Python script or Docker container that you register with the Rhino FCP for execution on a site's on-premises server. Think of it as sending a sealed instruction packet to someone at the hospital: *"Take the patients file, apply these exact rules, and hand me back a cleaned version."* The person (the Rhino agent) opens the instructions locally and does the work — you never touch the original data.
 
@@ -31,7 +27,7 @@ The container is discarded when the run completes.
 
 See [link](https://docs.rhinohealth.com/hc/en-us/articles/12384939376669-What-is-a-Code-Object) for more info
 
-### Supported Code Object Types
+## Supported Code Object Types
 
 The Rhino FCP supports several types of Code Objects:
 
@@ -46,7 +42,7 @@ For data preparation, Python Code Objects are the right choice. They are lightwe
 
 See [link](https://docs.rhinohealth.com/hc/en-us/articles/12385157324829-Supported-Code-Object-Types-on-the-Rhino-FCP) for more info
 
-### What Is a Code Run?
+## What is a Code Run?
 
 A **Code Run** is an execution record for a Code Object. It tracks:
 - Which Code Object was executed
@@ -60,7 +56,7 @@ Code Runs are persisted in the FCP — you can always go back and see exactly wh
 
 See [link](https://docs.rhinohealth.com/hc/en-us/articles/12385247215005-What-is-a-Code-Run) for more info
 
-### Standard I/O File Paths
+## Standard I/O File Paths
 
 All Code Objects use the same file paths regardless of content:
 
@@ -74,7 +70,7 @@ All Code Objects use the same file paths regardless of content:
 
 The container always has these paths available — you do not need to create them.
 
-### Why Three Separate Code Objects?
+## Why Three Separate Code Objects?
 
 Each of the three datasets requires different cleaning logic. Keeping them as three independent Code Objects means:
 - You can re-run one dataset's prep without reprocessing the others
@@ -82,11 +78,9 @@ Each of the three datasets requires different cleaning logic. Keeping them as th
 - Each Code Object is descriptively named and self-contained, making the project easier to audit and maintain
 - Code Objects are reusable — once registered, run the same script against a new dataset at any site with a single call
 
----
+# What Each Script Does
 
-## What Each Script Does
-
-### Patients Preparation
+## Patients Preparation
 | Transformation | Why It Is Needed |
 |---|---|
 | Standardize `Gender` to title case | Source data may contain `"male"`, `"MALE"`, and `"Male"` — all meaning the same thing. OMOP mapping requires consistent casing to match semantic mapping entries. |
@@ -94,7 +88,7 @@ Each of the three datasets requires different cleaning logic. Keeping them as th
 | Drop exact duplicate rows | Prevents patients from being counted multiple times in analytics |
 | Drop rows missing `patientID` | A patient without an ID cannot be linked to encounters or procedures in the OMOP model |
 
-### Encounters Preparation
+## Encounters Preparation
 | Transformation | Why It Is Needed |
 |---|---|
 | Parse `DateOfService` to `YYYY-MM-DD` | OMOP requires date fields in a standard parseable format |
@@ -102,7 +96,7 @@ Each of the three datasets requires different cleaning logic. Keeping them as th
 | Drop rows missing `patientID` or `visitID` | Records without both IDs cannot be linked in OMOP |
 | Drop duplicate rows | Prevents visits from being counted multiple times |
 
-### Procedures Preparation
+## Procedures Preparation
 | Transformation | Why It Is Needed |
 |---|---|
 | Parse `ProcedureDate` to `YYYY-MM-DD` | Required for OMOP `procedure_date` field |
@@ -110,19 +104,15 @@ Each of the three datasets requires different cleaning logic. Keeping them as th
 | Drop rows missing `patientID` or `visitID` | Orphaned procedure records cannot be linked |
 | Drop duplicate rows | Prevents procedures from being counted multiple times |
 
----
-
-## What You Need Before Starting
+# Step 0: Prerequisites
 
 1. Completed Tutorial 1 — six UIDs needed in the Configuration cell
 2. Your login credentials
 3. Your `PROJECT_UID`
 
----
+# Step 1: Running the Notebook
 
-## Running the Notebook
-
-Open `notebooks/data_preparation.ipynb` and select the **rhino_data_engineering** kernel.
+Open `notebooks/3_data_preparation.ipynb` and select the **rhino_data_engineering** kernel.
 
 **Run the Configuration cell and the Shared Utilities cell first.** These must be executed before any dataset section, as they define the helper functions that all three sections use.
 
@@ -148,11 +138,9 @@ Run initiated: yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy
 Run completed successfully.
 ```
 
----
+# Step 2: Checking Your Work
 
-## Checking Your Work in the FCP Dashboard
-
-After running the notebook sections:
+After running the notebook sections, check the following in the FCP Dashboard UI:
 
 ### Verifying Code Objects
 1. Navigate to **Projects → [Your Project] → Code**
@@ -176,9 +164,7 @@ After running the notebook sections:
    - **Schema** should show an auto-inferred schema name (not blank)
    - Use the **Analytics** tab to verify distributions look reasonable
 
----
-
-## Outputs — Copy These UIDs
+# Step 3: Save These UIDs
 
 The final cell prints six UIDs for the prepared datasets and their schemas. **Save all six before moving to Tutorial 4.**
 
@@ -191,9 +177,7 @@ PREPARED_ENCOUNTERS_SCHEMA_UID = '...'
 PREPARED_PROCEDURES_SCHEMA_UID = '...'
 ```
 
----
-
-## Common Questions
+# FAQs
 
 **Q: The run failed. Where do I see what went wrong?**
 The notebook automatically fetches and prints the logs when a failure is detected. Look for the `Run did not complete. Logs:` section in the output. The Python error message from inside the script will appear there. You can also view the logs in the Dashboard under **Code Runs → click the failed run → Logs tab**.
@@ -207,8 +191,5 @@ Depends. For the example data, all 100 rows should pass through cleanly. If rows
 **Q: Can I test the cleaning script locally before registering it?**
 Yes. Copy the script string contents to a `.py` file, replace `/input/0/dataset.csv` with a local CSV path, and run it with `python your_script.py`. This is the fastest way to validate logic before deploying to the site. Alternatively, use an Interactive Container (Tutorial 2) to run exploratory code directly on the server data.
 
----
-
-## Getting Help
-
-For additional support, please reach out to [support@rhinohealth.com](support@rhinohealth.com)
+# Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
