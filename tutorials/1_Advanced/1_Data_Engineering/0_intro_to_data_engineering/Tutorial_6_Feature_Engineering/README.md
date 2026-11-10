@@ -4,22 +4,18 @@ This tutorial derives **patient-level features** from the three validated OMOP d
 
 Feature engineering runs as a **Generalized Compute Code Object** on the Rhino client, using the `generic-python-runner` container. The Python script is passed to the container at run time as a run parameter — not embedded in the Code Object definition — so the same Code Object can be re-run with a different script without re-registration. The script reads **three inputs simultaneously** (OMOP Person, Visit Occurrence, and Procedure Occurrence), joins them on `person_id` entirely on the client, and produces a flat feature table ready for model training.
 
----
-
-## What You Will Do
+# What You Will Do
 
 1. Define a Python script that reads all three OMOP tables from indexed input paths and pass it to the container at run time via `run_params`
 2. Derive age, gender flags, visit counts, procedure counts, and clinical history span per patient
 3. Register and run the Code Object on the Rhino client
 4. Verify the output with federated analytics (row count, age distribution, visit/procedure summaries)
 
----
-
-## What Is Feature Engineering?
+# What is Feature Engineering?
 
 Raw clinical data — even well-harmonized data in OMOP format — rarely maps directly to what a machine learning model expects as input. **Feature engineering** is the process of transforming raw data fields into a numeric, patient-level representation that a model can train on.
 
-### The Problem: Multi-Table Clinical Data
+## The Problem: Multi-Table Clinical Data
 
 OMOP structures data relationally: each table captures one entity type.
 
@@ -31,7 +27,7 @@ OMOP structures data relationally: each table captures one entity type.
 
 A single patient with 4 visits and 8 procedures spans **13 rows across three tables**. Machine learning models, on the other hand, expect a flat matrix: one row per patient, one column per feature.
 
-### The Solution: Aggregation, Derivation, and Encoding
+## The Solution: Aggregation, Derivation, and Encoding
 
 Feature engineering collapses the multi-table structure into that flat representation through three operations:
 
@@ -48,7 +44,7 @@ Feature engineering collapses the multi-table structure into that flat represent
 
 After feature engineering, the 13 rows for Patient #42 become a **single row** with columns like `age`, `visit_count`, `procedure_count`, `is_female`, `has_inpatient_visit`, etc.
 
-### Why the Quality of Features Matters
+## Why the Quality of Features Matters
 
 A poorly designed feature can silently degrade model performance even when the underlying data is correct. For example:
 
@@ -56,8 +52,6 @@ A poorly designed feature can silently degrade model performance even when the u
 - Using raw `year_of_birth` instead of `age` works, but is less stable — a model trained one year will behave differently the next without retraining, because the same year of birth now maps to a different feature value.
 
 Thoughtful feature engineering is where clinical domain knowledge gets encoded into the representation the model learns from.
-
----
 
 ## UI Alternative: Python Code Snippet
 
@@ -77,9 +71,7 @@ If you prefer not to use the notebook, you can create and run this Code Object d
 
 The snippet version uses `[[person_df], [visit_df], [proc_df]] = inputs` and `outputs = [[features]]` — the platform injects DataFrames directly rather than reading from file paths.
 
----
-
-## Why Run This Inside a Code Object?
+## Why Run Inside a Code Object?
 
 This tutorial runs feature engineering as a Rhino Code Object rather than locally in the notebook. The reasons are the same as in Tutorial 3:
 
@@ -87,9 +79,7 @@ This tutorial runs feature engineering as a Rhino Code Object rather than locall
 - **The script is reusable.** Once registered, the same Code Object can be run at any additional participating site with a single API call — no code changes needed.
 - **Outputs are tracked.** The feature dataset is registered on the FCP with an auto-inferred schema, giving you a clean audit trail from raw data to model-ready features.
 
----
-
-## Data Quality and Missing Patients
+# Data Quality and Missing Patients
 
 Real-world data is rarely perfectly consistent across tables. This tutorial's Code Object handles three specific cases gracefully rather than failing silently:
 
@@ -103,9 +93,8 @@ In all cases, a warning is recorded and printed in the run logs at the end of th
 
 You can review the logged warnings from the FCP Dashboard under **Code Runs → [your run] → Logs**.
 
----
 
-## Features Derived
+# Features Derived
 
 The feature engineering script produces one row per patient with the following columns:
 
@@ -126,9 +115,7 @@ The feature engineering script produces one row per patient with the following c
 | `procedure_count` | Procedure Occurrence | Total procedures recorded for this patient |
 | `unique_procedure_count` | Procedure Occurrence | Distinct procedure concept IDs |
 
----
-
-## How Multi-Input Code Objects Work
+# How Multi-Input Code Objects Work
 
 Tutorial 3 used Code Objects with a single input dataset — the script read from `/input/dataset.csv`. When a Code Object receives **multiple inputs**, each input is available at an indexed path:
 
@@ -140,7 +127,6 @@ Tutorial 3 used Code Objects with a single input dataset — the script read fro
 
 The slot order is set by the `input_dataset_uids` list when you call `run_code_object`. The script reads each file independently and joins them in memory on the client.
 
----
 
 ## What Is Not Returned
 
@@ -152,7 +138,6 @@ As with all Code Objects, only the output dataset metadata is returned to the FC
 
 To inspect individual rows, use an **Interactive Container** on the Rhino client (covered in Tutorial 2).
 
----
 
 ## What Comes Next
 
@@ -162,9 +147,16 @@ The feature table produced here is the starting point for federated model traini
 - Run additional federated analytics (correlations, distributions) across sites using the feature table
 - Export schema information to inform downstream pipeline configuration
 
----
+# Step 1: Running the Notebook
 
-## Checking Your Work in the FCP Dashboard
+See `Running Notebooks` section in root level [README.md](../README.md)
+
+Open `notebooks/6_feature_engineering.ipynb` and select the **rhino_data_engineering** kernel.
+
+
+# Step 2: Checking Your Work
+
+In the FCP Dashboard UI: 
 
 ### Reviewing the Code Object
 
@@ -190,8 +182,6 @@ The feature table produced here is the starting point for federated model traini
    - `visit_count` histogram should show most patients with 1–3 visits
    - `procedure_count` histogram should reflect the cleaned procedures dataset
 
----
 
-## Getting Help
-
-For additional support, please reach out to [support@rhinohealth.com](mailto:support@rhinohealth.com)
+# Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

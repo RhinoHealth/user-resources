@@ -4,7 +4,7 @@ This tutorial introduces the **Rhino MCP Server** — a cloud-hosted bridge that
 
 No local server to install. No credentials in config files. Setup takes under 5 minutes.
 
-## Overview
+# Overview
 
 The Rhino MCP Server connects any AI assistant directly to the Rhino Federated Computing Platform. Through natural language, you can run federated analytics, explore datasets, execute code, and monitor jobs — all without raw data ever leaving your sites.
 
@@ -23,7 +23,7 @@ The MCP server exposes 8 capability areas, each mapped to a set of named tools y
 
 All results are aggregated — raw patient data never leaves hospital sites.
 
-## How Authentication Works
+# How Authentication Works
 
 The Rhino MCP Server uses **OAuth 2.1 with PKCE** — the same standard used by Google and GitHub. You never put credentials in a config file.
 
@@ -36,9 +36,7 @@ The Rhino MCP Server uses **OAuth 2.1 with PKCE** — the same standard used by 
 
 Your credentials never appear in the AI chat. The AI assistant never sees your password.
 
----
-
-## Setup
+# Setup
 
 ### Default Environment: Production
 
@@ -49,8 +47,6 @@ https://mcp.rhinohealth.com/mcp
 ```
 
 Use this unless you've been told to use a different environment. Choose your AI client below.
-
----
 
 ### Option A: Claude Desktop (Simplest)
 
@@ -63,7 +59,6 @@ Use this unless you've been told to use a different environment. Choose your AI 
 4. Click **Save**, then **Connect**
 5. A browser window opens — log in to Rhino FCP. Done.
 
----
 
 ### Option B: Claude Code CLI
 
@@ -86,7 +81,6 @@ claude
 
 No config file needed — everything is managed via the CLI.
 
----
 
 ### Option C: Claude Desktop (Dev Mode / Config File)
 
@@ -117,8 +111,6 @@ If you prefer editing the config file directly (e.g., for scripting or CI):
 
 Quit Claude Desktop fully (**Cmd+Q**) and reopen. On first use, ask: `"List my Rhino FCP projects"` — your browser opens for OAuth login.
 
----
-
 ### Option D: Cursor IDE
 
 Create or edit `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (per-project):
@@ -135,7 +127,6 @@ Create or edit `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (per-project)
 
 Restart Cursor, open Agent mode (**Cmd+L**), and ask: `"List my Rhino FCP projects"`.
 
----
 
 ### Option E: VS Code + Copilot
 
@@ -156,9 +147,7 @@ Restart VS Code. Open Copilot Chat (**Ctrl+Shift+I**) and switch to Agent mode.
 
 > Requires VS Code 1.99+ with an active GitHub Copilot subscription.
 
----
-
-## Switching Environments
+# Switching Environments
 
 Each environment has its own MCP URL. To switch, replace the URL in your config with the one for your target environment and re-authenticate.
 
@@ -200,9 +189,7 @@ curl https://mcp.rhinohealth.com/health
 # → {"status":"ok","version":"1.0.0"}
 ```
 
----
-
-## Verify Your Setup
+# Verify Your Setup
 
 Once connected, try these prompts to confirm everything is working:
 
@@ -212,13 +199,11 @@ Once connected, try these prompts to confirm everything is working:
 "What datasets are in [project]?"   → explores a specific project
 ```
 
----
-
-## Tutorial Contents
+# Notebook
 
 See [`notebooks/rhino_mcp.ipynb`](./notebooks/rhino_mcp.ipynb) for a reference of prompt → tool mappings for each workflow step.
 
-### Workflow at a Glance
+## Workflow at a Glance
 
 ```
 Open your AI client
@@ -254,9 +239,8 @@ Verify cohorts              ("How many patients are in the Males 30-40 cohort?
                               What's the mean age?")
 ```
 
----
 
-## Tool Reference
+# Tool Reference
 
 The Rhino MCP exposes the following capabilities. Your AI client selects the appropriate tool automatically based on your prompt.
 
@@ -285,9 +269,8 @@ The Rhino MCP exposes the following capabilities. Your AI client selects the app
 | "Run the cohort selection code object against the Patient Features dataset" | `rhino_code_run` |
 | "How many patients are in the Males 30-40 cohort? What's the mean age?" | `rhino_metric_run` |
 
----
 
-## Troubleshooting
+# Troubleshooting
 
 | Symptom | Fix |
 |---|---|
@@ -298,13 +281,13 @@ The Rhino MCP exposes the following capabilities. Your AI client selects the app
 | `NOT_AUTHENTICATED` error | Token expired — restart your AI client to trigger a new login |
 | Tools appear but return no data | Confirm project access in the Rhino platform; check that your account has workgroup membership |
 
-Need help? Contact [support@rhinofcp.com](mailto:support@rhinofcp.com) with your client name, error message, and the output of the health check curl command.
 
----
-
-## Tips
+# Tips
 
 - **Be specific with dataset names.** The MCP resolves datasets by name — include enough context (e.g., "the prepared patients dataset" vs. "the raw patients dataset") if multiple datasets have similar names.
 - **Approval is still your responsibility.** Claude can display proposed semantic mapping terms and execute approval instructions based on user-provided input/output data schema descriptions (if no descriptions provided, the user will get an internal error), but reviewing these recommendations for clinical correctness remains a human task. Currently, this review process cannot be accomplished via the API/SDK/MCP and must be performed through the UI.
 - **All operations are still federated.** The MCP does not change the privacy model — raw data never leaves sites regardless of whether you use the SDK or the MCP.
 - **To disconnect:** remove the `rhino-health` entry from your config (or run `claude mcp remove rhino-health`) and restart your client.
+
+# Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).

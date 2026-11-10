@@ -2,30 +2,14 @@
 
 This tutorial maps the three prepared datasets to **OMOP CDM** target tables using the Rhino Data Harmonization Engine. The result is a set of harmonized datasets conforming to a shared standard, enabling federated analytics and model training across sites without custom per-site translation code.
 
----
-
-## Prerequisites
-
-- Tutorial 3 complete — all 3 prepared datasets and their corresponding 3 schema UIDs are required
-- OMOP target schemas pre-defined in the FCP (your Rhino administrator can create these, or use the Dashboard: Projects → Data Schemas → New Schema)
-- Your `PROJECT_UID`
-
-**Inputs:** Three prepared datasets from Tutorial 3
-
-**Outputs:** Three OMOP-conformant datasets (OMOP Person, Visit Occurrence, Procedure Occurrence), registered on the Rhino client
-
----
-
-## What You Will Do
+# What You Will Do
 
 1. Create Semantic Mappings (value-level vocabulary translations)
 2. Review and approve AI-proposed term matches
 3. Auto-generate Syntactic Mapping field rules
 4. Run harmonization to produce OMOP-compliant output datasets
 
----
-
-## About the Rhino Data Harmonization Engine (RhinoDHE)
+# About the RhinoDHE
 
 The RhinoDHE is the Rhino FCP's system for transforming source data into a target data model in a structured, auditable, and reusable way. It is not limited to a single standard — it supports three target model types:
 
@@ -39,14 +23,11 @@ In all three cases, the harmonization mechanism is the same: a Semantic Mapping 
 
 For more info, see [RhinoDocs](https://docs.rhinofcp.com/data-harmonization/overview)
 
-
----
-
-## Two Layers of Mapping
+# Layers of Mapping
 
 Harmonization operates at two distinct layers:
 
-### Layer 1: Semantic Mapping (Value Translation)
+## Layer 1: Semantic Mapping (Value Translation)
 
 Translates individual **values** between vocabularies:
 
@@ -61,11 +42,11 @@ The platform proposes matches using AI. A data steward reviews and approves/reje
 
 **Status lifecycle:** `Not Started → In Progress → Needs Review → Approved`
 
-### Layer 2: Syntactic Mapping (Structural Transformation)
+## Layer 2: Syntactic Mapping (Structural Transformation)
 
 Defines **field-level rules**: which source column maps to which target column, what type conversion to apply, and which semantic mapping to invoke for coded columns. [RhinoDocs](https://docs.rhinofcp.com/data-harmonization/syntactic-mapping)
 
-### Syntactic Mapping Transformations
+## Syntactic Mapping Transformations
 
 The auto-generated field rules in a Syntactic Mapping support a range of additional transformation types beyond simple column renaming:
 
@@ -81,10 +62,7 @@ The auto-generated field rules in a Syntactic Mapping support a range of additio
 
 When auto-generation does not produce the right rule for a column, you can edit the syntactic mapping configuration manually via the SDK or the FCP Dashboard.
 
-
----
-
-## Semantic Mapping (OMOP Concepts)
+# Semantic Mapping (OMOP Concepts)
 
 ### Gender → OMOP Gender Concepts
 | Source Value (after cleaning) | OMOP Concept ID | OMOP Name |
@@ -131,9 +109,8 @@ When auto-generation does not produce the right rule for a column, you can edit 
 | 99213        | 4098462 | Office visit, established |
 | 99285        | 4129922 | Emergency department visit |
 
----
 
-## Syntactic Mapping (Source → OMOP Table)
+# Syntactic Mapping (Source → OMOP Table)
 
 | Source Dataset | OMOP Target Table | Key Column Mappings                                                                                                                                                                                                                                                 |
 |---|---|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -141,9 +118,26 @@ When auto-generation does not produce the right rule for a column, you can edit 
 | encounters (prepared) | `visit_occurrence` | `visitID`→`visit_occurrence_id`; `patientID`→`person_id`; `TypeOfService`→`visit_concept_id`; `DateOfService`→`visit_start_date`; `DateOfService`→`visit_end_date`; `TypeOfService`→`visit_type_concept_id`;  `TypeOfService`→`visit_source_concept_id`             |
 | procedures (prepared) | `procedure_occurrence` | `visitID`→`procedure_occurrence_id`; `patientID`→`person_id`; `ProcedureDescription`→`procedure_concept_id`; `ProcedureDate`→`procedure_date`; `ProcedureCategory`→`procedure_type_concept_id`; `visitID`→`procedure_occurrence_id` |
 
----
+# Step 0: Prerequisites
 
-## Checking Your Work in the FCP Dashboard
+- Tutorial 3 complete — all 3 prepared datasets and their corresponding 3 schema UIDs are required
+- OMOP target schemas pre-defined in the FCP (your Rhino administrator can create these, or use the Dashboard: Projects → Data Schemas → New Schema)
+- Your `PROJECT_UID`
+
+**Inputs:** Three prepared datasets from Tutorial 3
+
+**Outputs:** Three OMOP-conformant datasets (OMOP Person, Visit Occurrence, Procedure Occurrence), registered on the Rhino client
+
+# Step 1: Running the Notebook
+
+See `Running Notebooks` section in root level [README.md](../README.md)
+
+Open `notebooks/4_harmonization.ipynb` and select the **rhino_data_engineering** kernel.
+
+
+# Step 2: Checking Your Work
+
+In the FCP Dashboard UI:
 
 ### After Setup
 1. Dashboard → Projects → [Your Project] → **Data Mappings** tab
@@ -162,26 +156,12 @@ When auto-generation does not produce the right rule for a column, you can edit 
 3. Dashboard → **Datasets** — three new OMOP output datasets appear
 4. Click any OMOP dataset → **Analytics** tab → inspect concept ID distributions
 
----
-
-## Common Pitfalls
+# Common Pitfalls
 
 - **"Semantic mapping cannot be used — status is Needs Review":** All terms must be approved before running. Review in Dashboard → Data Mappings → Semantic Mappings → click the mapping → approve/reject each entry.
 - **High concept_id = 0 rate in output:** A source value was not included in your semantic mapping. Add it, re-approve, re-run.
 - **"Auto-generate produced no field rules":** Source schema column names don't match what the mapping expects. Verify prepared dataset schema field names match exactly.
 
----
 
-## Helpful Links
-
-| Resource | Description |
-|---|---|
-| [Rhino FCP Dashboard](https://dashboard.rhinohealth.com/login) | Web UI for monitoring runs and managing mappings |
-| [Rhino SDK Docs](https://rhinohealth.github.io/rhino_sdk_docs/html/index.html) | Full SDK reference |
-| [Rhino FCP Docs](https://docs.rhinofcp.com) | Rhino Federated Computing Platform docs |
-
----
-
-## Getting Help
-
-For additional support, please reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com)
+# Getting Help
+For additional support, check out [RhinoDocs](https://docs.rhinofcp.com/) or reach out to [support@rhinofcp.com](mailto:support@rhinofcp.com).
