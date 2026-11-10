@@ -5,7 +5,7 @@
 
 Contains the resources for Tutorial 1, that goes over how to configure a project, register data, and analyze it with basic metrics, visualizations, and reports.
 
-See [RhinoDocs](https://docs.rhinofcp.com/tutorials-recipes-and-demos/tutorial-1-basic-usage) for additional info and instructions.
+This notebook corresponds to [Step 7 of Tutorial 1](https://docs.rhinofcp.com/tutorials-recipes-and-demos/tutorial-1-basic-usage)
 
 ## Resources
 - `containers/` - Folders for each of the containers you will build and run in this tutorial
