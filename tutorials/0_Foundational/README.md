@@ -4,6 +4,9 @@ These tutorials cover core workflows end-to-end. Start here if you are new to Rh
 
 ## [Tutorial 1 — Hello World: Basic Usage](./1_tutorial_one/)
 
+This notebook corresponds to [Step 7 of Tutorial 1](https://docs.rhinofcp.com/tutorials-recipes-and-demos/tutorial-1-basic-usage)
+
+
 An end-to-end introduction to the Rhino FCP. You will:
 - Create a project and configure permissions
 - Import DICOM and CSV datasets
@@ -17,7 +20,9 @@ An end-to-end introduction to the Rhino FCP. You will:
 
 ## [Tutorial 2 — Data Harmonization via SDK](./2_tutorial_two/)
 
-A guided walkthrough of data harmonization using the Rhino Python SDK. You will:
+This notebook corresponds to [Step 4 of Tutorial 2](https://docs.rhinofcp.com/tutorials-recipes-and-demos/tutorial-2-using-the-sdk)
+
+A guided walkthrough of data harmonization (outside of the DHE) using the Rhino Python SDK. You will:
 - Install and configure the Rhino SDK
 - Import multi-site CSV datasets with differing schemas
 - Define a harmonization mapping

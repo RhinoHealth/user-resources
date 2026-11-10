@@ -1,11 +1,11 @@
 # Tutorial 2 -  Using the Rhino Python SDK
-> Last validated: 2026-10-27
+> Last validated: 2026-11-10
 
 ## Description
 
 Contains the resources for Tutorial 2, that goes over basic functionalities of the Rhino Python SDK, including how to register datasets and process and explore that data programmatically. 
 
-See [RhinoDocs](https://docs.rhinofcp.com/tutorials-recipes-and-demos/tutorial-2-using-the-sdk) for additional info and instructions.
+This notebook corresponds to [Step 4 of Tutorial 2](https://docs.rhinofcp.com/tutorials-recipes-and-demos/tutorial-2-using-the-sdk)
 
 ## Resources
 - `data/` - The data needed for the tutorial
