@@ -11,6 +11,7 @@ Every scheduling event is logged as one `STAGGER {json}` line (see `stagger_repo
 also logged as plain sentences, so a failed run explains itself in the server log.
 """
 
+import copy
 import json
 import re
 import threading
@@ -111,6 +112,8 @@ class StaggeredFedAvg(FedAvg):
         self._lock = threading.Lock()
         self._succeeded: set[str] = set()
         self._error_results: dict[str, str] = {}
+        # This round's train data, deep-copied once and shared by every site's task (see `_run_staggered_round`).
+        self._round_data: Optional[Shareable] = None
 
     def run(self) -> None:
         try:
@@ -167,6 +170,18 @@ class StaggeredFedAvg(FedAvg):
         self._current_failed_clients = set()
         self.set_fl_context(data)
 
+        # One protected copy of the global model per round, shared by every site's task. This matches what NVFlare
+        # does for a plain FedAvg broadcast, which deep-copies its task data once and hands every client a shallow
+        # copy. Broadcasting one task per site instead made NVFlare deep-copy the full model once per site.
+        self._round_data = copy.deepcopy(self._build_shareable(data))
+        try:
+            self._run_round_loop(sites, task_name, data, timeout, callback)
+        finally:
+            self._round_data = None
+
+    def _run_round_loop(
+        self, sites: list[str], task_name: str, data: FLModel, timeout: int, callback: Callable[[FLModel], None]
+    ) -> None:
         round_state = _StaggeredRound(sites, self._agent_of, self._limit_of)
         with self._lock:
             self._succeeded = set()
@@ -266,9 +281,13 @@ class StaggeredFedAvg(FedAvg):
                 self._succeeded.add(site)
 
         task = self._prepare_task(data=data, task_name=task_name, timeout=timeout, callback=aggregate_and_record)
+        # Swap the per-task Shareable `_prepare_task` built for the round's shared copy, and use `send` (one target,
+        # no deep copy) instead of `broadcast` (deep-copies task.data once per task). Each site still gets its own
+        # task, task id, callbacks and timeout; NVFlare gives each client a shallow copy with its own headers.
+        task.data = self._round_data
         task.after_task_sent_cb = self._on_task_sent
         task.result_received_cb = self._on_train_result
-        self.broadcast(task=task, fl_ctx=self.fl_ctx, targets=[site], min_responses=1)
+        self.send(task=task, fl_ctx=self.fl_ctx, targets=[site])
         return task
 
     def _collect_finished_tasks(self, round_state: "_StaggeredRound") -> None:
